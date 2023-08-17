@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import Network from "components/Network";
-import Box from "components/Box";
+import Terrain from "components/Terrain";
 
 export default function Page() {
   return (
@@ -10,8 +10,7 @@ export default function Page() {
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       <Network />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
+      <Terrain />
     </Canvas>
   );
 }
