@@ -33,29 +33,25 @@ const baseNoise = (
   return value * (gradient + 0.1);
 };
 
-export default function Box(props: ThreeElements["mesh"]) {
+export default function Terrain(props: { seed: string }) {
   const geometryRef = useRef<BufferGeometry>(null!);
 
-  const {
-    seed,
-    octaves,
-    amplitude,
-    frequency,
-    gradientSharpness,
-    gradientEdge,
-  } = useControls({
+  const [
+    { seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge },
+    set,
+  ] = useControls(() => ({
     seed: {
-      value: "seed",
+      value: props.seed,
     },
     octaves: {
-      value: 5,
+      value: 3,
       min: 1,
       max: 8,
       step: 1,
     },
     amplitude: {
       value: 0.5,
-      min: 0,
+      min: 0.2,
       max: 1,
       step: 0.01,
     },
@@ -77,7 +73,7 @@ export default function Box(props: ThreeElements["mesh"]) {
       max: 1,
       step: 0.01,
     },
-  });
+  }));
 
   const points: Vector3[] = useMemo(() => {
     const prng = Alea(seed);

@@ -7,14 +7,14 @@ export default function Sun() {
 
   useFrame((_, delta) => {
     sunRef.current.rotation.y -= 0.1 * delta;
-    if (sunRef.current.rotation.y < Math.PI * -0.6) {
-      sunRef.current.rotation.y = Math.PI * 0.6;
+    if (sunRef.current.rotation.y < Math.PI * -0.7) {
+      sunRef.current.rotation.y = Math.PI * 0.7;
     }
   });
 
   useLayoutEffect(() => {
     if (sunRef.current) {
-      sunRef.current.rotation.y = Math.PI * 0.6;
+      sunRef.current.rotation.y = Math.PI * 0.7;
     }
   }, []);
 
