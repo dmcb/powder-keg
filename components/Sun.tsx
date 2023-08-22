@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
 
@@ -7,15 +7,21 @@ export default function Sun() {
 
   useFrame((_, delta) => {
     sunRef.current.rotation.y -= 0.1 * delta;
-    if (Math.abs(sunRef.current.rotation.y) > Math.PI) {
-      sunRef.current.rotation.y = 0;
+    if (sunRef.current.rotation.y < Math.PI * -0.6) {
+      sunRef.current.rotation.y = Math.PI * 0.6;
     }
   });
+
+  useLayoutEffect(() => {
+    if (sunRef.current) {
+      sunRef.current.rotation.y = Math.PI * 0.6;
+    }
+  }, []);
 
   return (
     <group ref={sunRef}>
       <directionalLight
-        position={[10, 0, 0]}
+        position={[0, 0, 2]}
         color="white"
         castShadow={true}
         shadow-mapSize={[4096, 4096]}

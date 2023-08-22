@@ -3,15 +3,21 @@ import { ThreeElements } from "@react-three/fiber";
 import { MathUtils, Vector2, Vector3, BufferGeometry } from "three";
 import Delaunator from "delaunator";
 import { NoiseFunction2D, createNoise2D } from "simplex-noise";
+import Alea from "alea";
+import { useControls } from "leva";
 
-const baseNoise = (noiseFunction: NoiseFunction2D, x: number, y: number) => {
+const baseNoise = (
+  noiseFunction: NoiseFunction2D,
+  octaves: number,
+  amplitude: number,
+  frequency: number,
+  gradientSharpness: number,
+  gradientEdge: number,
+  x: number,
+  y: number
+) => {
   const position = new Vector2(x, y);
-  const octaves = 8;
-  const gradientSharpness = 0.8;
-  const gradientEdge = 1;
   let value = 0;
-  let amplitude = 0.3;
-  let frequency = 0.3;
   for (let i = 0; i < octaves; i++) {
     value +=
       amplitude *
@@ -30,27 +36,122 @@ const baseNoise = (noiseFunction: NoiseFunction2D, x: number, y: number) => {
 export default function Box(props: ThreeElements["mesh"]) {
   const geometryRef = useRef<BufferGeometry>(null!);
 
-  const points: Vector3[] = useMemo(() => {
-    const noise2D = createNoise2D();
+  const {
+    seed,
+    octaves,
+    amplitude,
+    frequency,
+    gradientSharpness,
+    gradientEdge,
+  } = useControls({
+    seed: {
+      value: "seed",
+    },
+    octaves: {
+      value: 5,
+      min: 1,
+      max: 8,
+      step: 1,
+    },
+    amplitude: {
+      value: 0.5,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    frequency: {
+      value: 0.5,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    gradientSharpness: {
+      value: 1,
+      min: 0.5,
+      max: 2,
+      step: 0.01,
+    },
+    gradientEdge: {
+      value: 0.8,
+      min: 0.5,
+      max: 1,
+      step: 0.01,
+    },
+  });
 
-    let size = 2;
-    let edgePointsCount = 24;
-    let innerPointsCount = 2900;
+  const points: Vector3[] = useMemo(() => {
+    const prng = Alea(seed);
+    const noise2D = createNoise2D(prng);
+
+    const insidePointsCount = 1600;
+    const edgePointsCount = 99;
+    const size = 2;
 
     // Start with corner points
-    let points = [
-      new Vector3(-1, -1, baseNoise(noise2D, -1, -1)),
-      new Vector3(1, -1, baseNoise(noise2D, 1, -1)),
-      new Vector3(1, 1, baseNoise(noise2D, 1, 1)),
-      new Vector3(-1, 1, baseNoise(noise2D, -1, 1)),
+    const points = [
+      new Vector3(
+        -1,
+        -1,
+        baseNoise(
+          noise2D,
+          octaves,
+          amplitude,
+          frequency,
+          gradientSharpness,
+          gradientEdge,
+          -1,
+          -1
+        )
+      ),
+      new Vector3(
+        1,
+        -1,
+        baseNoise(
+          noise2D,
+          octaves,
+          amplitude,
+          frequency,
+          gradientSharpness,
+          gradientEdge,
+          1,
+          -1
+        )
+      ),
+      new Vector3(
+        1,
+        1,
+        baseNoise(
+          noise2D,
+          octaves,
+          amplitude,
+          frequency,
+          gradientSharpness,
+          gradientEdge,
+          1,
+          1
+        )
+      ),
+      new Vector3(
+        -1,
+        1,
+        baseNoise(
+          noise2D,
+          octaves,
+          amplitude,
+          frequency,
+          gradientSharpness,
+          gradientEdge,
+          -1,
+          1
+        )
+      ),
     ];
 
     // Add edges
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < edgePointsCount; j++) {
-        let x = MathUtils.randFloatSpread(size);
-        let y = MathUtils.randFloatSpread(size);
-        let z = 0;
+        let x = prng() * size - size / 2;
+        let y = prng() * size - size / 2;
         switch (i) {
           case 0:
             y = -1;
@@ -65,20 +166,49 @@ export default function Box(props: ThreeElements["mesh"]) {
             x = -1;
             break;
         }
-        points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
+        points.push(
+          new Vector3(
+            x,
+            y,
+            baseNoise(
+              noise2D,
+              octaves,
+              amplitude,
+              frequency,
+              gradientSharpness,
+              gradientEdge,
+              x,
+              y
+            )
+          )
+        );
       }
     }
 
     // Fill in the rest
-    for (let i = 0; i < innerPointsCount; i++) {
-      let x = MathUtils.randFloatSpread(size * 0.98);
-      let y = MathUtils.randFloatSpread(size * 0.98);
-      let z = 0;
-      points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
+    for (let i = 0; i < insidePointsCount; i++) {
+      let x = prng() * size * 0.98 - (size * 0.98) / 2;
+      let y = prng() * size * 0.98 - (size * 0.98) / 2;
+      points.push(
+        new Vector3(
+          x,
+          y,
+          baseNoise(
+            noise2D,
+            octaves,
+            amplitude,
+            frequency,
+            gradientSharpness,
+            gradientEdge,
+            x,
+            y
+          )
+        )
+      );
     }
 
     return points;
-  }, []);
+  }, [seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge]);
 
   const meshIndex: number[] = useMemo(() => {
     // Triangulate
@@ -103,7 +233,7 @@ export default function Box(props: ThreeElements["mesh"]) {
       geometryRef.current.setIndex(meshIndex);
       geometryRef.current.computeVertexNormals();
     }
-  }, []);
+  }, [seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge]);
 
   return (
     <mesh {...props} castShadow={true} receiveShadow={true}>
