@@ -1,8 +1,31 @@
 import React, { useRef, useLayoutEffect, useMemo } from "react";
 import { ThreeElements } from "@react-three/fiber";
-import { MathUtils, Vector3, BufferGeometry } from "three";
+import { MathUtils, Vector2, Vector3, BufferGeometry } from "three";
 import Delaunator from "delaunator";
-import { createNoise2D } from "simplex-noise";
+import { NoiseFunction2D, createNoise2D } from "simplex-noise";
+
+const baseNoise = (noiseFunction: NoiseFunction2D, x: number, y: number) => {
+  const position = new Vector2(x, y);
+  const octaves = 8;
+  const gradientSharpness = 0.8;
+  const gradientEdge = 1;
+  let value = 0;
+  let amplitude = 0.3;
+  let frequency = 0.3;
+  for (let i = 0; i < octaves; i++) {
+    value +=
+      amplitude *
+      Math.abs(noiseFunction((x + 1) * frequency, (y + 1) * frequency));
+    amplitude *= 0.5;
+    frequency *= 2;
+  }
+  const distance = position.distanceTo(new Vector2(0, 0));
+  const gradient = Math.pow(
+    Math.max(0, gradientEdge - distance),
+    gradientSharpness
+  );
+  return value * (gradient + 0.1);
+};
 
 export default function Box(props: ThreeElements["mesh"]) {
   const geometryRef = useRef<BufferGeometry>(null!);
@@ -11,15 +34,15 @@ export default function Box(props: ThreeElements["mesh"]) {
     const noise2D = createNoise2D();
 
     let size = 2;
-    let edgePointsCount = 49;
-    let innerPointsCount = 4800;
+    let edgePointsCount = 24;
+    let innerPointsCount = 2900;
 
     // Start with corner points
     let points = [
-      new Vector3(-1, -1, 0.3 * noise2D(-1, -1)),
-      new Vector3(1, -1, 0.3 * noise2D(1, -1)),
-      new Vector3(1, 1, 0.3 * noise2D(1, 1)),
-      new Vector3(-1, 1, 0.3 * noise2D(-1, 1)),
+      new Vector3(-1, -1, baseNoise(noise2D, -1, -1)),
+      new Vector3(1, -1, baseNoise(noise2D, 1, -1)),
+      new Vector3(1, 1, baseNoise(noise2D, 1, 1)),
+      new Vector3(-1, 1, baseNoise(noise2D, -1, 1)),
     ];
 
     // Add edges
@@ -42,7 +65,7 @@ export default function Box(props: ThreeElements["mesh"]) {
             x = -1;
             break;
         }
-        points.push(new Vector3(x, y, 0.3 * noise2D(x, y)));
+        points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
       }
     }
 
@@ -51,7 +74,7 @@ export default function Box(props: ThreeElements["mesh"]) {
       let x = MathUtils.randFloatSpread(size * 0.98);
       let y = MathUtils.randFloatSpread(size * 0.98);
       let z = 0;
-      points.push(new Vector3(x, y, 0.3 * noise2D(x, y)));
+      points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
     }
 
     return points;
@@ -71,7 +94,7 @@ export default function Box(props: ThreeElements["mesh"]) {
       meshIndex.push(delaunayIndex.triangles[i]);
     }
 
-    return meshIndex;
+    return meshIndex.reverse();
   }, [points]);
 
   useLayoutEffect(() => {
@@ -83,9 +106,9 @@ export default function Box(props: ThreeElements["mesh"]) {
   }, []);
 
   return (
-    <mesh {...props}>
+    <mesh {...props} castShadow={true} receiveShadow={true}>
       <bufferGeometry ref={geometryRef} />
-      <meshStandardMaterial wireframe={true} color={"hotpink"} />
+      <meshStandardMaterial color={"white"} flatShading={true} />
     </mesh>
   );
 }
