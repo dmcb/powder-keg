@@ -108,7 +108,7 @@ export default function Box(props: ThreeElements["mesh"]) {
   return (
     <mesh {...props} castShadow={true} receiveShadow={true}>
       <bufferGeometry ref={geometryRef} />
-      <meshStandardMaterial color={"white"} flatShading={true} />
+      <meshStandardMaterial color={"beige"} flatShading={true} />
     </mesh>
   );
 }

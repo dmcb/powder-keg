@@ -3,19 +3,14 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Network from "components/Network";
-import Terrain from "components/Terrain";
-import Ocean from "components/Ocean";
-import Sun from "components/Sun";
+import Board from "components/Board";
 
 export default function Page() {
   return (
-    <Canvas>
+    <Canvas shadows={true} camera={{ fov: 10, position: [0, 0, 12] }}>
       <OrbitControls />
-      <ambientLight intensity={0.1} />
       <Network />
-      <Terrain />
-      <Ocean />
-      <Sun />
+      <Board />
     </Canvas>
   );
 }
