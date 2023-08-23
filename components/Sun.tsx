@@ -22,11 +22,11 @@ export default function Sun() {
     dayLength: {
       value: 30,
       min: 1,
-      max: 300,
+      max: 600,
       step: 1,
     },
     sunRotationsPerDay: {
-      value: 0.7,
+      value: 0.65,
       min: 0.01,
       max: 1,
       step: 0.01,

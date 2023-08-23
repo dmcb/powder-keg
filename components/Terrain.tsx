@@ -1,5 +1,10 @@
 import React, { useRef, useLayoutEffect, useMemo } from "react";
-import { Vector2, Vector3, BufferGeometry } from "three";
+import {
+  Vector2,
+  Vector3,
+  BufferGeometry,
+  Float32BufferAttribute,
+} from "three";
 import Delaunator from "delaunator";
 import { NoiseFunction2D, createNoise2D } from "simplex-noise";
 import Alea from "alea";
@@ -222,10 +227,26 @@ export default function Terrain(props: { seed: string }) {
     return meshIndex.reverse();
   }, [points]);
 
+  const colours: number[] = useMemo(() => {
+    const colours = [];
+    for (let i = 0; i < points.length; i++) {
+      const height = points[i].z;
+      const color = new Vector3(0.3, 0.3, 0.2)
+        .lerp(new Vector3(1, 1, 1), Math.max(0, (height - 0.2) * 10))
+        .toArray();
+      colours.push(...color);
+    }
+    return colours;
+  }, [points]);
+
   useLayoutEffect(() => {
     if (geometryRef.current) {
       geometryRef.current.setFromPoints(points);
       geometryRef.current.setIndex(meshIndex);
+      geometryRef.current.setAttribute(
+        "color",
+        new Float32BufferAttribute(colours, 3)
+      );
       geometryRef.current.computeVertexNormals();
     }
   }, [seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge]);
@@ -233,7 +254,7 @@ export default function Terrain(props: { seed: string }) {
   return (
     <mesh {...props} castShadow={true} receiveShadow={true}>
       <bufferGeometry ref={geometryRef} />
-      <meshStandardMaterial color={"beige"} flatShading={true} />
+      <meshStandardMaterial flatShading={true} vertexColors={true} />
     </mesh>
   );
 }
