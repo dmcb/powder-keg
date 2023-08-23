@@ -1,6 +1,5 @@
 import React, { useRef, useLayoutEffect, useMemo } from "react";
-import { ThreeElements } from "@react-three/fiber";
-import { MathUtils, Vector2, Vector3, BufferGeometry } from "three";
+import { Vector2, Vector3, BufferGeometry } from "three";
 import Delaunator from "delaunator";
 import { NoiseFunction2D, createNoise2D } from "simplex-noise";
 import Alea from "alea";
@@ -50,7 +49,7 @@ export default function Terrain(props: { seed: string }) {
       step: 1,
     },
     amplitude: {
-      value: 0.5,
+      value: 0.65,
       min: 0.2,
       max: 1,
       step: 0.01,
@@ -62,13 +61,13 @@ export default function Terrain(props: { seed: string }) {
       step: 0.01,
     },
     gradientSharpness: {
-      value: 1,
+      value: 1.2,
       min: 0.5,
       max: 2,
       step: 0.01,
     },
     gradientEdge: {
-      value: 0.7,
+      value: 0.8,
       min: 0.5,
       max: 0.85,
       step: 0.01,
