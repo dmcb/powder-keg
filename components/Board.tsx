@@ -2,7 +2,6 @@ import React, { useRef, useLayoutEffect } from "react";
 import { Group } from "three";
 import Terrain from "components/Terrain";
 import Ocean from "components/Ocean";
-import Sun from "components/Sun";
 
 export default function Board(props: { seed: string }) {
   const boardRef = useRef<Group>(null!);
@@ -16,10 +15,8 @@ export default function Board(props: { seed: string }) {
 
   return (
     <group ref={boardRef}>
-      <ambientLight intensity={0.5} />
       <Terrain seed={props.seed} />
       <Ocean />
-      <Sun />
     </group>
   );
 }

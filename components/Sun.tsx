@@ -1,26 +1,44 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Group } from "three";
+import { AmbientLight, DirectionalLight, Group } from "three";
+import kelvinToRGB from "lib/kelvin";
 
 export default function Sun() {
   const sunRef = useRef<Group>(null!);
+  const ambientRef = useRef<AmbientLight>(null!);
+  const directionalRef = useRef<DirectionalLight>(null!);
+
+  const arcLength = Math.PI * 0.65;
 
   useFrame((_, delta) => {
-    sunRef.current.rotation.y -= 0.1 * delta;
-    if (sunRef.current.rotation.y < Math.PI * -0.7) {
-      sunRef.current.rotation.y = Math.PI * 0.7;
+    // Rotate sun
+    sunRef.current.rotation.y -= 0.15 * delta;
+    if (sunRef.current.rotation.y < -arcLength) {
+      sunRef.current.rotation.y = arcLength;
     }
+    // Determine percentage of the day
+    const dayPercentage =
+      (arcLength - Math.abs(sunRef.current.rotation.y)) / arcLength;
+    ambientRef.current.intensity = Math.pow(dayPercentage, 0.5) * 0.3;
+    ambientRef.current.color.set(
+      kelvinToRGB(Math.pow(dayPercentage, 0.7) * 5000)
+    );
+    directionalRef.current.color.set(
+      kelvinToRGB(Math.pow(dayPercentage, 0.7) * 5000)
+    );
   });
 
   useLayoutEffect(() => {
     if (sunRef.current) {
-      sunRef.current.rotation.y = Math.PI * 0.7;
+      sunRef.current.rotation.y = arcLength;
     }
   }, []);
 
   return (
     <group ref={sunRef}>
+      <ambientLight ref={ambientRef} />
       <directionalLight
+        ref={directionalRef}
         position={[0, 0, 2]}
         color="white"
         castShadow={true}

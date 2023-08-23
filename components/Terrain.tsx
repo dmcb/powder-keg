@@ -30,7 +30,7 @@ const baseNoise = (
     Math.max(0, gradientEdge - distance),
     gradientSharpness
   );
-  return value * (gradient + 0.1);
+  return value * gradient;
 };
 
 export default function Terrain(props: { seed: string }) {
@@ -57,7 +57,7 @@ export default function Terrain(props: { seed: string }) {
     },
     frequency: {
       value: 0.5,
-      min: 0,
+      min: 0.15,
       max: 1,
       step: 0.01,
     },
@@ -68,9 +68,9 @@ export default function Terrain(props: { seed: string }) {
       step: 0.01,
     },
     gradientEdge: {
-      value: 0.8,
+      value: 0.7,
       min: 0.5,
-      max: 1,
+      max: 0.85,
       step: 0.01,
     },
   }));
