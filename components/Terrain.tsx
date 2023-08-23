@@ -231,7 +231,7 @@ export default function Terrain(props: { seed: string }) {
     const colours = [];
     for (let i = 0; i < points.length; i++) {
       const height = points[i].z;
-      const color = new Vector3(0.3, 0.3, 0.2)
+      const color = new Vector3(0.25, 0.25, 0.18)
         .lerp(new Vector3(1, 1, 1), Math.max(0, (height - 0.2) * 10))
         .toArray();
       colours.push(...color);
