@@ -44,7 +44,7 @@ export default function Sun() {
       step: 0.01,
     },
     colorTempGradient: {
-      value: 0.5,
+      value: 0.8,
       min: 0,
       max: 2,
       step: 0.01,
@@ -88,7 +88,7 @@ export default function Sun() {
         position={[0, 0, 2]}
         color="white"
         castShadow={true}
-        shadow-mapSize={[4096, 4096]}
+        shadow-mapSize={[2048, 2048]}
         shadow-radius={0}
         shadow-normalBias={0.000001}
         shadow-camera-left={-1}

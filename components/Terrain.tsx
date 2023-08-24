@@ -1,5 +1,6 @@
 import React, { useRef, useLayoutEffect, useMemo } from "react";
 import {
+  Color,
   Vector2,
   Vector3,
   BufferGeometry,
@@ -8,6 +9,7 @@ import {
 import Delaunator from "delaunator";
 import { NoiseFunction2D, createNoise2D } from "simplex-noise";
 import Alea from "alea";
+import chroma from "chroma-js";
 import { useControls } from "leva";
 
 const baseNoise = (
@@ -83,8 +85,8 @@ export default function Terrain(props: { seed: string }) {
     const prng = Alea(seed);
     const noise2D = createNoise2D(prng);
 
-    const insidePointsCount = 1600;
-    const edgePointsCount = 99;
+    const insidePointsCount = 8000;
+    const edgePointsCount = 449;
     const size = 2;
 
     // Start with corner points
@@ -227,6 +229,12 @@ export default function Terrain(props: { seed: string }) {
     return meshIndex.reverse();
   }, [points]);
 
+  const colourScale: chroma = useMemo(() => {
+    return chroma
+      .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
+      .domain([0.3, 0.4, 0.5, 0.6, 0.75, 0.9]);
+  }, []);
+
   useLayoutEffect(() => {
     if (geometryRef.current) {
       geometryRef.current.setFromPoints(points);
@@ -242,9 +250,11 @@ export default function Terrain(props: { seed: string }) {
           positionAttribute.getZ(i) +
           positionAttribute.getZ(i + 1) +
           positionAttribute.getZ(i + 2) / 3;
-        colours.push(avgHeightOfFace, avgHeightOfFace, avgHeightOfFace);
-        colours.push(avgHeightOfFace, avgHeightOfFace, avgHeightOfFace);
-        colours.push(avgHeightOfFace, avgHeightOfFace, avgHeightOfFace);
+        console.log(avgHeightOfFace);
+        const [r, g, b] = colourScale(avgHeightOfFace).get("rgb");
+        colours.push(r / 255, g / 255, b / 255);
+        colours.push(r / 255, g / 255, b / 255);
+        colours.push(r / 255, g / 255, b / 255);
       }
       geometryRef.current.setAttribute(
         "color",
