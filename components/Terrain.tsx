@@ -15,77 +15,69 @@ export default function Terrain(props: { seed: string }) {
   const geometryRef = useRef<BufferGeometry>(null!);
 
   const baseNoise = (x: number, y: number) => {
+    // Generate noise
     const position = new Vector2(x, y);
     let adjustedAmp = amplitude;
     let adjustedFreq = frequency;
     let value = 0;
     for (let i = 0; i < octaves; i++) {
-      value +=
-        adjustedAmp *
-        Math.abs(noise2D((x + 1) * adjustedFreq, (y + 1) * adjustedFreq));
+      value += adjustedAmp * noise2D(x * adjustedFreq, y * adjustedFreq);
       adjustedAmp *= 0.5;
       adjustedFreq *= 2;
     }
+
+    // Drop off the edges
+    let gradient = 1;
+    let dropoff = 0.5;
+    let closenessToEdge = 0;
     const distance = position.distanceTo(new Vector2(0, 0));
-    const gradient = Math.pow(
-      Math.max(0, gradientEdge - distance),
-      gradientSharpness
-    );
-    return value * gradient;
+    if (distance - gradientEdge > 0) {
+      closenessToEdge = Math.min(
+        1,
+        (distance - gradientEdge) / (1 - gradientEdge)
+      );
+    }
+    dropoff *= closenessToEdge;
+    gradient = Math.pow(1 - closenessToEdge, 0.1);
+    return Math.max(-0.1, value * gradient - dropoff);
   };
 
-  const [
-    {
-      seed,
-      biome,
-      octaves,
-      amplitude,
-      frequency,
-      gradientSharpness,
-      gradientEdge,
-    },
-    set,
-  ] = useControls(() => ({
-    seed: {
-      value: props.seed,
-    },
-    biome: {
-      value: 0,
-      min: 0,
-      max: 1,
-      step: 1,
-    },
-    octaves: {
-      value: 3,
-      min: 1,
-      max: 8,
-      step: 1,
-    },
-    amplitude: {
-      value: 0.65,
-      min: 0.2,
-      max: 1,
-      step: 0.01,
-    },
-    frequency: {
-      value: 0.5,
-      min: 0.15,
-      max: 1,
-      step: 0.01,
-    },
-    gradientSharpness: {
-      value: 1.2,
-      min: 0.5,
-      max: 2,
-      step: 0.01,
-    },
-    gradientEdge: {
-      value: 1.0,
-      min: 0.5,
-      max: 0.85,
-      step: 0.01,
-    },
-  }));
+  const [{ seed, biome, amplitude, frequency, gradientEdge, octaves }, set] =
+    useControls(() => ({
+      seed: {
+        value: props.seed,
+      },
+      biome: {
+        value: 0,
+        min: 0,
+        max: 1,
+        step: 1,
+      },
+      amplitude: {
+        value: 0.3,
+        min: 0.1,
+        max: 0.4,
+        step: 0.01,
+      },
+      frequency: {
+        value: 1.0,
+        min: 0.5,
+        max: 2,
+        step: 0.01,
+      },
+      gradientEdge: {
+        value: 1.0,
+        min: 0.5,
+        max: 0.85,
+        step: 0.01,
+      },
+      octaves: {
+        value: 3,
+        min: 1,
+        max: 8,
+        step: 1,
+      },
+    }));
 
   const prng = useMemo(() => new Alea(seed), [seed]);
   const noise2D = createNoise2D(prng);
@@ -136,7 +128,7 @@ export default function Terrain(props: { seed: string }) {
     }
 
     return points;
-  }, [seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge]);
+  }, [seed, octaves, amplitude, frequency, gradientEdge]);
 
   const meshIndex: number[] = useMemo(() => {
     // Triangulate
@@ -160,22 +152,21 @@ export default function Terrain(props: { seed: string }) {
       case 0:
         return chroma
           .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
-          .domain([0.3, 0.4, 0.5, 0.7, 0.8, 1.0]);
+          .domain([0.0, 0.1, 0.2, 0.4, 0.6, 1.0]);
       case 1:
         return chroma
           .scale(["F2DEB9", "DAA46D", "9C4F20", "746354", "FFFFFF"])
-          .domain([0.3, 0.4, 0.5, 0.6, 1.0]);
+          .domain([0.0, 0.1, 0.2, 0.4, 1.0]);
     }
   }, [biome]);
 
-  // Set new random values from prng for amplitude and frequency and gradientEdge and gradientSharpness when seed changes
+  // Set new random values from prng for amplitude and frequency and gradientEdge when seed changes
   useEffect(() => {
     set({
       biome: prng() > 0.5 ? 0 : 1,
-      amplitude: prng() * 0.8 + 0.2,
-      frequency: prng() * 0.85 + 0.15,
+      amplitude: prng() * 0.3 + 0.1,
+      frequency: prng() * 1.5 + 0.5,
       gradientEdge: prng() * 0.35 + 0.5,
-      gradientSharpness: prng() * 1.5 + 0.5,
     });
   }, [seed]);
 
@@ -205,15 +196,7 @@ export default function Terrain(props: { seed: string }) {
         new Float32BufferAttribute(colours, 3)
       );
     }
-  }, [
-    seed,
-    biome,
-    octaves,
-    amplitude,
-    frequency,
-    gradientSharpness,
-    gradientEdge,
-  ]);
+  }, [seed, biome, octaves, amplitude, frequency, gradientEdge]);
 
   return (
     <mesh {...props} castShadow={true} receiveShadow={true}>
