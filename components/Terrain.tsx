@@ -227,27 +227,29 @@ export default function Terrain(props: { seed: string }) {
     return meshIndex.reverse();
   }, [points]);
 
-  const colours: number[] = useMemo(() => {
-    const colours = [];
-    for (let i = 0; i < points.length; i++) {
-      const height = points[i].z;
-      const color = new Vector3(0.25, 0.25, 0.18)
-        .lerp(new Vector3(1, 1, 1), Math.max(0, (height - 0.2) * 10))
-        .toArray();
-      colours.push(...color);
-    }
-    return colours;
-  }, [points]);
-
   useLayoutEffect(() => {
     if (geometryRef.current) {
       geometryRef.current.setFromPoints(points);
       geometryRef.current.setIndex(meshIndex);
+      geometryRef.current.computeVertexNormals();
+      geometryRef.current.copy(geometryRef.current.toNonIndexed());
+
+      // Set colours per face
+      const positionAttribute = geometryRef.current.getAttribute("position");
+      const colours = [];
+      for (let i = 0; i < positionAttribute.count; i += 3) {
+        const avgHeightOfFace =
+          positionAttribute.getZ(i) +
+          positionAttribute.getZ(i + 1) +
+          positionAttribute.getZ(i + 2) / 3;
+        colours.push(avgHeightOfFace, avgHeightOfFace, avgHeightOfFace);
+        colours.push(avgHeightOfFace, avgHeightOfFace, avgHeightOfFace);
+        colours.push(avgHeightOfFace, avgHeightOfFace, avgHeightOfFace);
+      }
       geometryRef.current.setAttribute(
         "color",
         new Float32BufferAttribute(colours, 3)
       );
-      geometryRef.current.computeVertexNormals();
     }
   }, [seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge]);
 

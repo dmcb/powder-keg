@@ -44,7 +44,7 @@ export default function Sun() {
       step: 0.01,
     },
     colorTempGradient: {
-      value: 0.7,
+      value: 0.5,
       min: 0,
       max: 2,
       step: 0.01,
