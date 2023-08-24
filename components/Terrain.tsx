@@ -1,6 +1,5 @@
-import React, { useRef, useLayoutEffect, useMemo } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import {
-  Color,
   Vector2,
   Vector3,
   BufferGeometry,
@@ -8,39 +7,32 @@ import {
 } from "three";
 import Delaunator from "delaunator";
 import { NoiseFunction2D, createNoise2D } from "simplex-noise";
-import Alea from "alea";
+import Alea from "aleaprng";
 import chroma from "chroma-js";
 import { useControls } from "leva";
 
-const baseNoise = (
-  noiseFunction: NoiseFunction2D,
-  octaves: number,
-  amplitude: number,
-  frequency: number,
-  gradientSharpness: number,
-  gradientEdge: number,
-  x: number,
-  y: number
-) => {
-  const position = new Vector2(x, y);
-  let value = 0;
-  for (let i = 0; i < octaves; i++) {
-    value +=
-      amplitude *
-      Math.abs(noiseFunction((x + 1) * frequency, (y + 1) * frequency));
-    amplitude *= 0.5;
-    frequency *= 2;
-  }
-  const distance = position.distanceTo(new Vector2(0, 0));
-  const gradient = Math.pow(
-    Math.max(0, gradientEdge - distance),
-    gradientSharpness
-  );
-  return value * gradient;
-};
-
 export default function Terrain(props: { seed: string }) {
   const geometryRef = useRef<BufferGeometry>(null!);
+
+  const baseNoise = (x: number, y: number) => {
+    const position = new Vector2(x, y);
+    let adjustedAmp = amplitude;
+    let adjustedFreq = frequency;
+    let value = 0;
+    for (let i = 0; i < octaves; i++) {
+      value +=
+        adjustedAmp *
+        Math.abs(noise2D((x + 1) * adjustedFreq, (y + 1) * adjustedFreq));
+      adjustedAmp *= 0.5;
+      adjustedFreq *= 2;
+    }
+    const distance = position.distanceTo(new Vector2(0, 0));
+    const gradient = Math.pow(
+      Math.max(0, gradientEdge - distance),
+      gradientSharpness
+    );
+    return value * gradient;
+  };
 
   const [
     {
@@ -88,16 +80,18 @@ export default function Terrain(props: { seed: string }) {
       step: 0.01,
     },
     gradientEdge: {
-      value: 0.8,
+      value: 1.0,
       min: 0.5,
       max: 0.85,
       step: 0.01,
     },
   }));
 
+  const prng = useMemo(() => new Alea(seed), [seed]);
+  const noise2D = createNoise2D(prng);
+
   const points: Vector3[] = useMemo(() => {
-    const prng = Alea(seed);
-    const noise2D = createNoise2D(prng);
+    prng.restart();
 
     const insidePointsCount = 8000;
     const edgePointsCount = 449;
@@ -105,62 +99,10 @@ export default function Terrain(props: { seed: string }) {
 
     // Start with corner points
     const points = [
-      new Vector3(
-        -1,
-        -1,
-        baseNoise(
-          noise2D,
-          octaves,
-          amplitude,
-          frequency,
-          gradientSharpness,
-          gradientEdge,
-          -1,
-          -1
-        )
-      ),
-      new Vector3(
-        1,
-        -1,
-        baseNoise(
-          noise2D,
-          octaves,
-          amplitude,
-          frequency,
-          gradientSharpness,
-          gradientEdge,
-          1,
-          -1
-        )
-      ),
-      new Vector3(
-        1,
-        1,
-        baseNoise(
-          noise2D,
-          octaves,
-          amplitude,
-          frequency,
-          gradientSharpness,
-          gradientEdge,
-          1,
-          1
-        )
-      ),
-      new Vector3(
-        -1,
-        1,
-        baseNoise(
-          noise2D,
-          octaves,
-          amplitude,
-          frequency,
-          gradientSharpness,
-          gradientEdge,
-          -1,
-          1
-        )
-      ),
+      new Vector3(-1, -1, baseNoise(-1, -1)),
+      new Vector3(1, -1, baseNoise(1, -1)),
+      new Vector3(1, 1, baseNoise(1, 1)),
+      new Vector3(-1, 1, baseNoise(-1, 1)),
     ];
 
     // Add edges
@@ -182,22 +124,7 @@ export default function Terrain(props: { seed: string }) {
             x = -1;
             break;
         }
-        points.push(
-          new Vector3(
-            x,
-            y,
-            baseNoise(
-              noise2D,
-              octaves,
-              amplitude,
-              frequency,
-              gradientSharpness,
-              gradientEdge,
-              x,
-              y
-            )
-          )
-        );
+        points.push(new Vector3(x, y, baseNoise(x, y)));
       }
     }
 
@@ -205,22 +132,7 @@ export default function Terrain(props: { seed: string }) {
     for (let i = 0; i < insidePointsCount; i++) {
       let x = prng() * size * 0.98 - (size * 0.98) / 2;
       let y = prng() * size * 0.98 - (size * 0.98) / 2;
-      points.push(
-        new Vector3(
-          x,
-          y,
-          baseNoise(
-            noise2D,
-            octaves,
-            amplitude,
-            frequency,
-            gradientSharpness,
-            gradientEdge,
-            x,
-            y
-          )
-        )
-      );
+      points.push(new Vector3(x, y, baseNoise(x, y)));
     }
 
     return points;
@@ -256,7 +168,19 @@ export default function Terrain(props: { seed: string }) {
     }
   }, [biome]);
 
-  useLayoutEffect(() => {
+  // Set new random values from prng for amplitude and frequency and gradientEdge and gradientSharpness when seed changes
+  useEffect(() => {
+    set({
+      biome: prng() > 0.5 ? 0 : 1,
+      amplitude: prng() * 0.8 + 0.2,
+      frequency: prng() * 0.85 + 0.15,
+      gradientEdge: prng() * 0.35 + 0.5,
+      gradientSharpness: prng() * 1.5 + 0.5,
+    });
+  }, [seed]);
+
+  // Update geometry with points, faces, and colouring
+  useEffect(() => {
     if (geometryRef.current) {
       geometryRef.current.setFromPoints(points);
       geometryRef.current.setIndex(meshIndex);
@@ -271,7 +195,6 @@ export default function Terrain(props: { seed: string }) {
           positionAttribute.getZ(i) +
           positionAttribute.getZ(i + 1) +
           positionAttribute.getZ(i + 2) / 3;
-        console.log(avgHeightOfFace);
         const [r, g, b] = colourScale(avgHeightOfFace).get("rgb");
         colours.push(r / 255, g / 255, b / 255);
         colours.push(r / 255, g / 255, b / 255);
