@@ -43,11 +43,25 @@ export default function Terrain(props: { seed: string }) {
   const geometryRef = useRef<BufferGeometry>(null!);
 
   const [
-    { seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge },
+    {
+      seed,
+      biome,
+      octaves,
+      amplitude,
+      frequency,
+      gradientSharpness,
+      gradientEdge,
+    },
     set,
   ] = useControls(() => ({
     seed: {
       value: props.seed,
+    },
+    biome: {
+      value: 0,
+      min: 0,
+      max: 1,
+      step: 1,
     },
     octaves: {
       value: 3,
@@ -230,10 +244,17 @@ export default function Terrain(props: { seed: string }) {
   }, [points]);
 
   const colourScale: chroma = useMemo(() => {
-    return chroma
-      .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
-      .domain([0.3, 0.4, 0.5, 0.6, 0.75, 0.9]);
-  }, []);
+    switch (biome) {
+      case 0:
+        return chroma
+          .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
+          .domain([0.3, 0.4, 0.5, 0.7, 0.8, 1.0]);
+      case 1:
+        return chroma
+          .scale(["F2DEB9", "DAA46D", "9C4F20", "746354", "FFFFFF"])
+          .domain([0.3, 0.4, 0.5, 0.6, 1.0]);
+    }
+  }, [biome]);
 
   useLayoutEffect(() => {
     if (geometryRef.current) {
@@ -261,7 +282,15 @@ export default function Terrain(props: { seed: string }) {
         new Float32BufferAttribute(colours, 3)
       );
     }
-  }, [seed, octaves, amplitude, frequency, gradientSharpness, gradientEdge]);
+  }, [
+    seed,
+    biome,
+    octaves,
+    amplitude,
+    frequency,
+    gradientSharpness,
+    gradientEdge,
+  ]);
 
   return (
     <mesh {...props} castShadow={true} receiveShadow={true}>

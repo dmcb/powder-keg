@@ -38,7 +38,7 @@ export default function Sun() {
       step: 0.01,
     },
     ambientBrightnessGradient: {
-      value: 0.3,
+      value: 0.4,
       min: 0,
       max: 2,
       step: 0.01,
@@ -71,12 +71,12 @@ export default function Sun() {
       0
     );
     ambientRef.current.intensity =
-      Math.pow(heightOfSun, ambientBrightnessGradient) * 0.3;
+      Math.pow(heightOfSun, ambientBrightnessGradient) * 0.5;
     ambientRef.current.color.set(
-      kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 6500)
+      kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 5800)
     );
     directionalRef.current.color.set(
-      kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 6500)
+      kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 5800)
     );
   });
 
@@ -85,8 +85,8 @@ export default function Sun() {
       <ambientLight ref={ambientRef} />
       <directionalLight
         ref={directionalRef}
+        intensity={0.9}
         position={[0, 0, 2]}
-        color="white"
         castShadow={true}
         shadow-mapSize={[2048, 2048]}
         shadow-radius={0}
