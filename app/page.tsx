@@ -6,10 +6,11 @@ import { Leva } from "leva";
 import Network from "components/Network";
 import Board from "components/Board";
 import cryptoRandomString from "crypto-random-string";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
-  const queryString = new URLSearchParams(window.location.hash.slice(1));
-  const debug = queryString.has("debug");
+  const searchParams = useSearchParams();
+  const debug = searchParams.has("debug");
 
   const seed: string = cryptoRandomString({
     length: 6,
