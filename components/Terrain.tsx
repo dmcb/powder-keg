@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useLayoutEffect, useMemo } from "react";
 import {
   Vector2,
   Vector3,
@@ -61,8 +61,8 @@ export default function Terrain(props: { seed: string }) {
       },
       frequency: {
         value: 1.0,
-        min: 0.8,
-        max: 2,
+        min: 0.85,
+        max: 1.75,
         step: 0.01,
       },
       gradientEdge: {
@@ -79,7 +79,7 @@ export default function Terrain(props: { seed: string }) {
       },
     }));
 
-  const prng = useMemo(() => new Alea(seed), [seed]);
+  const prng = new Alea(seed);
   const noise2D = createNoise2D(prng);
 
   const points: Vector3[] = useMemo(() => {
@@ -161,17 +161,17 @@ export default function Terrain(props: { seed: string }) {
   }, [biome]);
 
   // Set new random values from prng for amplitude and frequency and gradientEdge when seed changes
-  useEffect(() => {
+  useLayoutEffect(() => {
     set({
       biome: prng() > 0.5 ? 0 : 1,
       amplitude: prng() * 0.3 + 0.1,
-      frequency: prng() * 1.2 + 0.8,
+      frequency: prng() * 0.9 + 0.85,
       gradientEdge: prng() * 0.35 + 0.5,
     });
   }, [seed]);
 
   // Update geometry with points, faces, and colouring
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (geometryRef.current) {
       geometryRef.current.setFromPoints(points);
       geometryRef.current.setIndex(meshIndex);
