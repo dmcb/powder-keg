@@ -20,7 +20,7 @@ export default function Page() {
   return (
     <>
       <Leva hidden={debug ? false : true} collapsed />
-      <Canvas shadows={true} camera={{ fov: 10, position: [0, 0, 14] }}>
+      <Canvas shadows={true} camera={{ fov: 10, position: [0, 0, 14.25] }}>
         {debug && <Perf position="top-left" />}
         <Network />
         <Board seed={seed} />
