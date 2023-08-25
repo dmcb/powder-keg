@@ -61,7 +61,7 @@ export default function Terrain(props: { seed: string }) {
       },
       frequency: {
         value: 1.0,
-        min: 0.5,
+        min: 0.8,
         max: 2,
         step: 0.01,
       },
@@ -165,7 +165,7 @@ export default function Terrain(props: { seed: string }) {
     set({
       biome: prng() > 0.5 ? 0 : 1,
       amplitude: prng() * 0.3 + 0.1,
-      frequency: prng() * 1.5 + 0.5,
+      frequency: prng() * 1.2 + 0.8,
       gradientEdge: prng() * 0.35 + 0.5,
     });
   }, [seed]);
