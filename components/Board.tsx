@@ -1,12 +1,12 @@
 import React, { useRef, useLayoutEffect } from "react";
-import { Group } from "three";
 import Terrain from "components/Terrain";
 import Ocean from "components/Ocean";
 import Sun from "components/Sun";
+import Player from "components/Player";
 
 export default function Board(props: { seed: string }) {
-  const boardRef = useRef<Group>(null!);
-  const surfaceRef = useRef<Group>(null!);
+  const boardRef = useRef<THREE.Group>(null!);
+  const surfaceRef = useRef<THREE.Group>(null!);
 
   useLayoutEffect(() => {
     if (boardRef.current) {
@@ -21,6 +21,7 @@ export default function Board(props: { seed: string }) {
   return (
     <group ref={boardRef}>
       <group ref={surfaceRef}>
+        <Player />
         <Terrain seed={props.seed} />
         <Ocean />
       </group>
