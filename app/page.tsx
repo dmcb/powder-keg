@@ -21,11 +21,11 @@ export default function Page() {
   return (
     <>
       <Leva hidden={debug ? false : true} />
-      <Canvas shadows={true} camera={{ fov: 10, position: [0, 0, 14.25] }}>
+      <Canvas shadows={true} camera={{ fov: 10, position: [0, -5.75, 14.25] }}>
         {debug && <Perf position="top-left" />}
         {debug && <OrbitControls />}
         <Network />
-        <Board seed={seed} />
+        <Board seed={seed} debug={debug} />
       </Canvas>
     </>
   );
