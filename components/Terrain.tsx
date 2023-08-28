@@ -6,15 +6,53 @@ import {
   Float32BufferAttribute,
 } from "three";
 import Delaunator from "delaunator";
-import { NoiseFunction2D, createNoise2D } from "simplex-noise";
+import { NoiseFunction2D, RandomFn, createNoise2D } from "simplex-noise";
 import Alea from "aleaprng";
 import chroma from "chroma-js";
 import { useControls } from "leva";
 
 export default function Terrain(props: { seed: string }) {
   const geometryRef = useRef<BufferGeometry>(null!);
+  let prng = new Alea(props.seed);
 
-  const baseNoise = (x: number, y: number) => {
+  const [{ seed, biome, amplitude, frequency, gradientEdge, octaves }, set] =
+    useControls(() => ({
+      seed: {
+        value: props.seed,
+      },
+      biome: {
+        value: prng() > 0.5 ? 0 : 1,
+        min: 0,
+        max: 1,
+        step: 1,
+      },
+      amplitude: {
+        value: prng() * 0.3 + 0.1,
+        min: 0.1,
+        max: 0.4,
+        step: 0.01,
+      },
+      frequency: {
+        value: prng() * 0.9 + 0.85,
+        min: 0.85,
+        max: 1.75,
+        step: 0.01,
+      },
+      gradientEdge: {
+        value: prng() * 0.35 + 0.5,
+        min: 0.5,
+        max: 0.85,
+        step: 0.01,
+      },
+      octaves: {
+        value: 3,
+        min: 1,
+        max: 8,
+        step: 1,
+      },
+    }));
+
+  const baseNoise = (noise2D: NoiseFunction2D, x: number, y: number) => {
     // Generate noise
     const position = new Vector2(x, y);
     let adjustedAmp = amplitude;
@@ -42,59 +80,20 @@ export default function Terrain(props: { seed: string }) {
     return Math.max(-0.1, value * gradient - dropoff);
   };
 
-  const [{ seed, biome, amplitude, frequency, gradientEdge, octaves }, set] =
-    useControls(() => ({
-      seed: {
-        value: props.seed,
-      },
-      biome: {
-        value: 0,
-        min: 0,
-        max: 1,
-        step: 1,
-      },
-      amplitude: {
-        value: 0.3,
-        min: 0.1,
-        max: 0.4,
-        step: 0.01,
-      },
-      frequency: {
-        value: 1.0,
-        min: 0.85,
-        max: 1.75,
-        step: 0.01,
-      },
-      gradientEdge: {
-        value: 1.0,
-        min: 0.5,
-        max: 0.85,
-        step: 0.01,
-      },
-      octaves: {
-        value: 3,
-        min: 1,
-        max: 8,
-        step: 1,
-      },
-    }));
-
-  const prng = new Alea(seed);
-  const noise2D = createNoise2D(prng);
-
   const points: Vector3[] = useMemo(() => {
+    prng = new Alea(seed);
     prng.restart();
-
+    const noise2D = createNoise2D(prng);
     const insidePointsCount = 8000;
     const edgePointsCount = 449;
     const size = 2;
 
     // Start with corner points
     const points = [
-      new Vector3(-1, -1, baseNoise(-1, -1)),
-      new Vector3(1, -1, baseNoise(1, -1)),
-      new Vector3(1, 1, baseNoise(1, 1)),
-      new Vector3(-1, 1, baseNoise(-1, 1)),
+      new Vector3(-1, -1, baseNoise(noise2D, -1, -1)),
+      new Vector3(1, -1, baseNoise(noise2D, 1, -1)),
+      new Vector3(1, 1, baseNoise(noise2D, 1, 1)),
+      new Vector3(-1, 1, baseNoise(noise2D, -1, 1)),
     ];
 
     // Add edges
@@ -116,7 +115,7 @@ export default function Terrain(props: { seed: string }) {
             x = -1;
             break;
         }
-        points.push(new Vector3(x, y, baseNoise(x, y)));
+        points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
       }
     }
 
@@ -124,7 +123,7 @@ export default function Terrain(props: { seed: string }) {
     for (let i = 0; i < insidePointsCount; i++) {
       let x = prng() * size * 0.98 - (size * 0.98) / 2;
       let y = prng() * size * 0.98 - (size * 0.98) / 2;
-      points.push(new Vector3(x, y, baseNoise(x, y)));
+      points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
     }
 
     return points;
@@ -162,6 +161,8 @@ export default function Terrain(props: { seed: string }) {
 
   // Set new random values from prng for amplitude and frequency and gradientEdge when seed changes
   useLayoutEffect(() => {
+    prng = new Alea(seed);
+    prng.restart();
     set({
       biome: prng() > 0.5 ? 0 : 1,
       amplitude: prng() * 0.3 + 0.1,
