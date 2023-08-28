@@ -13,6 +13,7 @@ export default function Sun() {
     {
       dayLength,
       sunRotationsPerDay,
+      middayExaggeration,
       dayProgress,
       ambientBrightnessGradient,
       colorTempGradient,
@@ -28,6 +29,12 @@ export default function Sun() {
     sunRotationsPerDay: {
       value: 0.65,
       min: 0.01,
+      max: 1,
+      step: 0.01,
+    },
+    middayExaggeration: {
+      value: 0,
+      min: 0,
       max: 1,
       step: 0.01,
     },
@@ -56,7 +63,12 @@ export default function Sun() {
     const sunArcPerDay = sunRotationsPerDay * Math.PI * 2;
 
     // Get time of day
-    set({ dayProgress: dayProgress + delta / dayLength });
+    const middayness = 1 - Math.abs(0.5 - dayProgress) * 2;
+    set({
+      dayProgress:
+        dayProgress +
+        Math.pow(delta / dayLength, 1 + middayExaggeration * middayness),
+    });
     if (dayProgress >= 1) {
       set({ dayProgress: 0 });
     }
