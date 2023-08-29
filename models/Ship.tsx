@@ -359,13 +359,12 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   }, []);
 
   return (
-    <>
-      <group
-        scale={props.scale}
-        position={props.position}
-        rotation={props.rotation}
-        dispose={null}
-      >
+    <group
+      scale={props.scale}
+      position={props.position}
+      rotation={props.rotation}
+    >
+      <group rotation={[Math.PI / 2, Math.PI, 0]}>
         <mesh
           receiveShadow
           geometry={nodes.Mesh16_Group18_Group12_Group1_Model.geometry}
@@ -1957,7 +1956,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
           material={woodMaterial}
         />
       </group>
-    </>
+    </group>
   );
 }
 

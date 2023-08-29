@@ -21,7 +21,11 @@ export default function Board(props: { seed: string; debug: boolean }) {
   return (
     <group ref={boardRef}>
       <group ref={surfaceRef}>
-        <Physics gravity={[0, 0, -1]} debug={props.debug ? true : false}>
+        <Physics
+          colliders={false}
+          gravity={[0, 0, 0]}
+          debug={props.debug ? true : false}
+        >
           <Player />
         </Physics>
         <Ocean />

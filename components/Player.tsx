@@ -1,7 +1,12 @@
 import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
-import { RigidBody, RapierRigidBody, vec3 } from "@react-three/rapier";
+import {
+  RigidBody,
+  RapierRigidBody,
+  CuboidCollider,
+  quat,
+} from "@react-three/rapier";
 import Ship from "models/Ship";
 import { Vector3 } from "three";
 
@@ -16,43 +21,47 @@ export default function Player() {
     if (rigidBody.current) {
       if (leftward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: 0.00008 * delta },
+          { x: 0, y: 0, z: 0.00006 * delta },
           true
         );
       }
       if (rightward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: -0.00008 * delta },
+          { x: 0, y: 0, z: -0.00006 * delta },
           true
         );
       }
 
-      // const rotation = vec3(rigidBody.current.rotation());
-      // console.log(rotation);
-      // rigidBody.current.applyImpulse(
-      //   {
-      //     x: Math.sin(rotation.z) * 0.0003 * delta,
-      //     y: Math.cos(rotation.z) * 0.0003 * delta,
-      //     z: 0,
-      //   },
-      //   true
-      // );
+      const direction = new Vector3(0, 1, 0);
+      const rotation = quat(rigidBody.current.rotation());
+      direction.applyQuaternion(rotation);
+      rigidBody.current.applyImpulse(
+        {
+          x: direction.x * 0.003 * delta,
+          y: direction.y * 0.003 * delta,
+          z: 0,
+        },
+        true
+      );
     }
   });
 
   return (
-    <RigidBody
-      ref={rigidBody}
-      position={[-0.92, -0.92, 0]}
-      friction={1.5}
-      enabledRotations={[false, false, true]}
-      enabledTranslations={[true, true, false]}
-      angularDamping={10}
-      linearDamping={10}
-      rotation={[Math.PI / 2, Math.PI - Math.PI / 4, 0]}
-      scale={[0.015, 0.015, 0.015]}
-    >
-      <Ship />
-    </RigidBody>
+    <>
+      <RigidBody
+        ref={rigidBody}
+        position={[-0.92, -0.92, 0]}
+        friction={1}
+        enabledRotations={[false, false, true]}
+        enabledTranslations={[true, true, false]}
+        angularDamping={70}
+        linearDamping={70}
+        scale={[0.015, 0.015, 0.015]}
+        rotation={[0, 0, 0]}
+      >
+        <Ship />
+        <CuboidCollider position={[0, -0.5, 1]} args={[2, 4, 1]} />
+      </RigidBody>
+    </>
   );
 }
