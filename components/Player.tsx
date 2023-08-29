@@ -1,25 +1,52 @@
-import { useRef, useEffect, Suspense } from "react";
+import { useRef, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useKeyboardControls } from "@react-three/drei";
 import { RigidBody, RapierRigidBody } from "@react-three/rapier";
 import Ship from "models/Ship";
+import { Vector3 } from "three";
 
 export default function Player() {
   const rigidBody = useRef<RapierRigidBody>(null);
+  let direction = new Vector3(1, 1, 0);
 
-  useEffect(() => {
-    if (rigidBody.current) {
-      // rigidBody.current.addForce({ x: 0, y: 0.1, z: 0 }, true);
+  const [subscribeKeys, getKeys] = useKeyboardControls();
+
+  useFrame((_, delta) => {
+    const { leftward, rightward } = getKeys();
+
+    if (leftward) {
+      rigidBody.current.applyTorqueImpulse(
+        { x: 0, y: 0, z: 0.00008 * delta },
+        true
+      );
     }
-  }, []);
+    if (rightward) {
+      rigidBody.current.applyTorqueImpulse(
+        { x: 0, y: 0, z: -0.00008 * delta },
+        true
+      );
+    }
+
+    // if (rigidBody.current) {
+    //   rigidBody.current.applyImpulse(
+    //     {
+    //       x: direction.x * 0.0003 * delta,
+    //       y: direction.y * 0.0003 * delta,
+    //       z: 0,
+    //     },
+    //     true
+    //   );
+    // }
+  });
 
   return (
-    <RigidBody ref={rigidBody}>
-      <Suspense fallback={null}>
-        <Ship
-          scale={[0.015, 0.015, 0.015]}
-          position={[-0.92, -0.92, 0]}
-          rotation={[Math.PI / 2, Math.PI - Math.PI / 4, 0]}
-        />
-      </Suspense>
+    <RigidBody
+      ref={rigidBody}
+      position={[-0.92, -0.92, 0]}
+      rotation={[Math.PI / 2, Math.PI - Math.PI / 4, 0]}
+      friction={0.7}
+    >
+      <Ship scale={[0.015, 0.015, 0.015]} />
     </RigidBody>
   );
 }

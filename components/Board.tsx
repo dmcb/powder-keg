@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { RigidBody, Physics } from "@react-three/rapier";
 import Terrain from "components/Terrain";
 import Ocean from "components/Ocean";
@@ -9,7 +9,7 @@ export default function Board(props: { seed: string; debug: boolean }) {
   const boardRef = useRef<THREE.Group>(null!);
   const surfaceRef = useRef<THREE.Group>(null!);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (boardRef.current) {
       boardRef.current.position.y = 0.08;
     }
@@ -23,11 +23,9 @@ export default function Board(props: { seed: string; debug: boolean }) {
       <group ref={surfaceRef}>
         <Physics gravity={[0, 0, -1]} debug={props.debug ? true : false}>
           <Player />
-          <Terrain seed={props.seed} />
-          <RigidBody type="fixed">
-            <Ocean />
-          </RigidBody>
+          <Ocean />
         </Physics>
+        <Terrain seed={props.seed} />
       </group>
       <Sun />
     </group>

@@ -7,7 +7,8 @@ import Network from "components/Network";
 import Board from "components/Board";
 import cryptoRandomString from "crypto-random-string";
 import { useSearchParams } from "next/navigation";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, KeyboardControls } from "@react-three/drei";
+import { Suspense } from "react";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -21,12 +22,24 @@ export default function Page() {
   return (
     <>
       <Leva hidden={debug ? false : true} />
-      <Canvas shadows={true} camera={{ fov: 10, position: [0, -5.75, 14.25] }}>
-        {debug && <Perf position="top-left" />}
-        {debug && <OrbitControls />}
-        <Network />
-        <Board seed={seed} debug={debug} />
-      </Canvas>
+      <KeyboardControls
+        map={[
+          { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
+          { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+        ]}
+      >
+        <Canvas
+          shadows={true}
+          camera={{ fov: 10, position: [0, -5.75, 14.25] }}
+        >
+          {debug && <Perf position="top-left" />}
+          {debug && <OrbitControls />}
+          <Suspense>
+            <Network />
+            <Board seed={seed} debug={debug} />
+          </Suspense>
+        </Canvas>
+      </KeyboardControls>
     </>
   );
 }
