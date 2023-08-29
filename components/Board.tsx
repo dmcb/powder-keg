@@ -23,8 +23,8 @@ export default function Board(props: { seed: string; debug: boolean }) {
       <group ref={surfaceRef}>
         <Physics gravity={[0, 0, -1]} debug={props.debug ? true : false}>
           <Player />
-          <Ocean />
         </Physics>
+        <Ocean />
         <Terrain seed={props.seed} />
       </group>
       <Sun />
