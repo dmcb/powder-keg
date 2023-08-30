@@ -4,7 +4,7 @@ import Terrain from "components/Terrain";
 import Ocean from "components/Ocean";
 import Sun from "components/Sun";
 import Player from "components/Player";
-import Barrier from "components/Barrier";
+import Border from "components/Border";
 
 export default function Board(props: { seed: string; debug: boolean }) {
   const boardRef = useRef<THREE.Group>(null!);
@@ -24,13 +24,13 @@ export default function Board(props: { seed: string; debug: boolean }) {
       <group ref={surfaceRef}>
         <Physics colliders={false} gravity={[0, 0, 0]}>
           <Player />
-          <Barrier position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]} />
-          <Barrier position={[0, 1, 0]} rotation={[Math.PI / 2, 0, 0]} />
-          <Barrier
+          <Border position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]} />
+          <Border position={[0, 1, 0]} rotation={[Math.PI / 2, 0, 0]} />
+          <Border
             position={[-1, 0, 0]}
             rotation={[Math.PI / 2, Math.PI / 2, 0]}
           />
-          <Barrier
+          <Border
             position={[1, 0, 0]}
             rotation={[Math.PI / 2, Math.PI / 2, 0]}
           />

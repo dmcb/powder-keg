@@ -102,10 +102,10 @@ export default function Sun() {
         shadow-mapSize={[2048, 2048]}
         shadow-radius={0}
         shadow-normalBias={0.000001}
-        shadow-camera-left={-1}
-        shadow-camera-right={1}
-        shadow-camera-top={1}
-        shadow-camera-bottom={-1}
+        shadow-camera-left={-1.3}
+        shadow-camera-right={1.3}
+        shadow-camera-top={1.5}
+        shadow-camera-bottom={-1.3}
       />
     </group>
   );
