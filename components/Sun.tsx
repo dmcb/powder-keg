@@ -21,7 +21,7 @@ export default function Sun() {
     set,
   ] = useControls(() => ({
     dayLength: {
-      value: 30,
+      value: 6,
       min: 1,
       max: 600,
       step: 1,
@@ -33,7 +33,7 @@ export default function Sun() {
       step: 0.01,
     },
     middayExaggeration: {
-      value: 0,
+      value: 0.8,
       min: 0,
       max: 1,
       step: 0.01,

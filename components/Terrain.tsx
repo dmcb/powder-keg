@@ -10,6 +10,7 @@ import { NoiseFunction2D, RandomFn, createNoise2D } from "simplex-noise";
 import Alea from "aleaprng";
 import chroma from "chroma-js";
 import { useControls } from "leva";
+import { RigidBody } from "@react-three/rapier";
 
 export default function Terrain(props: { seed: string }) {
   const geometryRef = useRef<BufferGeometry>(null!);
@@ -200,9 +201,11 @@ export default function Terrain(props: { seed: string }) {
   }, [seed, biome, octaves, amplitude, frequency, gradientEdge]);
 
   return (
-    <mesh {...props} castShadow={true} receiveShadow={true}>
-      <bufferGeometry ref={geometryRef} />
-      <meshStandardMaterial flatShading={true} vertexColors={true} />
-    </mesh>
+    <RigidBody type="fixed" colliders="trimesh">
+      <mesh {...props} castShadow={true} receiveShadow={true}>
+        <bufferGeometry ref={geometryRef} />
+        <meshStandardMaterial flatShading={true} vertexColors={true} />
+      </mesh>
+    </RigidBody>
   );
 }

@@ -6,6 +6,7 @@ import {
   RapierRigidBody,
   CuboidCollider,
   quat,
+  BallCollider,
 } from "@react-three/rapier";
 import Ship from "models/Ship";
 import { Vector3 } from "three";
@@ -21,13 +22,13 @@ export default function Player() {
     if (rigidBody.current) {
       if (leftward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: 0.00006 * delta },
+          { x: 0, y: 0, z: 0.00001 * delta },
           true
         );
       }
       if (rightward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: -0.00006 * delta },
+          { x: 0, y: 0, z: -0.00001 * delta },
           true
         );
       }
@@ -37,8 +38,8 @@ export default function Player() {
       direction.applyQuaternion(rotation);
       rigidBody.current.applyImpulse(
         {
-          x: direction.x * 0.003 * delta,
-          y: direction.y * 0.003 * delta,
+          x: direction.x * 0.0006 * delta,
+          y: direction.y * 0.0006 * delta,
           z: 0,
         },
         true
@@ -47,21 +48,19 @@ export default function Player() {
   });
 
   return (
-    <>
-      <RigidBody
-        ref={rigidBody}
-        position={[-0.92, -0.92, 0]}
-        friction={1}
-        enabledRotations={[false, false, true]}
-        enabledTranslations={[true, true, false]}
-        angularDamping={70}
-        linearDamping={70}
-        scale={[0.015, 0.015, 0.015]}
-        rotation={[0, 0, 0]}
-      >
-        <Ship />
-        <CuboidCollider position={[0, -0.5, 1]} args={[2, 4, 1]} />
-      </RigidBody>
-    </>
+    <RigidBody
+      ref={rigidBody}
+      position={[-0.92, -0.92, 0]}
+      enabledRotations={[false, false, true]}
+      enabledTranslations={[true, true, false]}
+      angularDamping={70}
+      linearDamping={70}
+      restitution={8}
+      scale={[0.01, 0.01, 0.01]}
+      rotation={[0, 0, 0]}
+    >
+      <Ship />
+      <CuboidCollider position={[0, 1, 1]} args={[1.8, 3.8, 1]} />
+    </RigidBody>
   );
 }
