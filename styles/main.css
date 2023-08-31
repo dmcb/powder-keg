@@ -4,3 +4,11 @@ body {
   height: 100%;
   margin: 0;
 }
+
+body {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(90, 105, 117, 1) 100%
+  );
+}
