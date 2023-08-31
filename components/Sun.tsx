@@ -83,7 +83,7 @@ export default function Sun() {
       0
     );
     ambientRef.current.intensity =
-      Math.pow(heightOfSun, ambientBrightnessGradient) * 0.4;
+      Math.pow(heightOfSun, ambientBrightnessGradient) * 0.6;
     ambientRef.current.color.set(
       kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 5800)
     );
@@ -99,6 +99,7 @@ export default function Sun() {
         ref={directionalRef}
         position={[0, 0, 2]}
         castShadow={true}
+        intensity={1.5}
         shadow-mapSize={[2048, 2048]}
         shadow-radius={0}
         shadow-normalBias={0.000001}
