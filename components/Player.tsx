@@ -13,7 +13,7 @@ import { Vector3 } from "three";
 
 export default function Player() {
   const rigidBody = useRef<RapierRigidBody>(null);
-  const shipRef = useRef<THREE.Group>(null!);
+  const shipRef = useRef;
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
 
@@ -25,13 +25,13 @@ export default function Player() {
 
       if (leftward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: 0.000005 * sailSpeedModifier * delta },
+          { x: 0, y: 0, z: 0.000004 * sailSpeedModifier * delta },
           true
         );
       }
       if (rightward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: -0.000005 * sailSpeedModifier * delta },
+          { x: 0, y: 0, z: -0.000004 * sailSpeedModifier * delta },
           true
         );
       }
@@ -41,8 +41,8 @@ export default function Player() {
       direction.applyQuaternion(rotation);
       rigidBody.current.applyImpulse(
         {
-          x: direction.x * 0.0003 * sailSpeedModifier * delta,
-          y: direction.y * 0.0003 * sailSpeedModifier * delta,
+          x: direction.x * 0.0002 * sailSpeedModifier * delta,
+          y: direction.y * 0.0002 * sailSpeedModifier * delta,
           z: 0,
         },
         true
@@ -75,18 +75,12 @@ export default function Player() {
       if (newSails < -1) {
         return -1;
       }
-      if (newSails > 2) {
-        return 2;
+      if (newSails > 3) {
+        return 3;
       }
       return newSails;
     });
   };
-
-  // useEffect(() => {
-  //   if (shipRef.current) {
-  //     shipRef.current.setSails(sails);
-  //   }
-  // }, [sails]);
 
   return (
     <RigidBody

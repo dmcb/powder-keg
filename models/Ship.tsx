@@ -1176,24 +1176,28 @@ export default function Model(props) {
         geometry={nodes.mesh_10_11.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_11.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 1 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_11.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
         geometry={nodes.mesh_11_1.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_11_2.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 1 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_11_2.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
@@ -1212,12 +1216,14 @@ export default function Model(props) {
         geometry={nodes.mesh_11_5.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_11_6.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 1 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_11_6.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
@@ -1824,24 +1830,28 @@ export default function Model(props) {
         geometry={nodes.mesh_13_50.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_14.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 0 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_14.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
         geometry={nodes.mesh_14_1.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_14_2.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 0 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_14_2.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
@@ -1860,12 +1870,14 @@ export default function Model(props) {
         geometry={nodes.mesh_14_5.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_14_6.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 0 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_14_6.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
@@ -1890,36 +1902,42 @@ export default function Model(props) {
         geometry={nodes.mesh_18_2.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_18_3.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 2 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_18_3.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
         geometry={nodes.mesh_18_4.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_18_5.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 2 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_18_5.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
         geometry={nodes.mesh_18_6.geometry}
         material={woodMaterial}
       />
-      <mesh
-        receiveShadow
-        castShadow
-        geometry={nodes.mesh_18_7.geometry}
-        material={flagMaterial}
-      />
+      {props.sails > 2 && (
+        <mesh
+          receiveShadow
+          castShadow
+          geometry={nodes.mesh_18_7.geometry}
+          material={flagMaterial}
+        />
+      )}
       <mesh
         receiveShadow
         castShadow
