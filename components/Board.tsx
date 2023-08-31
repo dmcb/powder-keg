@@ -21,7 +21,7 @@ export default function Board(props: { seed: string; debug: boolean }) {
 
   return (
     <group ref={boardRef}>
-      <group ref={surfaceRef}>
+      <group ref={surfaceRef} onClick={() => console.log("click")}>
         <Physics colliders={false} gravity={[0, 0, 0]}>
           <Player />
           <Border position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]} />
