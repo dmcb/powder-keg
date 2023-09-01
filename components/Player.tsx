@@ -21,7 +21,7 @@ export default function Player() {
 
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
-    playbackRate: Math.random() * 0.5 + 0.75,
+    playbackRate: Math.random() * 0.2 + 0.9,
   });
 
   useFrame((_, delta) => {
@@ -100,15 +100,15 @@ export default function Player() {
       if (newSails > 3) {
         return 3;
       }
-      if (
-        newSails !== sails &&
-        ((sails == 1 && newSails == 0) || newSails >= 1)
-      ) {
-        playSails();
-      }
       return newSails;
     });
   };
+
+  useEffect(() => {
+    if (sails >= 1) {
+      playSails();
+    }
+  }, [sails]);
 
   return (
     <RigidBody
