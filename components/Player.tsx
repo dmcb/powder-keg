@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useKeyboardControls } from "@react-three/drei";
+import { useKeyboardControls, useBounds } from "@react-three/drei";
 import {
   RigidBody,
   RapierRigidBody,
@@ -13,9 +13,10 @@ import { Vector3 } from "three";
 
 export default function Player() {
   const rigidBody = useRef<RapierRigidBody>(null);
-  const shipRef = useRef;
+  const shipRef = useRef<THREE.Group>(null!);
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
+  const bounds = useBounds();
 
   useFrame((_, delta) => {
     const { leftward, rightward } = getKeys();
@@ -67,7 +68,19 @@ export default function Player() {
         }
       }
     );
+    subscribeKeys(
+      (state) => state.cameraToggle,
+      (value) => {
+        if (value) {
+          adjustCamera();
+        }
+      }
+    );
   }, []);
+
+  const adjustCamera = () => {
+    bounds.refresh(shipRef.current).fit();
+  };
 
   const incrementSails = (value: number) => {
     setSails((sails) => {
