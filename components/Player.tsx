@@ -8,8 +8,9 @@ import {
   quat,
   BallCollider,
 } from "@react-three/rapier";
-import Ship from "models/Ship";
 import { Vector3 } from "three";
+import useSound from "use-sound";
+import Ship from "models/Ship";
 
 export default function Player() {
   const rigidBody = useRef<RapierRigidBody>(null);
@@ -18,21 +19,29 @@ export default function Player() {
   const [sails, setSails] = useState(0);
   const bounds = useBounds();
 
+  const [playSails] = useSound("sounds/sail.mp3", {
+    volume: 0.5,
+    playbackRate: Math.random() * 0.5 + 0.75,
+  });
+
   useFrame((_, delta) => {
     const { leftward, rightward } = getKeys();
 
     if (rigidBody.current) {
       const sailSpeedModifier = sails === -1 ? -0.25 : sails;
+      let sailTurnModifier = 0;
+      if (sails < 0) sailTurnModifier = 0.5;
+      if (sails > 0) sailTurnModifier = 1;
 
       if (leftward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: 0.000004 * sailSpeedModifier * delta },
+          { x: 0, y: 0, z: 0.000005 * sailTurnModifier * delta },
           true
         );
       }
       if (rightward) {
         rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: -0.000004 * sailSpeedModifier * delta },
+          { x: 0, y: 0, z: -0.000005 * sailTurnModifier * delta },
           true
         );
       }
@@ -42,8 +51,8 @@ export default function Player() {
       direction.applyQuaternion(rotation);
       rigidBody.current.applyImpulse(
         {
-          x: direction.x * 0.0002 * sailSpeedModifier * delta,
-          y: direction.y * 0.0002 * sailSpeedModifier * delta,
+          x: direction.x * 0.0003 * sailSpeedModifier * delta,
+          y: direction.y * 0.0003 * sailSpeedModifier * delta,
           z: 0,
         },
         true
@@ -90,6 +99,12 @@ export default function Player() {
       }
       if (newSails > 3) {
         return 3;
+      }
+      if (
+        newSails !== sails &&
+        ((sails == 1 && newSails == 0) || newSails >= 1)
+      ) {
+        playSails();
       }
       return newSails;
     });
