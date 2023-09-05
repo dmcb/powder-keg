@@ -8,7 +8,7 @@ import Board from "components/Board";
 import Sun from "components/Sun";
 import cryptoRandomString from "crypto-random-string";
 import { useSearchParams } from "next/navigation";
-import { OrbitControls, KeyboardControls, Bounds } from "@react-three/drei";
+import { OrbitControls, KeyboardControls } from "@react-three/drei";
 import { Suspense } from "react";
 
 export default function Page() {
@@ -32,17 +32,12 @@ export default function Page() {
           { name: "cameraToggle", keys: ["KeyC"] },
         ]}
       >
-        <Canvas
-          shadows={true}
-          camera={{ fov: 10, position: [0, -4.75, 14.25] }}
-        >
+        <Canvas shadows={true} camera={{ fov: 10, position: [0, -4.75, 15] }}>
           {debug && <Perf position="top-left" />}
           {debug && <OrbitControls />}
           <Suspense>
             <Network />
-            <Bounds fit damping={2} observe margin={1}>
-              <Board seed={seed} debug={debug} />
-            </Bounds>
+            <Board seed={seed} debug={debug} />
             <Sun />
           </Suspense>
         </Canvas>

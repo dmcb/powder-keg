@@ -10,6 +10,7 @@ export default function Board(props: { seed: string; debug: boolean }) {
 
   useLayoutEffect(() => {
     if (boardRef.current) {
+      boardRef.current.position.z = 0.15;
       boardRef.current.rotation.z = -Math.PI / 4;
     }
   }, []);

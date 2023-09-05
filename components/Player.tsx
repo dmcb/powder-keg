@@ -6,18 +6,19 @@ import {
   RapierRigidBody,
   CuboidCollider,
   quat,
-  BallCollider,
+  vec3,
 } from "@react-three/rapier";
 import { Vector3 } from "three";
 import useSound from "use-sound";
 import Ship from "models/Ship";
+import usePlayerCamera from "lib/usePlayerCamera";
 
 export default function Player() {
   const rigidBody = useRef<RapierRigidBody>(null);
   const shipRef = useRef<THREE.Group>(null!);
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
-  const bounds = useBounds();
+  const playerCamera = usePlayerCamera();
 
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
@@ -57,6 +58,9 @@ export default function Player() {
         },
         true
       );
+
+      const position = vec3(rigidBody.current.translation());
+      playerCamera.position.set(position.x, position.y, position.z);
     }
   });
 
@@ -87,9 +91,7 @@ export default function Player() {
     );
   }, []);
 
-  const adjustCamera = () => {
-    bounds.refresh(shipRef.current).fit();
-  };
+  const adjustCamera = () => {};
 
   const incrementSails = (value: number) => {
     setSails((sails) => {

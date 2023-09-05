@@ -1,6 +1,4 @@
-import { ThreeElements } from "@react-three/fiber";
-
-export default function Ocean(props: ThreeElements["mesh"]) {
+export default function Ocean(props: THREE.Mesh) {
   return (
     <mesh {...props} position={[0, 0, 0]} receiveShadow={true}>
       <planeGeometry args={[2, 2]} />
