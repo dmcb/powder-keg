@@ -6,7 +6,7 @@ import {
   Float32BufferAttribute,
 } from "three";
 import Delaunator from "delaunator";
-import { NoiseFunction2D, RandomFn, createNoise2D } from "simplex-noise";
+import { NoiseFunction2D, createNoise2D } from "simplex-noise";
 import Alea from "aleaprng";
 import chroma from "chroma-js";
 import { useControls } from "leva";
@@ -22,9 +22,9 @@ export default function Terrain(props: { seed: string }) {
         value: props.seed,
       },
       biome: {
-        value: prng() > 0.5 ? 0 : 1,
+        value: Math.round(prng() * 2),
         min: 0,
-        max: 1,
+        max: 2,
         step: 1,
       },
       amplitude: {
@@ -152,11 +152,15 @@ export default function Terrain(props: { seed: string }) {
       case 0:
         return chroma
           .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.4, 0.6, 1.0]);
+          .domain([0.0, 0.1, 0.2, 0.4, 0.9, 1.0]);
       case 1:
         return chroma
-          .scale(["F2DEB9", "DAA46D", "9C4F20", "746354", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.4, 1.0]);
+          .scale(["FBD5A2", "F8D0AE", "A06743", "754228", "451304", "FFFFFF"])
+          .domain([0.0, 0.1, 0.2, 0.4, 0.7, 1.0]);
+      case 2:
+        return chroma
+          .scale(["827369", "54596D", "BED6DB", "F4F5F6", "FFFFFF"])
+          .domain([0.0, 0.1, 0.4, 0.7, 1.0]);
     }
   }, [biome]);
 
@@ -165,7 +169,7 @@ export default function Terrain(props: { seed: string }) {
     prng = new Alea(seed);
     prng.restart();
     set({
-      biome: prng() > 0.5 ? 0 : 1,
+      biome: Math.round(prng() * 2),
       amplitude: prng() * 0.3 + 0.1,
       frequency: prng() * 0.9 + 0.85,
       gradientEdge: prng() * 0.35 + 0.5,
