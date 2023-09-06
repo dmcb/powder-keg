@@ -106,6 +106,24 @@ export default function Player() {
     });
   };
 
+  const onCollisionEnter = (e) => {
+    console.log("collision enter");
+    const impactNormal = vec3(e.manifold.normal());
+    // // Apply reflected impulse to ship off impactNormal
+    // const impulse = vec3(e.manifold.local_ni);
+    // const impulseMagnitude = impulse.length();
+    // impulse.normalize();
+    // const reflected = vec3(impactNormal);
+    // reflected.scale(-2 * impulse.dot(impactNormal));
+    // impulse.add(reflected);
+    // impulse.scale(impulseMagnitude);
+    // rigidBody.current.applyImpulse(impulse, true);
+  };
+
+  const onCollisionExit = (e) => {
+    console.log("collision exit", e);
+  };
+
   useEffect(() => {
     if (sails >= 1) {
       playSails();
@@ -125,7 +143,12 @@ export default function Player() {
       rotation={[0, 0, 0]}
     >
       <Ship ref={shipRef} sails={sails} />
-      <CuboidCollider position={[0, 1, 1]} args={[1.8, 3.8, 1]} />
+      <CuboidCollider
+        position={[0, 1, 1]}
+        args={[1.8, 3.8, 1]}
+        onCollisionEnter={onCollisionEnter}
+        onCollisionExit={onCollisionExit}
+      />
     </RigidBody>
   );
 }

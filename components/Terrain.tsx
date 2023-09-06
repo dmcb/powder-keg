@@ -152,15 +152,18 @@ export default function Terrain(props: { seed: string }) {
       case 0:
         return chroma
           .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.4, 0.9, 1.0]);
+          .domain([0.0, 0.1, 0.2, 0.6, 0.95, 1.0])
+          .classes(20);
       case 1:
         return chroma
           .scale(["FBD5A2", "F8D0AE", "A06743", "754228", "451304", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.4, 0.7, 1.0]);
+          .domain([0.0, 0.1, 0.2, 0.4, 0.9, 1.0])
+          .classes(20);
       case 2:
         return chroma
           .scale(["827369", "54596D", "BED6DB", "F4F5F6", "FFFFFF"])
-          .domain([0.0, 0.1, 0.4, 0.7, 1.0]);
+          .domain([0.0, 0.1, 0.4, 0.6, 0.8])
+          .classes(20);
     }
   }, [biome]);
 

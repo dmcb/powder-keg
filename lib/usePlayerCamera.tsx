@@ -24,7 +24,7 @@ export default function usePlayerCamera() {
   };
 
   const onDocumentPinch = (e) => {
-    const v = followPoint.position.z / ((e.scale - 1) * 0.01 + 1);
+    const v = followPoint.position.z / ((e.scale - 1) * 0.02 + 1);
     if (v >= cameraMinDistance && v <= cameraMaxDistance) {
       followPoint.position.z = v;
     }
@@ -51,7 +51,6 @@ export default function usePlayerCamera() {
     camera.position.set(0, followPoint.position.y, followPoint.position.z);
     document.addEventListener("wheel", onDocumentMouseWheel);
     const hammertime = new Hammer(document.getElementsByTagName("canvas")[0]);
-    console.log(hammertime);
     hammertime.get("pinch").set({ enable: true });
     hammertime.on("pinch", onDocumentPinch);
     return () => {
