@@ -338,6 +338,13 @@ type Props = {
 const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
   const { nodes, materials } = useGLTF("gltf/ship.gltf") as GLTFResult;
 
+  const whiteMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      flatShading: true,
+      color: 0xffffff,
+    });
+  }, []);
+
   const flagMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       flatShading: true,
@@ -676,6 +683,8 @@ const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
         geometry={nodes.mesh_3_8.geometry}
         material={woodMaterial}
       />
+      {/* 
+      Front Cannon
       <mesh
         receiveShadow
         castShadow
@@ -765,7 +774,7 @@ const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
         castShadow
         geometry={nodes.mesh_4_14.geometry}
         material={cannonMaterial}
-      />
+      /> */}
       <mesh
         receiveShadow
         castShadow

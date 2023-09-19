@@ -82,6 +82,22 @@ export default function Player() {
       }
     );
     subscribeKeys(
+      (state) => state.cannonleft,
+      (value) => {
+        if (value) {
+          fireCannon(-1);
+        }
+      }
+    );
+    subscribeKeys(
+      (state) => state.cannonright,
+      (value) => {
+        if (value) {
+          fireCannon(-1);
+        }
+      }
+    );
+    subscribeKeys(
       (state) => state.cameraToggle,
       (value) => {
         if (value) {
@@ -104,6 +120,10 @@ export default function Player() {
       }
       return newSails;
     });
+  };
+
+  const fireCannon = (direction: number) => {
+    console.log("fire cannon", direction);
   };
 
   const onCollisionEnter = (e) => {

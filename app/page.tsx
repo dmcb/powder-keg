@@ -29,6 +29,8 @@ export default function Page() {
           { name: "rightward", keys: ["ArrowRight", "KeyD"] },
           { name: "forward", keys: ["ArrowUp", "KeyW"] },
           { name: "backward", keys: ["ArrowDown", "KeyS"] },
+          { name: "cannonleft", keys: ["KeyQ"] },
+          { name: "cannonright", keys: ["KeyE"] },
           { name: "cameraToggle", keys: ["KeyC"] },
         ]}
       >
