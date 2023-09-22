@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useKeyboardControls, useBounds } from "@react-three/drei";
+import { useKeyboardControls } from "@react-three/drei";
 import {
   RigidBody,
   RapierRigidBody,
@@ -8,14 +8,17 @@ import {
   quat,
   vec3,
 } from "@react-three/rapier";
-import { Vector3 } from "three";
+import { Vector3, Group } from "three";
 import useSound from "use-sound";
-import Ship from "models/Ship";
+import Ship from "components/Ship";
+import Cannonball from "components/Cannonball";
 import usePlayerCamera from "lib/usePlayerCamera";
+
+const cannonCoolDown = 800;
 
 export default function Player() {
   const rigidBody = useRef<RapierRigidBody>(null);
-  const shipRef = useRef<THREE.Group>(null!);
+  const shipRef = useRef<Group>(null!);
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
   const playerCamera = usePlayerCamera();
@@ -23,6 +26,12 @@ export default function Player() {
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
     playbackRate: Math.random() * 0.2 + 0.9,
+  });
+
+  // Player state
+  const [cannonballs, setCannonballs] = useState([]);
+  const state = useRef({
+    timeToShoot: 0,
   });
 
   useFrame((_, delta) => {
@@ -123,7 +132,30 @@ export default function Player() {
   };
 
   const fireCannon = (direction: number) => {
-    console.log("fire cannon", direction);
+    const now = Date.now();
+    if (now >= state.current.timeToShoot) {
+      console.log("cannon fired at ", now);
+      state.current.timeToShoot = now + cannonCoolDown;
+      setCannonballs((cannonballs) => [
+        ...cannonballs,
+        {
+          id: now + "a",
+          position: [
+            shipRef.current.position.x,
+            shipRef.current.position.y,
+            shipRef.current.position.z,
+          ],
+        },
+        {
+          id: now + "b",
+          position: [
+            shipRef.current.position.x,
+            shipRef.current.position.y + 1,
+            shipRef.current.position.z,
+          ],
+        },
+      ]);
+    }
   };
 
   const onCollisionEnter = (e) => {
@@ -163,6 +195,11 @@ export default function Player() {
       rotation={[0, 0, 0]}
     >
       <Ship ref={shipRef} sails={sails} />
+      {cannonballs.map((cannonball) => {
+        return (
+          <Cannonball key={cannonball.id} position={cannonball.position} />
+        );
+      })}
       <CuboidCollider
         position={[0, 1, 1]}
         args={[1.8, 3.8, 1]}

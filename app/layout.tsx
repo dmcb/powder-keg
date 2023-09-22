@@ -1,5 +1,9 @@
 import "styles/main.css";
 
+export const metadata = {
+  metadataBase: new URL("https://powderkeg.dmcb.dev"),
+};
+
 export default function RootLayout({
   children,
 }: {

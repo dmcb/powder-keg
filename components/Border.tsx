@@ -1,9 +1,10 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { ThreeElements } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
+import { Mesh } from "three";
 
 export default function Border(props: ThreeElements["mesh"]) {
-  const borderRef = useRef<THREE.Mesh>(null!);
+  const borderRef = useRef<Mesh>(null!);
 
   useLayoutEffect(() => {
     if (borderRef.current) {

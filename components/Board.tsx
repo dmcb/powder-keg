@@ -4,9 +4,10 @@ import Terrain from "components/Terrain";
 import Ocean from "components/Ocean";
 import Player from "components/Player";
 import Border from "components/Border";
+import { Group } from "three";
 
 export default function Board(props: { seed: string; debug: boolean }) {
-  const boardRef = useRef<THREE.Group>(null!);
+  const boardRef = useRef<Group>(null!);
 
   useLayoutEffect(() => {
     if (boardRef.current) {
