@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useLayoutEffect } from "react";
+import { useMemo, useLayoutEffect, useState } from "react";
 import { Object3D, Vector3 } from "three";
 
 export default function usePlayerCamera() {
@@ -14,7 +14,9 @@ export default function usePlayerCamera() {
     return cam;
   }, []);
 
-  const onDocumentMouseWheel = (e) => {
+  let initialDistance = null;
+
+  const onWheel = (e) => {
     const v = followPoint.position.z + e.deltaY * 0.006;
     if (v >= cameraMinDistance && v <= cameraMaxDistance) {
       followPoint.position.z = v;
@@ -22,12 +24,37 @@ export default function usePlayerCamera() {
     return false;
   };
 
-  const onDocumentPinch = (e) => {
-    const v = followPoint.position.z / ((e.scale - 1) * 0.02 + 1);
-    if (v >= cameraMinDistance && v <= cameraMaxDistance) {
-      followPoint.position.z = v;
+  const touchstart = (e) => {
+    if (e.touches.length === 2) {
+      const [touch1, touch2] = e.touches;
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      initialDistance = distance;
     }
-    return false;
+  };
+
+  const touchmove = (e) => {
+    if (e.touches.length === 2 && initialDistance !== null) {
+      const [touch1, touch2] = e.touches;
+      const currentDistance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+
+      const pinchScale = currentDistance / initialDistance;
+      console.log(pinchScale);
+
+      const v = followPoint.position.z / Math.pow(pinchScale, 0.02);
+      if (v >= cameraMinDistance && v <= cameraMaxDistance) {
+        followPoint.position.z = v;
+      }
+    }
+  };
+
+  const touchend = () => {
+    initialDistance = null;
   };
 
   useFrame((_, delta) => {
@@ -48,9 +75,15 @@ export default function usePlayerCamera() {
 
   useLayoutEffect(() => {
     camera.position.set(0, followPoint.position.y, followPoint.position.z);
-    document.addEventListener("wheel", onDocumentMouseWheel);
+    document.addEventListener("wheel", onWheel);
+    document.addEventListener("touchstart", touchstart);
+    document.addEventListener("touchmove", touchmove);
+    document.addEventListener("touchend", touchend);
     return () => {
-      document.removeEventListener("wheel", onDocumentMouseWheel);
+      document.removeEventListener("wheel", onWheel);
+      document.removeEventListener("touchstart", touchstart);
+      document.removeEventListener("touchmove", touchmove);
+      document.removeEventListener("touchend", touchend);
     };
   }, []);
 
