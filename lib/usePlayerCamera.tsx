@@ -1,7 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useLayoutEffect } from "react";
 import { Object3D, Vector3 } from "three";
-import Hammer from "hammerjs";
 
 export default function usePlayerCamera() {
   const { camera } = useThree();
@@ -50,12 +49,8 @@ export default function usePlayerCamera() {
   useLayoutEffect(() => {
     camera.position.set(0, followPoint.position.y, followPoint.position.z);
     document.addEventListener("wheel", onDocumentMouseWheel);
-    const hammertime = new Hammer(document.getElementsByTagName("canvas")[0]);
-    hammertime.get("pinch").set({ enable: true });
-    hammertime.on("pinch", onDocumentPinch);
     return () => {
       document.removeEventListener("wheel", onDocumentMouseWheel);
-      hammertime.off("pinch", onDocumentPinch);
     };
   }, []);
 
