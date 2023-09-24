@@ -364,7 +364,11 @@ const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
 
   return (
     <group ref={ref}>
-      <group scale={0.01} rotation={[Math.PI / 2, Math.PI, 0]}>
+      <group
+        scale={0.01}
+        position={[0, -0.01, 0]}
+        rotation={[Math.PI / 2, Math.PI, 0]}
+      >
         <mesh
           receiveShadow
           castShadow

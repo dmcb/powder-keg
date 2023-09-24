@@ -3,10 +3,13 @@ import { Mesh } from "three";
 import { usePlane } from "@react-three/cannon";
 
 export default function Border(props) {
-  // const [barrierRef] = usePlane(
-  //   () => ({ mass: 0, ...props }),
-  //   useRef<Mesh>(null)
-  // );
+  const [barrierRef] = usePlane(
+    () => ({
+      mass: 0,
+      ...props,
+    }),
+    useRef<Mesh>(null)
+  );
   const borderRef = useRef<Mesh>(null!);
 
   useLayoutEffect(() => {
@@ -17,7 +20,7 @@ export default function Border(props) {
 
   return (
     <>
-      <mesh>
+      <mesh ref={barrierRef}>
         <planeGeometry args={[2, 1]} />
         <meshStandardMaterial visible={false} />
       </mesh>

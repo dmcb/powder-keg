@@ -13,9 +13,9 @@ export default function Board(props: { seed: string; debug: boolean }) {
     <group ref={boardRef} onClick={() => console.log("click")}>
       <Physics gravity={[0, 0, -1]}>
         {(props.debug && (
-          <Debug color="black">
+          <Debug color="green">
             <Player />
-            <Border position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]} />
+            <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
             <Border position={[0, 1, 0]} rotation={[Math.PI / 2, 0, 0]} />
             <Border
               position={[-1, 0, 0]}
@@ -23,14 +23,14 @@ export default function Board(props: { seed: string; debug: boolean }) {
             />
             <Border
               position={[1, 0, 0]}
-              rotation={[Math.PI / 2, Math.PI / 2, 0]}
+              rotation={[Math.PI / 2, -Math.PI / 2, 0]}
             />
             <Terrain seed={props.seed} />
           </Debug>
         )) || (
           <>
             <Player />
-            <Border position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]} />
+            <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
             <Border position={[0, 1, 0]} rotation={[Math.PI / 2, 0, 0]} />
             <Border
               position={[-1, 0, 0]}
@@ -38,7 +38,7 @@ export default function Board(props: { seed: string; debug: boolean }) {
             />
             <Border
               position={[1, 0, 0]}
-              rotation={[Math.PI / 2, Math.PI / 2, 0]}
+              rotation={[Math.PI / 2, -Math.PI / 2, 0]}
             />
             <Terrain seed={props.seed} />
           </>

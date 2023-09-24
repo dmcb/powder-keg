@@ -15,7 +15,10 @@ export default function Player() {
     () => ({
       angularFactor: [0, 0, 1],
       linearFactor: [1, 1, 0],
-      mass: 0.1,
+      mass: 1,
+      angularDamping: 1,
+      linearDamping: 0.999,
+      args: [0.035, 0.085, 0.1],
       position: [-0.92, -0.92, 0],
     }),
     useRef<Group>(null)
@@ -33,6 +36,9 @@ export default function Player() {
   const [cannonballs, setCannonballs] = useState([]);
   const state = useRef({
     timeToShoot: 0,
+    position: new Vector3(),
+    velocity: new Vector3(),
+    forward: new Vector3(),
   });
 
   useFrame((_, delta) => {
@@ -43,30 +49,33 @@ export default function Player() {
     if (sails < 0) sailTurnModifier = 0.5;
     if (sails > 0) sailTurnModifier = 1;
     if (leftward) {
-      api.applyTorque([0, 0, 1 * sailTurnModifier * delta]);
+      api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
     }
     if (rightward) {
-      api.applyTorque([0, 0, -1 * sailTurnModifier * delta]);
+      api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
     }
-    // const direction = new Vector3(0, 1, 0);
-    // const rotation = quat(rigidBody.current.rotation());
-    // direction.applyQuaternion(rotation);
-    // rigidBody.current.applyImpulse(
-    //   {
-    //     x: direction.x * 0.0003 * sailSpeedModifier * delta,
-    //     y: direction.y * 0.0003 * sailSpeedModifier * delta,
-    //     z: 0,
-    //   },
-    //   true
-    // );
+
+    api.applyImpulse(
+      [
+        state.current.forward.x * 0.6 * sailSpeedModifier * delta,
+        state.current.forward.y * 0.6 * sailSpeedModifier * delta,
+        0,
+      ],
+      [0, 0, 0]
+    );
+
+    playerCamera.position.copy(state.current.position);
   });
 
   useEffect(() => {
-    const unsubscribe = api.position.subscribe((p) =>
-      playerCamera.position.set(p[0], p[1], p[2])
-    );
-    return unsubscribe;
-  }, []);
+    api.position.subscribe((p) => state.current.position.set(p[0], p[1], p[2]));
+    api.velocity.subscribe((v) => state.current.velocity.set(v[0], v[1], v[2]));
+    api.rotation.subscribe((r) => {
+      const direction = new Vector3(0, 1, 0);
+      direction.applyAxisAngle(new Vector3(0, 0, 1), r[2]);
+      state.current.forward.copy(direction);
+    });
+  }, [api]);
 
   useEffect(() => {
     subscribeKeys(
