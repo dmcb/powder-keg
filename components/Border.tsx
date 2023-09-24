@@ -1,9 +1,12 @@
 import React, { useRef, useLayoutEffect } from "react";
-import { ThreeElements } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
 import { Mesh } from "three";
+import { usePlane } from "@react-three/cannon";
 
-export default function Border(props: ThreeElements["mesh"]) {
+export default function Border(props) {
+  // const [barrierRef] = usePlane(
+  //   () => ({ mass: 0, ...props }),
+  //   useRef<Mesh>(null)
+  // );
   const borderRef = useRef<Mesh>(null!);
 
   useLayoutEffect(() => {
@@ -13,15 +16,15 @@ export default function Border(props: ThreeElements["mesh"]) {
   }, []);
 
   return (
-    <RigidBody type="fixed" colliders="hull" includeInvisible>
-      <mesh {...props}>
+    <>
+      <mesh>
         <planeGeometry args={[2, 1]} />
         <meshStandardMaterial visible={false} />
       </mesh>
-      <mesh {...props} ref={borderRef}>
+      <mesh ref={borderRef} {...props}>
         <planeGeometry args={[2, 0.1]} />
         <meshStandardMaterial color={"blue"} />
       </mesh>
-    </RigidBody>
+    </>
   );
 }

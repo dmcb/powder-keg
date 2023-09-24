@@ -4,12 +4,11 @@ import { Object3D, Vector3 } from "three";
 
 export default function usePlayerCamera() {
   const { camera } = useThree();
-  const cameraMaxDistance = 15;
+  const cameraMaxDistance = 16.25;
   const cameraMinDistance = 6;
   const attachPoint = useMemo(() => new Object3D(), []);
   const followPoint = useMemo(() => {
     const cam = new Object3D();
-    cam.position.y = -4.75;
     cam.position.z = cameraMaxDistance;
     return cam;
   }, []);
@@ -57,7 +56,7 @@ export default function usePlayerCamera() {
     initialDistance = null;
   };
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     const focusPoint = new Vector3(0, 0, 0);
     focusPoint.lerp(
       attachPoint.position,
@@ -66,15 +65,14 @@ export default function usePlayerCamera() {
           (cameraMaxDistance - cameraMinDistance)
     );
     camera.position.lerp(focusPoint, 1);
-    camera.position.y =
-      focusPoint.y +
-      followPoint.position.y * (followPoint.position.z / cameraMaxDistance);
     camera.position.z = followPoint.position.z;
+    camera.up.set(0, 1, 0);
     camera.lookAt(focusPoint);
+    camera.rotateOnAxis(new Vector3(0, 0, 1), Math.PI / 4);
   });
 
   useLayoutEffect(() => {
-    camera.position.set(0, followPoint.position.y, followPoint.position.z);
+    camera.position.set(0, 0, 0);
     document.addEventListener("wheel", onWheel);
     document.addEventListener("touchstart", touchstart);
     document.addEventListener("touchmove", touchmove);

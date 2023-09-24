@@ -1,13 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
-import {
-  RigidBody,
-  RapierRigidBody,
-  CuboidCollider,
-  quat,
-  vec3,
-} from "@react-three/rapier";
+import { useBox } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
 import Ship from "components/Ship";
@@ -17,8 +11,15 @@ import usePlayerCamera from "lib/usePlayerCamera";
 const cannonCoolDown = 800;
 
 export default function Player() {
-  const rigidBody = useRef<RapierRigidBody>(null);
-  const shipRef = useRef<Group>(null!);
+  const [shipRef, api] = useBox(
+    () => ({
+      angularFactor: [0, 0, 1],
+      linearFactor: [1, 1, 0],
+      mass: 0.1,
+      position: [-0.92, -0.92, 0],
+    }),
+    useRef<Group>(null)
+  );
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
   const playerCamera = usePlayerCamera();
@@ -37,41 +38,35 @@ export default function Player() {
   useFrame((_, delta) => {
     const { leftward, rightward } = getKeys();
 
-    if (rigidBody.current) {
-      const sailSpeedModifier = sails === -1 ? -0.25 : sails;
-      let sailTurnModifier = 0;
-      if (sails < 0) sailTurnModifier = 0.5;
-      if (sails > 0) sailTurnModifier = 1;
-
-      if (leftward) {
-        rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: 0.000005 * sailTurnModifier * delta },
-          true
-        );
-      }
-      if (rightward) {
-        rigidBody.current.applyTorqueImpulse(
-          { x: 0, y: 0, z: -0.000005 * sailTurnModifier * delta },
-          true
-        );
-      }
-
-      const direction = new Vector3(0, 1, 0);
-      const rotation = quat(rigidBody.current.rotation());
-      direction.applyQuaternion(rotation);
-      rigidBody.current.applyImpulse(
-        {
-          x: direction.x * 0.0003 * sailSpeedModifier * delta,
-          y: direction.y * 0.0003 * sailSpeedModifier * delta,
-          z: 0,
-        },
-        true
-      );
-
-      const position = vec3(rigidBody.current.translation());
-      playerCamera.position.set(position.x, position.y, position.z);
+    const sailSpeedModifier = sails === -1 ? -0.25 : sails;
+    let sailTurnModifier = 0;
+    if (sails < 0) sailTurnModifier = 0.5;
+    if (sails > 0) sailTurnModifier = 1;
+    if (leftward) {
+      api.applyTorque([0, 0, 1 * sailTurnModifier * delta]);
     }
+    if (rightward) {
+      api.applyTorque([0, 0, -1 * sailTurnModifier * delta]);
+    }
+    // const direction = new Vector3(0, 1, 0);
+    // const rotation = quat(rigidBody.current.rotation());
+    // direction.applyQuaternion(rotation);
+    // rigidBody.current.applyImpulse(
+    //   {
+    //     x: direction.x * 0.0003 * sailSpeedModifier * delta,
+    //     y: direction.y * 0.0003 * sailSpeedModifier * delta,
+    //     z: 0,
+    //   },
+    //   true
+    // );
   });
+
+  useEffect(() => {
+    const unsubscribe = api.position.subscribe((p) =>
+      playerCamera.position.set(p[0], p[1], p[2])
+    );
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     subscribeKeys(
@@ -158,24 +153,6 @@ export default function Player() {
     }
   };
 
-  const onCollisionEnter = (e) => {
-    console.log("collision enter");
-    const impactNormal = vec3(e.manifold.normal());
-    // // Apply reflected impulse to ship off impactNormal
-    // const impulse = vec3(e.manifold.local_ni);
-    // const impulseMagnitude = impulse.length();
-    // impulse.normalize();
-    // const reflected = vec3(impactNormal);
-    // reflected.scale(-2 * impulse.dot(impactNormal));
-    // impulse.add(reflected);
-    // impulse.scale(impulseMagnitude);
-    // rigidBody.current.applyImpulse(impulse, true);
-  };
-
-  const onCollisionExit = (e) => {
-    console.log("collision exit", e);
-  };
-
   useEffect(() => {
     if (sails >= 1) {
       playSails();
@@ -183,29 +160,13 @@ export default function Player() {
   }, [sails]);
 
   return (
-    <RigidBody
-      ref={rigidBody}
-      position={[-0.92, -0.92, 0]}
-      enabledRotations={[false, false, true]}
-      enabledTranslations={[true, true, false]}
-      angularDamping={70}
-      linearDamping={70}
-      restitution={0}
-      scale={[0.01, 0.01, 0.01]}
-      rotation={[0, 0, 0]}
-    >
+    <>
       <Ship ref={shipRef} sails={sails} />
       {cannonballs.map((cannonball) => {
         return (
           <Cannonball key={cannonball.id} position={cannonball.position} />
         );
       })}
-      <CuboidCollider
-        position={[0, 1, 1]}
-        args={[1.8, 3.8, 1]}
-        onCollisionEnter={onCollisionEnter}
-        onCollisionExit={onCollisionExit}
-      />
-    </RigidBody>
+    </>
   );
 }
