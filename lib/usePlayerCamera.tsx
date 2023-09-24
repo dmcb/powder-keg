@@ -2,11 +2,12 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useLayoutEffect, useState } from "react";
 import { Object3D, Vector3 } from "three";
 
+const cameraMaxDistance = 16.25;
+const cameraMinDistance = 6;
+const cameraStartingDistance = 12;
+
 export default function usePlayerCamera() {
   const { camera } = useThree();
-  const cameraMaxDistance = 16.25;
-  const cameraMinDistance = 6;
-  const cameraStartingDistance = 12;
   const attachPoint = useMemo(() => new Object3D(), []);
   const followPoint = useMemo(() => {
     const cam = new Object3D();

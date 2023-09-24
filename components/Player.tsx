@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, use } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { useBox } from "@react-three/cannon";
@@ -11,6 +11,16 @@ import usePlayerCamera from "lib/usePlayerCamera";
 const cannonCoolDown = 800;
 
 export default function Player() {
+  const [playSails] = useSound("sounds/sail.mp3", {
+    volume: 0.5,
+    playbackRate: Math.random() * 0.2 + 0.9,
+  });
+
+  const [playCannonShot] = useSound("sounds/cannon-shot.mp3", {
+    volume: 0.5,
+    playbackRate: Math.random() * 0.2 + 0.9,
+  });
+
   const [shipRef, api] = useBox(
     () => ({
       angularFactor: [0, 0, 1],
@@ -26,16 +36,6 @@ export default function Player() {
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
   const playerCamera = usePlayerCamera();
-
-  const [playSails] = useSound("sounds/sail.mp3", {
-    volume: 0.5,
-    playbackRate: Math.random() * 0.2 + 0.9,
-  });
-
-  const [playCannonShot] = useSound("sounds/cannon-shot.mp3", {
-    volume: 0.5,
-    playbackRate: Math.random() * 0.2 + 0.9,
-  });
 
   // Player state
   const [cannonballs, setCannonballs] = useState([]);
@@ -145,7 +145,6 @@ export default function Player() {
   const fireCannon = (direction: number) => {
     const now = Date.now();
     if (now >= state.current.timeToShoot) {
-      playCannonShot();
       state.current.timeToShoot = now + cannonCoolDown;
       const velocity = new Vector3().copy(state.current.forward);
       velocity.applyAxisAngle(new Vector3(0, 0, direction), Math.PI / 2);
@@ -182,6 +181,12 @@ export default function Player() {
       playSails();
     }
   }, [sails]);
+
+  useEffect(() => {
+    if (cannonballs.length > 0) {
+      playCannonShot();
+    }
+  }, [cannonballs]);
 
   return (
     <>
