@@ -6,10 +6,11 @@ export default function usePlayerCamera() {
   const { camera } = useThree();
   const cameraMaxDistance = 16.25;
   const cameraMinDistance = 6;
+  const cameraStartingDistance = 12;
   const attachPoint = useMemo(() => new Object3D(), []);
   const followPoint = useMemo(() => {
     const cam = new Object3D();
-    cam.position.z = cameraMaxDistance;
+    cam.position.z = cameraStartingDistance;
     return cam;
   }, []);
 
@@ -43,7 +44,6 @@ export default function usePlayerCamera() {
       );
 
       const pinchScale = currentDistance / initialDistance;
-      console.log(pinchScale);
 
       const v = followPoint.position.z / Math.pow(pinchScale, 0.02);
       if (v >= cameraMinDistance && v <= cameraMaxDistance) {

@@ -1,9 +1,21 @@
-import { ThreeElements } from "@react-three/fiber";
+import { useSphere } from "@react-three/cannon";
+import { useRef } from "react";
+import type { Mesh } from "three";
 
-export default function Cannonball(props: ThreeElements["mesh"]) {
+export default function Cannonball(Props) {
+  const [sphereRef] = useSphere(
+    () => ({
+      args: [0.004],
+      mass: 0.1,
+      position: Props.position,
+      velocity: Props.velocity,
+    }),
+    useRef<Mesh>(null)
+  );
+
   return (
-    <mesh {...props} position={[0, 0, 0]}>
-      <sphereGeometry args={[2, 16, 16]} />
+    <mesh ref={sphereRef} castShadow>
+      <sphereGeometry args={[0.004, 16, 16]} />
       <meshStandardMaterial color={"black"} />
     </mesh>
   );

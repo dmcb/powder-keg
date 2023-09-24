@@ -32,12 +32,18 @@ export default function Player() {
     playbackRate: Math.random() * 0.2 + 0.9,
   });
 
+  const [playCannonShot] = useSound("sounds/cannon-shot.mp3", {
+    volume: 0.5,
+    playbackRate: Math.random() * 0.2 + 0.9,
+  });
+
   // Player state
   const [cannonballs, setCannonballs] = useState([]);
   const state = useRef({
     timeToShoot: 0,
     position: new Vector3(),
     velocity: new Vector3(),
+    rotation: 0,
     forward: new Vector3(),
   });
 
@@ -71,8 +77,9 @@ export default function Player() {
     api.position.subscribe((p) => state.current.position.set(p[0], p[1], p[2]));
     api.velocity.subscribe((v) => state.current.velocity.set(v[0], v[1], v[2]));
     api.rotation.subscribe((r) => {
+      state.current.rotation = r[2];
       const direction = new Vector3(0, 1, 0);
-      direction.applyAxisAngle(new Vector3(0, 0, 1), r[2]);
+      direction.applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
       state.current.forward.copy(direction);
     });
   }, [api]);
@@ -98,7 +105,7 @@ export default function Player() {
       (state) => state.cannonleft,
       (value) => {
         if (value) {
-          fireCannon(-1);
+          fireCannon(1);
         }
       }
     );
@@ -138,25 +145,33 @@ export default function Player() {
   const fireCannon = (direction: number) => {
     const now = Date.now();
     if (now >= state.current.timeToShoot) {
-      console.log("cannon fired at ", now);
+      playCannonShot();
       state.current.timeToShoot = now + cannonCoolDown;
+      const velocity = new Vector3().copy(state.current.forward);
+      velocity.applyAxisAngle(new Vector3(0, 0, direction), Math.PI / 2);
+      velocity.multiplyScalar(0.2);
+      const position1 = new Vector3(
+        direction * -0.02,
+        -0.005,
+        0
+      ).applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
+      position1.add(state.current.position);
+      const position2 = new Vector3(direction * -0.02, 0.015, 0).applyAxisAngle(
+        new Vector3(0, 0, 1),
+        state.current.rotation
+      );
+      position2.add(state.current.position);
       setCannonballs((cannonballs) => [
         ...cannonballs,
         {
           id: now + "a",
-          position: [
-            shipRef.current.position.x,
-            shipRef.current.position.y,
-            shipRef.current.position.z,
-          ],
+          velocity: [velocity.x, velocity.y, 0.3],
+          position: [position1.x, position1.y, 0.01],
         },
         {
           id: now + "b",
-          position: [
-            shipRef.current.position.x,
-            shipRef.current.position.y + 1,
-            shipRef.current.position.z,
-          ],
+          velocity: [velocity.x, velocity.y, 0.3],
+          position: [position2.x, position2.y, 0.01],
         },
       ]);
     }
@@ -173,7 +188,11 @@ export default function Player() {
       <Ship ref={shipRef} sails={sails} />
       {cannonballs.map((cannonball) => {
         return (
-          <Cannonball key={cannonball.id} position={cannonball.position} />
+          <Cannonball
+            key={cannonball.id}
+            position={cannonball.position}
+            velocity={cannonball.velocity}
+          />
         );
       })}
     </>
