@@ -9,10 +9,10 @@ import { Group } from "three";
 const BoardPieces = (props: { seed: string }) => {
   return (
     <>
-      {/* <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
+      <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
       <Border position={[0, 1, 0]} rotation={[Math.PI / 2, 0, 0]} />
       <Border position={[-1, 0, 0]} rotation={[Math.PI / 2, Math.PI / 2, 0]} />
-      <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} /> */}
+      <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       <Ocean />
       <Terrain seed={props.seed} />
       <Player />
