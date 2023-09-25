@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect, useMemo } from "react";
+import React, { useRef, useLayoutEffect, useMemo } from "react";
 import {
   Vector2,
   Vector3,
@@ -10,8 +10,18 @@ import { NoiseFunction2D, createNoise2D } from "simplex-noise";
 import Alea from "aleaprng";
 import chroma from "chroma-js";
 import { useControls } from "leva";
+import type { Mesh } from "three";
+import { useTrimesh } from "@react-three/cannon";
 
 export default function Terrain(props: { seed: string }) {
+  const [trimeshRef, trimeshApi] = useTrimesh(
+    () => ({
+      args: [points, meshIndex],
+      mass: 0,
+    }),
+    useRef<Mesh>(null)
+  );
+
   const geometryRef = useRef<BufferGeometry>(null!);
   let prng = new Alea(props.seed);
 
@@ -80,7 +90,7 @@ export default function Terrain(props: { seed: string }) {
     return Math.max(-0.1, value * gradient - dropoff);
   };
 
-  const points: Vector3[] = useMemo(() => {
+  const points: number[] = useMemo(() => {
     prng = new Alea(seed);
     prng.restart();
     const noise2D = createNoise2D(prng);
@@ -90,10 +100,18 @@ export default function Terrain(props: { seed: string }) {
 
     // Start with corner points
     const points = [
-      new Vector3(-1, -1, baseNoise(noise2D, -1, -1)),
-      new Vector3(1, -1, baseNoise(noise2D, 1, -1)),
-      new Vector3(1, 1, baseNoise(noise2D, 1, 1)),
-      new Vector3(-1, 1, baseNoise(noise2D, -1, 1)),
+      -1,
+      -1,
+      baseNoise(noise2D, -1, -1),
+      1,
+      -1,
+      baseNoise(noise2D, 1, -1),
+      1,
+      1,
+      baseNoise(noise2D, 1, 1),
+      -1,
+      1,
+      baseNoise(noise2D, -1, 1),
     ];
 
     // Add edges
@@ -115,7 +133,7 @@ export default function Terrain(props: { seed: string }) {
             x = -1;
             break;
         }
-        points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
+        points.push(x, y, baseNoise(noise2D, x, y));
       }
     }
 
@@ -123,7 +141,7 @@ export default function Terrain(props: { seed: string }) {
     for (let i = 0; i < insidePointsCount; i++) {
       let x = prng() * size * 0.98 - (size * 0.98) / 2;
       let y = prng() * size * 0.98 - (size * 0.98) / 2;
-      points.push(new Vector3(x, y, baseNoise(noise2D, x, y)));
+      points.push(x, y, baseNoise(noise2D, x, y));
     }
 
     return points;
@@ -131,11 +149,11 @@ export default function Terrain(props: { seed: string }) {
 
   const meshIndex: number[] = useMemo(() => {
     // Triangulate
-    const delaunayIndex = Delaunator.from(
-      points.map((v) => {
-        return [v.x, v.y];
-      })
-    );
+    const pointsAs2D = [];
+    for (let i = 0; i < points.length; i += 3) {
+      pointsAs2D.push([points[i], points[i + 1]]);
+    }
+    const delaunayIndex = Delaunator.from(pointsAs2D);
 
     // Create faces
     const meshIndex = [];
@@ -181,7 +199,13 @@ export default function Terrain(props: { seed: string }) {
   // Update geometry with points, faces, and colouring
   useLayoutEffect(() => {
     if (geometryRef.current) {
-      geometryRef.current.setFromPoints(points);
+      const pointsAsVector3 = [];
+      for (let i = 0; i < points.length; i += 3) {
+        pointsAsVector3.push(
+          new Vector3(points[i], points[i + 1], points[i + 2])
+        );
+      }
+      geometryRef.current.setFromPoints(pointsAsVector3);
       geometryRef.current.setIndex(meshIndex);
       geometryRef.current.computeVertexNormals();
       geometryRef.current.copy(geometryRef.current.toNonIndexed());
@@ -203,11 +227,20 @@ export default function Terrain(props: { seed: string }) {
         "color",
         new Float32BufferAttribute(colours, 3)
       );
+
+      // Reset trimesh
+      // Is there a way to dynamically update the trimesh geometry?
     }
   }, [seed, biome, octaves, amplitude, frequency, gradientEdge]);
 
   return (
-    <mesh {...props} castShadow={true} receiveShadow={true}>
+    <mesh
+      key={props.seed}
+      ref={trimeshRef}
+      castShadow={true}
+      receiveShadow={true}
+      {...props}
+    >
       <bufferGeometry ref={geometryRef} />
       <meshStandardMaterial flatShading={true} vertexColors={true} />
     </mesh>

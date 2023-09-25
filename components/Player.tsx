@@ -13,12 +13,12 @@ const cannonCoolDown = 800;
 export default function Player() {
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
-    playbackRate: Math.random() * 0.2 + 0.9,
+    playbackRate: Math.random() * 0.4 + 0.8,
   });
 
   const [playCannonShot] = useSound("sounds/cannon-shot.mp3", {
     volume: 0.5,
-    playbackRate: Math.random() * 0.2 + 0.9,
+    playbackRate: Math.random() * 0.4 + 0.8,
   });
 
   const [shipRef, api] = useBox(
@@ -26,6 +26,7 @@ export default function Player() {
       angularFactor: [0, 0, 1],
       linearFactor: [1, 1, 0],
       mass: 1,
+      type: "Dynamic",
       angularDamping: 1,
       linearDamping: 0.999,
       args: [0.035, 0.085, 0.1],
@@ -152,25 +153,26 @@ export default function Player() {
       const position1 = new Vector3(
         direction * -0.02,
         -0.005,
-        0
+        0.02
       ).applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
       position1.add(state.current.position);
-      const position2 = new Vector3(direction * -0.02, 0.015, 0).applyAxisAngle(
-        new Vector3(0, 0, 1),
-        state.current.rotation
-      );
+      const position2 = new Vector3(
+        direction * -0.02,
+        0.015,
+        0.02
+      ).applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
       position2.add(state.current.position);
       setCannonballs((cannonballs) => [
         ...cannonballs,
         {
           id: now + "a",
           velocity: [velocity.x, velocity.y, 0.3],
-          position: [position1.x, position1.y, 0.01],
+          position: [position1.x, position1.y, position1.z],
         },
         {
           id: now + "b",
           velocity: [velocity.x, velocity.y, 0.3],
-          position: [position2.x, position2.y, 0.01],
+          position: [position2.x, position2.y, position1.z],
         },
       ]);
     }

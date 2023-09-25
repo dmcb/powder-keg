@@ -1,5 +1,5 @@
 import React, { useRef, useLayoutEffect } from "react";
-import { Mesh } from "three";
+import type { Mesh } from "three";
 import { usePlane } from "@react-three/cannon";
 
 export default function Border(props) {

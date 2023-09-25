@@ -3,7 +3,7 @@ import { useMemo, useLayoutEffect, useState } from "react";
 import { Object3D, Vector3 } from "three";
 
 const cameraMaxDistance = 16.25;
-const cameraMinDistance = 6;
+const cameraMinDistance = 3;
 const cameraStartingDistance = 12;
 
 export default function usePlayerCamera() {

@@ -7,6 +7,7 @@ export default function Cannonball(Props) {
     () => ({
       args: [0.004],
       mass: 0.1,
+      type: "Dynamic",
       position: Props.position,
       velocity: Props.velocity,
     }),
