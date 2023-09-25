@@ -48,7 +48,7 @@ export default function usePlayerCamera() {
 
       const pinchScale = currentDistance / initialDistance;
 
-      const v = followPoint.position.z / Math.pow(pinchScale, 0.02);
+      const v = followPoint.position.z / Math.pow(pinchScale, 0.2);
       if (v >= cameraMinDistance && v <= cameraMaxDistance) {
         targetCameraDistance.current = v;
       }
