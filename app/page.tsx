@@ -34,7 +34,7 @@ export default function Page() {
           { name: "cameraToggle", keys: ["KeyC"] },
         ]}
       >
-        <Canvas shadows={true} camera={{ fov: 10, position: [0, -4.75, 15] }}>
+        <Canvas shadows={true} camera={{ fov: 10, position: [0, 0, 16.25] }}>
           {debug && <Perf position="top-left" />}
           {debug && <OrbitControls />}
           <Suspense>

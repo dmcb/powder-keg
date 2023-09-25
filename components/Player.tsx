@@ -39,13 +39,13 @@ export default function Player() {
         },
         {
           args: [0.015],
-          position: [0, 0.03, 0.008],
+          position: [0, 0.03, 0.01],
           rotation: [0, 0, 0],
           type: "Sphere",
         },
         {
           args: [0.015],
-          position: [0, -0.03, 0.008],
+          position: [0, -0.03, 0.01],
           rotation: [0, 0, 0],
           type: "Sphere",
         },
