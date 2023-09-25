@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, use } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
-import { useBox } from "@react-three/cannon";
+import { useCompoundBody } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
 import Ship from "components/Ship";
@@ -21,7 +21,7 @@ export default function Player() {
     playbackRate: Math.random() * 0.4 + 0.8,
   });
 
-  const [shipRef, api] = useBox(
+  const [shipRef, api] = useCompoundBody(
     () => ({
       angularFactor: [0, 0, 1],
       linearFactor: [1, 1, 0],
@@ -29,8 +29,27 @@ export default function Player() {
       type: "Dynamic",
       angularDamping: 1,
       linearDamping: 0.999,
-      args: [0.035, 0.085, 0.1],
       position: [-0.92, -0.92, 0],
+      shapes: [
+        {
+          args: [0.035, 0.085, 0.1],
+          position: [0, 0, 0],
+          rotation: [0, 0, 0],
+          type: "Box",
+        },
+        {
+          args: [0.015],
+          position: [0, 0.03, 0.008],
+          rotation: [0, 0, 0],
+          type: "Sphere",
+        },
+        {
+          args: [0.015],
+          position: [0, -0.03, 0.008],
+          rotation: [0, 0, 0],
+          type: "Sphere",
+        },
+      ],
     }),
     useRef<Group>(null)
   );
