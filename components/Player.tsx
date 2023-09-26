@@ -57,7 +57,7 @@ export default function Player() {
     useRef<Group>(null)
   );
   const [subscribeKeys, getKeys] = useKeyboardControls();
-  const [sails, setSails] = useState(1);
+  const [sails, setSails] = useState(0);
   const playerCamera = usePlayerCamera();
 
   // Player state
@@ -172,20 +172,31 @@ export default function Player() {
       }
     );
     useStore.subscribe((store) => {
-      // Determine click relative to ship to turn ship
+      // Determine click relative to ship to turn ship or change sails
       const clickLocation = new Vector3(store.x, store.y, 0);
       state.current.intendedPosition = clickLocation.sub(
         new Vector3(state.current.position.x, state.current.position.y, 0)
       );
       state.current.intendedDifferenceInAngle =
         state.current.intendedPosition.angleTo(state.current.forward);
-      const orientation =
-        state.current.intendedPosition.x * state.current.forward.y -
-        state.current.intendedPosition.y * state.current.forward.x;
-      if (orientation > 0) {
-        state.current.intendedDirection = 1;
+
+      // If angle is straight ahead or behind, change sails
+      // otherwise, turn the ship
+      if (state.current.intendedDifferenceInAngle < 0.24) {
+        state.current.intendedDifferenceInAngle = 0;
+        incrementSails(1);
+      } else if (state.current.intendedDifferenceInAngle > Math.PI - 0.24) {
+        state.current.intendedDifferenceInAngle = 0;
+        incrementSails(-1);
       } else {
-        state.current.intendedDirection = -1;
+        const orientation =
+          state.current.intendedPosition.x * state.current.forward.y -
+          state.current.intendedPosition.y * state.current.forward.x;
+        if (orientation > 0) {
+          state.current.intendedDirection = 1;
+        } else {
+          state.current.intendedDirection = -1;
+        }
       }
     });
   }, []);
