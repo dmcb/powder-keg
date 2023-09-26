@@ -181,7 +181,7 @@ export default function Terrain(props: { seed: string }) {
       case 2:
         return chroma
           .scale(["827369", "54596D", "BED6DB", "F4F5F6", "FFFFFF"])
-          .domain([0.0, 0.1, 0.4, 0.6, 0.8])
+          .domain([0.0, 0.1, 0.2, 0.6, 0.8])
           .classes(20);
     }
   }, [biome]);
