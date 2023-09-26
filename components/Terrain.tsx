@@ -18,6 +18,8 @@ export default function Terrain(props: { seed: string }) {
     () => ({
       args: [points, meshIndex],
       mass: 0,
+      collisionFilterGroup: 1,
+      collisionFilterMask: 1,
     }),
     useRef<Mesh>(null)
   );

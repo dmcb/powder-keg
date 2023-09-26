@@ -7,7 +7,8 @@ export default function Cannonball(Props) {
     () => ({
       args: [0.004],
       mass: 0.1,
-      type: "Dynamic",
+      collisionFilterGroup: 1,
+      collisionFilterMask: 1,
       position: Props.position,
       velocity: Props.velocity,
     }),

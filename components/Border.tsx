@@ -7,6 +7,8 @@ export default function Border(props) {
     () => ({
       mass: 0,
       ...props,
+      collisionFilterGroup: 2,
+      collisionFilterMask: 1,
     }),
     useRef<Mesh>(null)
   );

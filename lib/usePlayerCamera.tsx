@@ -4,7 +4,7 @@ import { Object3D, Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
 
 const cameraMaxDistance = 16.25;
-const cameraMinDistance = 6;
+const cameraMinDistance = 7;
 
 export default function usePlayerCamera() {
   const { camera } = useThree();
@@ -63,7 +63,6 @@ export default function usePlayerCamera() {
     // Check aspect ratio and update zoom leel
     const { viewport } = state;
     if (viewport.aspect != aspectRatio.current) {
-      console.log(viewport.aspect);
       aspectRatio.current = viewport.aspect;
       if (viewport.aspect < 1) {
         const minimumAspectRatio = 0.6;
@@ -71,7 +70,6 @@ export default function usePlayerCamera() {
           Math.max(viewport.aspect - minimumAspectRatio, 0) *
           (1 / (1 - minimumAspectRatio));
         normalizedRange = Math.pow(normalizedRange, 0.8);
-        console.log(normalizedRange);
         targetCameraDistance.current =
           normalizedRange * (cameraMaxDistance - cameraMinDistance) +
           cameraMinDistance;

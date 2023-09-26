@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, use } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { useCompoundBody } from "@react-three/cannon";
@@ -30,6 +30,8 @@ export default function Player() {
       angularDamping: 1,
       linearDamping: 0.999,
       position: [-0.92, -0.92, 0],
+      collisionFilterGroup: 1,
+      collisionFilterMask: 1 | 2,
       shapes: [
         {
           args: [0.035, 0.085, 0.1],
@@ -168,7 +170,7 @@ export default function Player() {
       state.current.timeToShoot = now + cannonCoolDown;
       const velocity = new Vector3().copy(state.current.forward);
       velocity.applyAxisAngle(new Vector3(0, 0, direction), Math.PI / 2);
-      velocity.multiplyScalar(0.2);
+      velocity.multiplyScalar(0.3);
       const position1 = new Vector3(
         direction * -0.02,
         -0.005,
@@ -185,12 +187,12 @@ export default function Player() {
         ...cannonballs,
         {
           id: now + "a",
-          velocity: [velocity.x, velocity.y, 0.3],
+          velocity: [velocity.x, velocity.y, 0.4],
           position: [position1.x, position1.y, position1.z],
         },
         {
           id: now + "b",
-          velocity: [velocity.x, velocity.y, 0.3],
+          velocity: [velocity.x, velocity.y, 0.4],
           position: [position2.x, position2.y, position1.z],
         },
       ]);
