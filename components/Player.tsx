@@ -1,12 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
-import { useCompoundBody } from "@react-three/cannon";
+import { useCompoundBody, useDistanceConstraint } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
-import usePlayerCamera from "lib/usePlayerCamera";
+import usePlayerCamera from "hooks/usePlayerCamera";
 import { useStore } from "stores/clickStore";
 
 const cannonCoolDown = 800;
@@ -172,31 +172,41 @@ export default function Player() {
       }
     );
     useStore.subscribe((store) => {
-      // Determine click relative to ship to turn ship or change sails
+      // Determine click position relative to ship
       const clickLocation = new Vector3(store.x, store.y, 0);
-      state.current.intendedPosition = clickLocation.sub(
-        new Vector3(state.current.position.x, state.current.position.y, 0)
+      const clickLocationRelativeToShip = new Vector3()
+        .copy(clickLocation)
+        .sub(
+          new Vector3(state.current.position.x, state.current.position.y, 0)
+        );
+      const clickAngleRelativeToShip = clickLocationRelativeToShip.angleTo(
+        state.current.forward
       );
-      state.current.intendedDifferenceInAngle =
-        state.current.intendedPosition.angleTo(state.current.forward);
-
-      // If angle is straight ahead or behind, change sails
-      // otherwise, turn the ship
-      if (state.current.intendedDifferenceInAngle < 0.24) {
-        state.current.intendedDifferenceInAngle = 0;
-        incrementSails(1);
-      } else if (state.current.intendedDifferenceInAngle > Math.PI - 0.24) {
-        state.current.intendedDifferenceInAngle = 0;
-        incrementSails(-1);
+      const clickDistance = state.current.position.distanceTo(clickLocation);
+      let clickOrientationRelativeToShip =
+        clickLocationRelativeToShip.x * state.current.forward.y -
+        clickLocationRelativeToShip.y * state.current.forward.x;
+      if (clickOrientationRelativeToShip > 0) {
+        clickOrientationRelativeToShip = 1;
       } else {
-        const orientation =
-          state.current.intendedPosition.x * state.current.forward.y -
-          state.current.intendedPosition.y * state.current.forward.x;
-        if (orientation > 0) {
-          state.current.intendedDirection = 1;
+        clickOrientationRelativeToShip = -1;
+      }
+
+      // If tap distance is close to ship, do operations
+      // Otherwise, turn the ship
+      if (clickDistance < 0.2) {
+        state.current.intendedDifferenceInAngle = 0;
+        if (clickAngleRelativeToShip < Math.PI / 4) {
+          incrementSails(1);
+        } else if (clickAngleRelativeToShip > Math.PI - Math.PI / 4) {
+          incrementSails(-1);
         } else {
-          state.current.intendedDirection = -1;
+          fireCannon(clickOrientationRelativeToShip);
         }
+      } else {
+        state.current.intendedDirection = clickOrientationRelativeToShip;
+        state.current.intendedDifferenceInAngle = clickAngleRelativeToShip;
+        state.current.intendedPosition = clickLocationRelativeToShip;
       }
     });
   }, []);
