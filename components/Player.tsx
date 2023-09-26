@@ -57,7 +57,7 @@ export default function Player() {
     useRef<Group>(null)
   );
   const [subscribeKeys, getKeys] = useKeyboardControls();
-  const [sails, setSails] = useState(0);
+  const [sails, setSails] = useState(1);
   const playerCamera = usePlayerCamera();
 
   // Player state
@@ -68,8 +68,12 @@ export default function Player() {
     velocity: new Vector3(),
     rotation: 0,
     forward: new Vector3(),
+    intendedDirection: 0,
+    intendedDifferenceInAngle: 0,
+    intendedPosition: new Vector3(),
   });
 
+  // Move ship
   useFrame((_, delta) => {
     const { leftward, rightward } = getKeys();
 
@@ -77,13 +81,30 @@ export default function Player() {
     let sailTurnModifier = 0;
     if (sails < 0) sailTurnModifier = 0.5;
     if (sails > 0) sailTurnModifier = 1;
+
+    // Turn ship according to keys
     if (leftward) {
+      state.current.intendedDifferenceInAngle = 0;
       api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
     }
     if (rightward) {
+      state.current.intendedDifferenceInAngle = 0;
       api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
     }
+    // Turn ship according to click
+    if (state.current.intendedDifferenceInAngle > 0.1) {
+      api.applyTorque([
+        0,
+        0,
+        state.current.intendedDirection * -5 * sailTurnModifier * delta,
+      ]);
+      state.current.intendedDifferenceInAngle =
+        state.current.intendedPosition.angleTo(state.current.forward);
+    } else {
+      state.current.intendedDifferenceInAngle = 0;
+    }
 
+    // Move ship forward
     api.applyImpulse(
       [
         state.current.forward.x * 0.6 * sailSpeedModifier * delta,
@@ -96,6 +117,7 @@ export default function Player() {
     playerCamera.position.copy(state.current.position);
   });
 
+  // Set state from physics
   useEffect(() => {
     api.position.subscribe((p) => state.current.position.set(p[0], p[1], p[2]));
     api.velocity.subscribe((v) => state.current.velocity.set(v[0], v[1], v[2]));
@@ -107,6 +129,7 @@ export default function Player() {
     });
   }, [api]);
 
+  // Listen to keys and clicks
   useEffect(() => {
     subscribeKeys(
       (state) => state.forward,
@@ -128,7 +151,7 @@ export default function Player() {
       (state) => state.cannonleft,
       (value) => {
         if (value) {
-          fireCannon(1);
+          fireCannon(-1);
         }
       }
     );
@@ -136,7 +159,7 @@ export default function Player() {
       (state) => state.cannonright,
       (value) => {
         if (value) {
-          fireCannon(-1);
+          fireCannon(1);
         }
       }
     );
@@ -148,8 +171,22 @@ export default function Player() {
         }
       }
     );
-    useStore.subscribe((state) => {
-      console.log(state);
+    useStore.subscribe((store) => {
+      // Determine click relative to ship to turn ship
+      const clickLocation = new Vector3(store.x, store.y, 0);
+      state.current.intendedPosition = clickLocation.sub(
+        new Vector3(state.current.position.x, state.current.position.y, 0)
+      );
+      state.current.intendedDifferenceInAngle =
+        state.current.intendedPosition.angleTo(state.current.forward);
+      const orientation =
+        state.current.intendedPosition.x * state.current.forward.y -
+        state.current.intendedPosition.y * state.current.forward.x;
+      if (orientation > 0) {
+        state.current.intendedDirection = 1;
+      } else {
+        state.current.intendedDirection = -1;
+      }
     });
   }, []);
 
@@ -173,16 +210,16 @@ export default function Player() {
     if (now >= state.current.timeToShoot) {
       state.current.timeToShoot = now + cannonCoolDown;
       const velocity = new Vector3().copy(state.current.forward);
-      velocity.applyAxisAngle(new Vector3(0, 0, direction), Math.PI / 2);
+      velocity.applyAxisAngle(new Vector3(0, 0, -direction), Math.PI / 2);
       velocity.multiplyScalar(0.3);
       const position1 = new Vector3(
-        direction * -0.02,
+        direction * 0.02,
         -0.005,
         0.02
       ).applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
       position1.add(state.current.position);
       const position2 = new Vector3(
-        direction * -0.02,
+        direction * 0.02,
         0.015,
         0.02
       ).applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
