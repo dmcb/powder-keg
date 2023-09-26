@@ -7,6 +7,7 @@ import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
 import usePlayerCamera from "lib/usePlayerCamera";
+import { useStore } from "stores/clickStore";
 
 const cannonCoolDown = 800;
 
@@ -147,6 +148,9 @@ export default function Player() {
         }
       }
     );
+    useStore.subscribe((state) => {
+      console.log(state);
+    });
   }, []);
 
   const adjustCamera = () => {};
