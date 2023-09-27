@@ -7,7 +7,7 @@ import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
 import usePlayerCamera from "hooks/usePlayerCamera";
-import { useStore } from "stores/clickStore";
+import { useTapStore, useDragStore } from "stores/pointerStore";
 
 const cannonCoolDown = 800;
 
@@ -171,7 +171,7 @@ export default function Player() {
         }
       }
     );
-    useStore.subscribe((store) => {
+    useTapStore.subscribe((store) => {
       // Determine click position relative to ship
       const clickLocation = new Vector3(store.x, store.y, 0);
       const clickLocationRelativeToShip = new Vector3()
@@ -182,7 +182,6 @@ export default function Player() {
       const clickAngleRelativeToShip = clickLocationRelativeToShip.angleTo(
         state.current.forward
       );
-      const clickDistance = state.current.position.distanceTo(clickLocation);
       let clickOrientationRelativeToShip =
         clickLocationRelativeToShip.x * state.current.forward.y -
         clickLocationRelativeToShip.y * state.current.forward.x;
@@ -192,22 +191,43 @@ export default function Player() {
         clickOrientationRelativeToShip = -1;
       }
 
-      // If tap distance is close to ship, do operations
-      // Otherwise, turn the ship
-      if (clickDistance < 0.2) {
-        state.current.intendedDifferenceInAngle = 0;
-        if (clickAngleRelativeToShip < Math.PI / 4) {
-          incrementSails(1);
-        } else if (clickAngleRelativeToShip > Math.PI - Math.PI / 4) {
-          incrementSails(-1);
-        } else {
-          fireCannon(clickOrientationRelativeToShip);
-        }
-      } else {
-        state.current.intendedDirection = clickOrientationRelativeToShip;
-        state.current.intendedDifferenceInAngle = clickAngleRelativeToShip;
-        state.current.intendedPosition = clickLocationRelativeToShip;
+      // If tap is behind, lower sails
+      if (clickAngleRelativeToShip > Math.PI - Math.PI / 4) {
+        incrementSails(-1);
       }
+      // If tap is ahead, raise sails
+      else if (clickAngleRelativeToShip < Math.PI / 4) {
+        incrementSails(1);
+      }
+      // Otherwise, fire cannons
+      else {
+        fireCannon(clickOrientationRelativeToShip);
+      }
+    });
+
+    useDragStore.subscribe((store) => {
+      // Determine click position relative to ship
+      const clickLocation = new Vector3(store.x, store.y, 0);
+      const clickLocationRelativeToShip = new Vector3()
+        .copy(clickLocation)
+        .sub(
+          new Vector3(state.current.position.x, state.current.position.y, 0)
+        );
+      const clickAngleRelativeToShip = clickLocationRelativeToShip.angleTo(
+        state.current.forward
+      );
+      let clickOrientationRelativeToShip =
+        clickLocationRelativeToShip.x * state.current.forward.y -
+        clickLocationRelativeToShip.y * state.current.forward.x;
+      if (clickOrientationRelativeToShip > 0) {
+        clickOrientationRelativeToShip = 1;
+      } else {
+        clickOrientationRelativeToShip = -1;
+      }
+
+      state.current.intendedDirection = clickOrientationRelativeToShip;
+      state.current.intendedDifferenceInAngle = clickAngleRelativeToShip;
+      state.current.intendedPosition = clickLocationRelativeToShip;
     });
   }, []);
 
