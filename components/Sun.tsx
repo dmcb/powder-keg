@@ -33,7 +33,7 @@ export default function Sun() {
       step: 0.01,
     },
     middayExaggeration: {
-      value: 0.2,
+      value: 0.25,
       min: 0,
       max: 1,
       step: 0.01,

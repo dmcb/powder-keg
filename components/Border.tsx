@@ -26,9 +26,9 @@ export default function Border(props) {
         <planeGeometry args={[2, 1]} />
         <meshStandardMaterial visible={false} />
       </mesh>
-      <mesh ref={borderRef} {...props}>
+      <mesh ref={borderRef} {...props} doubleSided>
         <planeGeometry args={[2, 0.1]} />
-        <meshStandardMaterial color={"blue"} />
+        <meshStandardMaterial color={"blue"} side={2} />
       </mesh>
     </>
   );

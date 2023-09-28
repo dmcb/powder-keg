@@ -45,15 +45,15 @@ export default function Terrain(props: { seed: string }) {
         step: 0.01,
       },
       frequency: {
-        value: prng() * 0.9 + 0.85,
-        min: 0.85,
-        max: 1.75,
+        value: prng() * 0.7 + 1.0,
+        min: 1,
+        max: 1.7,
         step: 0.01,
       },
       gradientEdge: {
-        value: prng() * 0.35 + 0.5,
+        value: prng() * 0.36 + 0.5,
         min: 0.5,
-        max: 0.85,
+        max: 0.86,
         step: 0.01,
       },
       octaves: {
@@ -176,7 +176,7 @@ export default function Terrain(props: { seed: string }) {
       case 1:
         return chroma
           .scale(["FBD5A2", "F8D0AE", "A06743", "754228", "451304", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.4, 0.9, 1.0])
+          .domain([0.0, 0.05, 0.2, 0.3, 0.9, 1.0])
           .classes(20);
       case 2:
         return chroma
@@ -193,8 +193,8 @@ export default function Terrain(props: { seed: string }) {
     set({
       biome: Math.round(prng() * 2),
       amplitude: prng() * 0.3 + 0.1,
-      frequency: prng() * 0.9 + 0.85,
-      gradientEdge: prng() * 0.35 + 0.5,
+      frequency: prng() * 0.7 + 1,
+      gradientEdge: prng() * 0.36 + 0.5,
     });
   }, [seed]);
 

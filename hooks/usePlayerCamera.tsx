@@ -1,9 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useLayoutEffect, useRef, use } from "react";
-import { Object3D, Vector3 } from "three";
+import { Object3D, Vector2, Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
 
-const cameraMaxDistance = 16.25;
+const cameraTiltDistance = 3;
+const cameraMaxDistance = 15.5;
 const cameraMinDistance = 7;
 
 export default function usePlayerCamera() {
@@ -11,7 +12,8 @@ export default function usePlayerCamera() {
   const attachPoint = useMemo(() => new Object3D(), []);
   const followPoint = useMemo(() => {
     const cam = new Object3D();
-    cam.position.z = cameraMaxDistance;
+    cam.position.set(0, 0, cameraMaxDistance);
+    cam.lookAt(new Vector3(0, 0, 0));
     return cam;
   }, []);
 
@@ -104,16 +106,20 @@ export default function usePlayerCamera() {
         (followPoint.position.z - cameraMinDistance) /
           (cameraMaxDistance - cameraMinDistance)
     );
-    camera.position.lerp(focusPoint, 1);
-    camera.position.z = followPoint.position.z;
-    camera.up.set(0, 1, 0);
+    camera.up.set(1, 1, 0);
+    camera.position.copy(followPoint.position);
+    camera.position.add(
+      new Vector3(
+        -cameraTiltDistance * (followPoint.position.z / cameraMaxDistance),
+        -cameraTiltDistance * (followPoint.position.z / cameraMaxDistance),
+        0
+      )
+    );
     camera.lookAt(focusPoint);
-    camera.rotateOnAxis(new Vector3(0, 0, 1), Math.PI / 4);
+    // camera.rotateOnAxis(new Vector3(0, 0, 1), Math.PI / 4);
   });
 
   useLayoutEffect(() => {
-    followPoint.position.z = cameraMaxDistance;
-    camera.position.z = cameraMaxDistance;
     document.addEventListener("wheel", onWheel);
     document.addEventListener("touchstart", touchstart);
     document.addEventListener("touchmove", touchmove);
