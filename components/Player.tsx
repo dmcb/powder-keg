@@ -30,6 +30,7 @@ export default function Player() {
       type: "Dynamic",
       angularDamping: 1,
       linearDamping: 0.999,
+      rotation: [0, 0, -Math.PI / 4],
       position: [-0.92, -0.92, 0],
       collisionFilterGroup: 1,
       collisionFilterMask: 1 | 2,
