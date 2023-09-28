@@ -3,8 +3,8 @@ import { useMemo, useLayoutEffect, useRef, use } from "react";
 import { Object3D, Vector2, Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
 
-const cameraTiltDistance = 3;
-const cameraMaxDistance = 15.5;
+const cameraTiltDistance = 4.3;
+const cameraMaxDistance = 16.5;
 const cameraMinDistance = 7;
 
 export default function usePlayerCamera() {
@@ -62,7 +62,7 @@ export default function usePlayerCamera() {
   };
 
   useFrame((state) => {
-    // Check aspect ratio and update zoom leel
+    // Check aspect ratio and update zoom level
     const { viewport } = state;
     if (viewport.aspect != aspectRatio.current) {
       aspectRatio.current = viewport.aspect;
@@ -116,7 +116,6 @@ export default function usePlayerCamera() {
       )
     );
     camera.lookAt(focusPoint);
-    // camera.rotateOnAxis(new Vector3(0, 0, 1), Math.PI / 4);
   });
 
   useLayoutEffect(() => {
