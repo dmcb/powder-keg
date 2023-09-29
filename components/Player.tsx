@@ -74,8 +74,8 @@ export default function Player() {
     intendedPosition: new Vector3(),
   });
 
-  // Move ship
   useFrame((_, delta) => {
+    // Move ship
     const { leftward, rightward } = getKeys();
 
     const sailSpeedModifier = sails === -1 ? -0.25 : sails;
@@ -267,14 +267,16 @@ export default function Player() {
       ).applyAxisAngle(new Vector3(0, 0, 1), state.current.rotation);
       position2.add(state.current.position);
       setCannonballs((cannonballs) => [
-        ...cannonballs,
+        ...cannonballs.filter((cannonball) => now - cannonball.fired < 5000),
         {
           id: now + "a",
+          fired: now,
           velocity: [velocity.x, velocity.y, 0.4],
           position: [position1.x, position1.y, position1.z],
         },
         {
           id: now + "b",
+          fired: now,
           velocity: [velocity.x, velocity.y, 0.4],
           position: [position2.x, position2.y, position1.z],
         },

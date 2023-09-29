@@ -5,6 +5,7 @@ import type { Mesh } from "three";
 export default function Cannonball(Props) {
   const [sphereRef] = useSphere(
     () => ({
+      allowSleep: true,
       args: [0.004],
       mass: 0.1,
       collisionFilterGroup: 1,
