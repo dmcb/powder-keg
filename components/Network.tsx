@@ -14,18 +14,16 @@ export default function Network() {
     const response = await axios.post<never, AxiosResponse>(
       "/api/players/connect"
     );
-    console.log(response);
   };
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY, {
-      cluster: process.env.NEXT_PUBLIC_CLUSTER,
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
     });
 
     const channel = pusher.subscribe("network");
 
     channel.bind("player-joined", (data) => {
-      setPlayers(data.players);
       console.log(data.players);
     });
 
