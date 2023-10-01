@@ -37,8 +37,8 @@ export default function Page() {
         <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 100] }}>
           {debug && <Perf position="top-left" />}
           {debug && <OrbitControls />}
+          <Network />
           <Suspense>
-            <Network />
             <Board seed={seed} debug={debug} />
             <Sun />
           </Suspense>
