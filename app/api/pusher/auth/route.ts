@@ -5,9 +5,16 @@ import { pusher } from "lib/pusher";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log(body);
-    const { socketId, channelName } = body;
-    const authResponse = pusher.authorizeChannel(socketId, channelName);
+    const { socketId, channelName, userId } = body;
+    const presenceData = {
+      user_id: "unique_user_id",
+      user_info: { name: "Blah", playerNumber: 1 },
+    };
+    const authResponse = pusher.authorizeChannel(
+      socketId,
+      channelName,
+      presenceData
+    );
     return jsonResponse(200, authResponse);
   } catch (e) {
     console.error(e);
