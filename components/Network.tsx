@@ -7,7 +7,7 @@ export interface AxiosResponse {
   data: any;
 }
 
-export default function Network() {
+export default function Network(props: { playerName: string }) {
   // const setPlayers = async () => {
   //   const response = await axios.post<never, AxiosResponse>(
   //     "/api/players/state"
@@ -28,10 +28,8 @@ export default function Network() {
             {
               socketId: data.socketId,
               channelName: data.channelName,
-              userId: "1",
               userInfo: {
-                name: "Blah",
-                playerNumber: 1,
+                name: props.playerName,
               },
             }
           );

@@ -5,6 +5,10 @@ body {
   margin: 0;
   overscroll-behavior: none;
   touch-action: none;
+  font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 body {
@@ -13,4 +17,80 @@ body {
     rgba(255, 255, 255, 1) 0%,
     rgba(90, 105, 117, 1) 100%
   );
+}
+
+.menu {
+  position: absolute;
+  border-radius: 1em;
+  border: solid 0.25em #433a32;
+  padding: 1em;
+  color: #fff;
+
+  --s: 8px; /* control the size */
+  --c1: #60544a;
+  --c2: #64574d;
+
+  --_s: 37.5% 12.5% at 62.5%;
+  --_g: 34% 99%, #0000 101%;
+  --g1: radial-gradient(var(--_s) 100%, #0000 32%, var(--c1) var(--_g));
+  --g2: radial-gradient(var(--_s) 0, #0000 32%, var(--c1) var(--_g));
+  --g3: radial-gradient(var(--_s) 100%, #0000 32%, var(--c2) var(--_g));
+  --g4: radial-gradient(var(--_s) 0, #0000 32%, var(--c2) var(--_g));
+  background: var(--g1), var(--g2) 0 calc(3 * var(--s)),
+    var(--g3) var(--s) calc(3 * var(--s)), var(--g4) var(--s) calc(6 * var(--s)),
+    var(--g1) calc(2 * var(--s)) calc(6 * var(--s)),
+    var(--g2) calc(2 * var(--s)) calc(9 * var(--s)),
+    var(--g3) calc(3 * var(--s)) calc(9 * var(--s)),
+    var(--g4) calc(3 * var(--s)) 0,
+    repeating-linear-gradient(var(--c1) 0 25%, var(--c2) 0 50%);
+  background-size: calc(4 * var(--s)) calc(12 * var(--s));
+}
+
+.menu label {
+  background-color: #433a32;
+  padding: 0.75em 1em;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.menu input {
+  font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+  display: block;
+  border-radius: 8px;
+  border: 0px none;
+  background-color: #d1c3b7;
+  margin-top: -0.75rem;
+  margin-left: 3rem;
+  margin-bottom: 1rem;
+  padding: 1.25rem 1rem 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.menu button {
+  width: 100%;
+  font-size: 1rem;
+  font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 0 none;
+  background-color: #498207;
+  transition: 0.3s ease-in-out all;
+  color: #fff;
+}
+
+.menu button:disabled {
+  opacity: 0.2;
+}
+
+.menu button:not(:disabled):hover {
+  background-color: #295321;
+  cursor: pointer;
+}
+
+h1 {
+  font-family: "WindSong", cursive;
+  font-size: 3rem;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 0;
 }
