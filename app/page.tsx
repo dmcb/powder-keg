@@ -3,14 +3,14 @@
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Leva } from "leva";
-import Network from "components/GameCount";
 import Board from "components/Board";
 import Sun from "components/Sun";
 import cryptoRandomString from "crypto-random-string";
 import { useSearchParams } from "next/navigation";
 import { OrbitControls, KeyboardControls } from "@react-three/drei";
 import { Suspense } from "react";
-import Interface from "components/Interface";
+import Lobby from "components/Lobby";
+import Gamepads from "components/Gamepads";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -47,8 +47,9 @@ export default function Page() {
             <Board seed={seed} debug={debug} />
             <Sun />
           </Suspense>
+          <Gamepads />
         </Canvas>
-        <Interface />
+        <Lobby />
       </KeyboardControls>
     </>
   );
