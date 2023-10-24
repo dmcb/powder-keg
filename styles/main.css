@@ -46,6 +46,15 @@ body {
   background-size: calc(4 * var(--s)) calc(12 * var(--s));
 }
 
+.menu .count {
+  display: block;
+  margin-top: -2em;
+  padding-bottom: 0.8em;
+  font-size: 0.8em;
+  color: #000;
+  text-align: right;
+}
+
 .menu label {
   background-color: #433a32;
   padding: 0.75em 1em;

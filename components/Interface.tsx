@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import GameCount from "components/GameCount";
 
 const nameAdjective = [
   "captain",
@@ -25,6 +26,11 @@ const nameAdjective = [
   "saber",
   "buccaneer",
   "coral",
+  "madame",
+  "sir",
+  "wooden",
+  "barnacle",
+  "commodore",
 ];
 
 const nameNoun = [
@@ -44,9 +50,13 @@ const nameNoun = [
   "pegleg",
   "boot",
   "dog",
+  "sparrow",
+  "morgan",
+  "flint",
+  "kraken",
 ];
 
-const roomAdjective = [
+const seedAdjective = [
   "blackened",
   "broken",
   "concealed",
@@ -87,7 +97,7 @@ const roomAdjective = [
   "turtles",
   "wanderers",
 ];
-const roomNoun = [
+const seedNoun = [
   "asylum",
   "bounty",
   "den",
@@ -96,7 +106,7 @@ const roomNoun = [
   "harbor",
   "haven",
   "hideout",
-  "jold",
+  "hold",
   "jewel",
   "keep",
   "port",
@@ -131,20 +141,35 @@ const roomNoun = [
 ];
 
 export default function Interface() {
+  let pusherConnection = null;
   const [playerName, setPlayerName] = useState(
     nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
       nameNoun[Math.floor(Math.random() * nameNoun.length)]
   );
-  const [roomName, setRoomName] = useState(
-    roomAdjective[Math.floor(Math.random() * roomAdjective.length)] +
-      roomNoun[Math.floor(Math.random() * roomNoun.length)]
+  const [seedName, setSeedName] = useState(
+    seedAdjective[Math.floor(Math.random() * seedAdjective.length)] +
+      seedNoun[Math.floor(Math.random() * seedNoun.length)]
   );
-  const formValid = playerName.trim().length > 0 && roomName.trim().length > 0;
+  const formValid = playerName.trim().length > 0 && seedName.trim().length > 0;
+
+  const startGame = (e) => {
+    e.preventDefault();
+    console.log("Game start");
+  };
 
   return (
     <div className="menu">
       <h1>Powder Keg</h1>
+      <GameCount />
       <form>
+        <label htmlFor="seedname">Seed</label>
+        <input
+          value={seedName}
+          type="text"
+          id="seedname"
+          autoComplete="off"
+          onChange={(e) => setSeedName(e.target.value)}
+        />
         <label htmlFor="playername">Player Name</label>
         <input
           value={playerName}
@@ -153,16 +178,8 @@ export default function Interface() {
           autoComplete="off"
           onChange={(e) => setPlayerName(e.target.value)}
         />
-        <label htmlFor="roomname">Room</label>
-        <input
-          value={roomName}
-          type="text"
-          id="roomname"
-          autoComplete="off"
-          onChange={(e) => setRoomName(e.target.value)}
-        />
-        <button type="submit" disabled={!formValid}>
-          Start/Join Room
+        <button type="submit" disabled={!formValid} onClick={startGame}>
+          Start
         </button>
       </form>
     </div>

@@ -7,7 +7,9 @@ export interface AxiosResponse {
   data: any;
 }
 
-export default function Network(props: { playerName: string }) {
+export default function GameCount() {
+  const [gameCount, setGameCount] = useState(0);
+
   // const setPlayers = async () => {
   //   const response = await axios.post<never, AxiosResponse>(
   //     "/api/players/state"
@@ -28,9 +30,6 @@ export default function Network(props: { playerName: string }) {
             {
               socketId: data.socketId,
               channelName: data.channelName,
-              userInfo: {
-                name: props.playerName,
-              },
             }
           );
           callback(null, response.data);
@@ -38,16 +37,18 @@ export default function Network(props: { playerName: string }) {
       },
     });
 
-    const channel = pusher.subscribe("presence-players");
+    const channel = pusher.subscribe("private-games");
 
-    channel.bind("pusher:subscription_succeeded", (members) => {
-      console.log(members);
+    channel.bind("pusher:subscription_count", (data) => {
+      setGameCount(data.subscription_count);
     });
 
     return () => {
-      pusher.unsubscribe("presence-players");
+      pusher.unsubscribe("private-games");
     };
   }, []);
 
-  return <></>;
+  return (
+    gameCount > 1 && <span className="count">{gameCount} games running</span>
+  );
 }

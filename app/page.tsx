@@ -3,7 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Leva } from "leva";
-import Network from "components/Network";
+import Network from "components/GameCount";
 import Board from "components/Board";
 import Sun from "components/Sun";
 import cryptoRandomString from "crypto-random-string";
@@ -44,7 +44,6 @@ export default function Page() {
           {debug && <Perf position="top-left" />}
           {debug && <OrbitControls />}
           <Suspense>
-            <Network playerName={playerName} />
             <Board seed={seed} debug={debug} />
             <Sun />
           </Suspense>
