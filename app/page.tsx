@@ -16,11 +16,6 @@ export default function Page() {
   const searchParams = useSearchParams();
   const debug = searchParams.has("debug");
 
-  const playerName: string = cryptoRandomString({
-    length: 6,
-    type: "alphanumeric",
-  });
-
   const seed: string = cryptoRandomString({
     length: 6,
     type: "alphanumeric",

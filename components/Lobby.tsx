@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GameCount from "components/GameCount";
+import PlayerConfig from "components/PlayerConfig";
+import { useConnectionStore } from "stores/gamepadStore";
 
 const seedAdjective = [
   "blackened",
@@ -64,7 +66,7 @@ const seedNoun = [
   "treasure",
   "trove",
   "archipelago",
-  "atol",
+  "atoll",
   "bay",
   "bluff",
   "cliff",
@@ -84,71 +86,36 @@ const seedNoun = [
   "shallow",
   "shore",
 ];
-const nameAdjective = [
-  "captain",
-  "salty",
-  "stormy",
-  "red",
-  "black",
-  "gold",
-  "silver",
-  "cannon",
-  "shark",
-  "jolly",
-  "scurvy",
-  "sea",
-  "dagger",
-  "skull",
-  "barrel",
-  "iron",
-  "stone",
-  "stinky",
-  "rusty",
-  "rapier",
-  "cutlass",
-  "saber",
-  "buccaneer",
-  "coral",
-  "madame",
-  "sir",
-  "wooden",
-  "barnacle",
-  "commodore",
-];
-const nameNoun = [
-  "beard",
-  "buckle",
-  "hook",
-  "crusher",
-  "wolf",
-  "bones",
-  "tooth",
-  "sword",
-  "heart",
-  "treader",
-  "jack",
-  "reef",
-  "eye",
-  "pegleg",
-  "boot",
-  "dog",
-  "sparrow",
-  "morgan",
-  "flint",
-  "kraken",
-];
 
 export default function Interface() {
-  let pusherConnection = null;
-  const [playerName, setPlayerName] = useState(
-    nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
-      nameNoun[Math.floor(Math.random() * nameNoun.length)]
-  );
+  const [players, setPlayers] = useState([
+    { index: 0, name: "", connected: false },
+    { index: 1, name: "", connected: false },
+    { index: 2, name: "", connected: false },
+    { index: 3, name: "", connected: false },
+  ]);
+
   const [seedName, setSeedName] = useState(
     seedAdjective[Math.floor(Math.random() * seedAdjective.length)] +
       seedNoun[Math.floor(Math.random() * seedNoun.length)]
   );
-  const formValid = playerName.trim().length > 0 && seedName.trim().length > 0;
+
+  const connections = useConnectionStore((state) => state.connections);
+
+  useEffect(() => {
+    setPlayers((players) =>
+      players.map((player) => {
+        return {
+          ...player,
+          connected: connections.includes(player.index),
+        };
+      })
+    );
+  }, [connections]);
+
+  const formValid =
+    players.filter((player) => player.connected).length >= 2 &&
+    seedName.trim().length > 0; // && playerName.trim().length > 0
 
   const startGame = (e) => {
     e.preventDefault();
@@ -168,14 +135,15 @@ export default function Interface() {
           autoComplete="off"
           onChange={(e) => setSeedName(e.target.value)}
         />
-        <label htmlFor="playername">Player Name</label>
-        <input
-          value={playerName}
-          type="text"
-          id="playername"
-          autoComplete="off"
-          onChange={(e) => setPlayerName(e.target.value)}
-        />
+        {players.map((player) => {
+          return (
+            <PlayerConfig
+              key={player.index}
+              playerNumber={player.index + 1}
+              connected={player.connected}
+            />
+          );
+        })}
         <button type="submit" disabled={!formValid} onClick={startGame}>
           Start
         </button>

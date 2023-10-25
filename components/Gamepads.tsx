@@ -1,9 +1,13 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useConnectionStore } from "stores/gamepadStore";
 
 export default function Gamepads() {
   const gamepads = useRef([]);
-  const previousGamepads = useRef([]);
+  const addGamepadConnection = useConnectionStore((state) => state.addGamepad);
+  const removeGamepadConnection = useConnectionStore(
+    (state) => state.removeGamepad
+  );
 
   const updateGamepad = (gamepad: Gamepad) => {
     gamepads.current = {
@@ -14,11 +18,13 @@ export default function Gamepads() {
 
   const addGamepad = (gamepad: Gamepad) => {
     console.log("Gamepad " + gamepad.index + " connected");
+    addGamepadConnection(gamepad.index);
     updateGamepad(gamepad);
   };
 
   const removeGamepad = (index: number) => {
     console.log("Gamepad " + index + " disconnected");
+    removeGamepadConnection(index);
     delete gamepads.current[index];
   };
 
