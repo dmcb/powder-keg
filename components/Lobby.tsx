@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import GameCount from "components/GameCount";
 import PlayerConfig from "components/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
+import { useGameStore } from "stores/gameStore";
 
 const seedAdjective = [
   "blackened",
@@ -101,6 +102,7 @@ export default function Interface() {
   );
 
   const connections = useConnectionStore((state) => state.connections);
+  const setStartGame = useGameStore((state) => state.startGame);
 
   useEffect(() => {
     setPlayers((players) =>
@@ -120,6 +122,7 @@ export default function Interface() {
   const startGame = (e) => {
     e.preventDefault();
     console.log("Game start");
+    setStartGame(seedName);
   };
 
   return (

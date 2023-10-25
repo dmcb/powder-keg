@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useKeyboardControls } from "@react-three/drei";
 import { useCompoundBody, useDistanceConstraint } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
@@ -57,7 +56,6 @@ export default function Player() {
     }),
     useRef<Group>(null)
   );
-  const [subscribeKeys, getKeys] = useKeyboardControls();
   const [sails, setSails] = useState(0);
   const playerCamera = usePlayerCamera();
 
@@ -76,22 +74,23 @@ export default function Player() {
 
   useFrame((_, delta) => {
     // Move ship
-    const { leftward, rightward } = getKeys();
+    // const { leftward, rightward } = getKeys();
 
     const sailSpeedModifier = sails === -1 ? -0.25 : sails;
     let sailTurnModifier = 0;
     if (sails < 0) sailTurnModifier = 0.5;
     if (sails > 0) sailTurnModifier = 1;
 
-    // Turn ship according to keys
-    if (leftward) {
-      state.current.intendedDifferenceInAngle = 0;
-      api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
-    }
-    if (rightward) {
-      state.current.intendedDifferenceInAngle = 0;
-      api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
-    }
+    // // Turn ship according to keys
+    // if (leftward) {
+    //   state.current.intendedDifferenceInAngle = 0;
+    //   api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
+    // }
+    // if (rightward) {
+    //   state.current.intendedDifferenceInAngle = 0;
+    //   api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
+    // }
+
     // Turn ship according to click
     if (state.current.intendedDifferenceInAngle > 0.1) {
       api.applyTorque([
@@ -132,46 +131,38 @@ export default function Player() {
 
   // Listen to keys and clicks
   useEffect(() => {
-    subscribeKeys(
-      (state) => state.forward,
-      (value) => {
-        if (value) {
-          incrementSails(1);
-        }
-      }
-    );
-    subscribeKeys(
-      (state) => state.backward,
-      (value) => {
-        if (value) {
-          incrementSails(-1);
-        }
-      }
-    );
-    subscribeKeys(
-      (state) => state.cannonleft,
-      (value) => {
-        if (value) {
-          fireCannon(-1);
-        }
-      }
-    );
-    subscribeKeys(
-      (state) => state.cannonright,
-      (value) => {
-        if (value) {
-          fireCannon(1);
-        }
-      }
-    );
-    subscribeKeys(
-      (state) => state.cameraToggle,
-      (value) => {
-        if (value) {
-          adjustCamera();
-        }
-      }
-    );
+    // subscribeKeys(
+    //   (state) => state.forward,
+    //   (value) => {
+    //     if (value) {
+    //       incrementSails(1);
+    //     }
+    //   }
+    // );
+    // subscribeKeys(
+    //   (state) => state.backward,
+    //   (value) => {
+    //     if (value) {
+    //       incrementSails(-1);
+    //     }
+    //   }
+    // );
+    // subscribeKeys(
+    //   (state) => state.cannonleft,
+    //   (value) => {
+    //     if (value) {
+    //       fireCannon(-1);
+    //     }
+    //   }
+    // );
+    // subscribeKeys(
+    //   (state) => state.cannonright,
+    //   (value) => {
+    //     if (value) {
+    //       fireCannon(1);
+    //     }
+    //   }
+    // );
     useTapStore.subscribe((store) => {
       // Determine click position relative to ship
       const clickLocation = new Vector3(store.x, store.y, 0);
@@ -231,8 +222,6 @@ export default function Player() {
       state.current.intendedPosition = clickLocationRelativeToShip;
     });
   }, []);
-
-  const adjustCamera = () => {};
 
   const incrementSails = (value: number) => {
     setSails((sails) => {

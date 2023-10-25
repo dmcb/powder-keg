@@ -5,47 +5,33 @@ import { Perf } from "r3f-perf";
 import { Leva } from "leva";
 import Board from "components/Board";
 import Sun from "components/Sun";
-import cryptoRandomString from "crypto-random-string";
 import { useSearchParams } from "next/navigation";
-import { OrbitControls, KeyboardControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { Suspense } from "react";
 import Lobby from "components/Lobby";
 import Gamepads from "components/Gamepads";
+import { useGameStore } from "stores/gameStore";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const debug = searchParams.has("debug");
-
-  const seed: string = cryptoRandomString({
-    length: 6,
-    type: "alphanumeric",
-  });
+  const seed = useGameStore((state) => state.seed);
 
   return (
     <>
       <Leva hidden={debug ? false : true} />
-      <KeyboardControls
-        map={[
-          { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
-          { name: "rightward", keys: ["ArrowRight", "KeyD"] },
-          { name: "forward", keys: ["ArrowUp", "KeyW"] },
-          { name: "backward", keys: ["ArrowDown", "KeyS"] },
-          { name: "cannonleft", keys: ["KeyQ"] },
-          { name: "cannonright", keys: ["KeyE"] },
-          { name: "cameraToggle", keys: ["KeyC"] },
-        ]}
-      >
-        <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 100] }}>
-          {debug && <Perf position="top-left" />}
-          {debug && <OrbitControls />}
+      <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 100] }}>
+        {debug && <Perf position="top-left" />}
+        {debug && <OrbitControls />}
+        {seed && (
           <Suspense>
             <Board seed={seed} debug={debug} />
             <Sun />
           </Suspense>
-          <Gamepads />
-        </Canvas>
-        <Lobby />
-      </KeyboardControls>
+        )}
+        <Gamepads />
+      </Canvas>
+      {!seed && <Lobby />}
     </>
   );
 }
