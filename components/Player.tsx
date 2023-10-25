@@ -1,12 +1,11 @@
 import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useCompoundBody, useDistanceConstraint } from "@react-three/cannon";
+import { useCompoundBody } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
 import usePlayerCamera from "hooks/usePlayerCamera";
-import { useTapStore, useDragStore } from "stores/pointerStore";
 
 const cannonCoolDown = 800;
 
@@ -163,64 +162,6 @@ export default function Player() {
     //     }
     //   }
     // );
-    useTapStore.subscribe((store) => {
-      // Determine click position relative to ship
-      const clickLocation = new Vector3(store.x, store.y, 0);
-      const clickLocationRelativeToShip = new Vector3()
-        .copy(clickLocation)
-        .sub(
-          new Vector3(state.current.position.x, state.current.position.y, 0)
-        );
-      const clickAngleRelativeToShip = clickLocationRelativeToShip.angleTo(
-        state.current.forward
-      );
-      let clickOrientationRelativeToShip =
-        clickLocationRelativeToShip.x * state.current.forward.y -
-        clickLocationRelativeToShip.y * state.current.forward.x;
-      if (clickOrientationRelativeToShip > 0) {
-        clickOrientationRelativeToShip = 1;
-      } else {
-        clickOrientationRelativeToShip = -1;
-      }
-
-      // If tap is behind, lower sails
-      if (clickAngleRelativeToShip > Math.PI - Math.PI / 4) {
-        incrementSails(-1);
-      }
-      // If tap is ahead, raise sails
-      else if (clickAngleRelativeToShip < Math.PI / 4) {
-        incrementSails(1);
-      }
-      // Otherwise, fire cannons
-      else {
-        fireCannon(clickOrientationRelativeToShip);
-      }
-    });
-
-    useDragStore.subscribe((store) => {
-      // Determine click position relative to ship
-      const clickLocation = new Vector3(store.x, store.y, 0);
-      const clickLocationRelativeToShip = new Vector3()
-        .copy(clickLocation)
-        .sub(
-          new Vector3(state.current.position.x, state.current.position.y, 0)
-        );
-      const clickAngleRelativeToShip = clickLocationRelativeToShip.angleTo(
-        state.current.forward
-      );
-      let clickOrientationRelativeToShip =
-        clickLocationRelativeToShip.x * state.current.forward.y -
-        clickLocationRelativeToShip.y * state.current.forward.x;
-      if (clickOrientationRelativeToShip > 0) {
-        clickOrientationRelativeToShip = 1;
-      } else {
-        clickOrientationRelativeToShip = -1;
-      }
-
-      state.current.intendedDirection = clickOrientationRelativeToShip;
-      state.current.intendedDifferenceInAngle = clickAngleRelativeToShip;
-      state.current.intendedPosition = clickLocationRelativeToShip;
-    });
   }, []);
 
   const incrementSails = (value: number) => {

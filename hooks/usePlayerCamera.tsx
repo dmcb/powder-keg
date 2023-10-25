@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useLayoutEffect, useRef, use } from "react";
+import { useMemo, useLayoutEffect, useRef } from "react";
 import { Object3D, Vector2, Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
 
@@ -19,47 +19,6 @@ export default function usePlayerCamera() {
 
   let targetCameraDistance = useRef(cameraMaxDistance);
   let aspectRatio = useRef(0);
-  let initialDistance = null;
-
-  const onWheel = (e) => {
-    const v = followPoint.position.z + e.deltaY * 0.06;
-    if (v >= cameraMinDistance && v <= cameraMaxDistance) {
-      targetCameraDistance.current = v;
-    }
-    return false;
-  };
-
-  const touchstart = (e) => {
-    if (e.touches.length === 2) {
-      const [touch1, touch2] = e.touches;
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      initialDistance = distance;
-    }
-  };
-
-  const touchmove = (e) => {
-    if (e.touches.length === 2 && initialDistance !== null) {
-      const [touch1, touch2] = e.touches;
-      const currentDistance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-
-      const pinchScale = currentDistance / initialDistance;
-
-      const v = followPoint.position.z / Math.pow(pinchScale, 0.2);
-      if (v >= cameraMinDistance && v <= cameraMaxDistance) {
-        targetCameraDistance.current = v;
-      }
-    }
-  };
-
-  const touchend = () => {
-    initialDistance = null;
-  };
 
   useFrame((state) => {
     // Check aspect ratio and update zoom level
@@ -117,19 +76,6 @@ export default function usePlayerCamera() {
     );
     camera.lookAt(focusPoint);
   });
-
-  useLayoutEffect(() => {
-    document.addEventListener("wheel", onWheel);
-    document.addEventListener("touchstart", touchstart);
-    document.addEventListener("touchmove", touchmove);
-    document.addEventListener("touchend", touchend);
-    return () => {
-      document.removeEventListener("wheel", onWheel);
-      document.removeEventListener("touchstart", touchstart);
-      document.removeEventListener("touchmove", touchmove);
-      document.removeEventListener("touchend", touchend);
-    };
-  }, []);
 
   return attachPoint;
 }
