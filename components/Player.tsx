@@ -6,10 +6,13 @@ import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
 import usePlayerCamera from "hooks/usePlayerCamera";
+import { useGamepadStore } from "stores/gamepadStore";
 
 const cannonCoolDown = 800;
 
 export default function Player() {
+  const gamepad = useGamepadStore((state) => state.gamepad0);
+
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
     playbackRate: Math.random() * 0.4 + 0.8,
@@ -67,40 +70,38 @@ export default function Player() {
     rotation: 0,
     forward: new Vector3(),
     intendedDirection: 0,
-    intendedDifferenceInAngle: 0,
     intendedPosition: new Vector3(),
   });
 
   useFrame((_, delta) => {
-    // Move ship
-    // const { leftward, rightward } = getKeys();
-
+    // Set sailing speed
     const sailSpeedModifier = sails === -1 ? -0.25 : sails;
     let sailTurnModifier = 0;
     if (sails < 0) sailTurnModifier = 0.5;
     if (sails > 0) sailTurnModifier = 1;
 
-    // // Turn ship according to keys
-    // if (leftward) {
-    //   state.current.intendedDifferenceInAngle = 0;
-    //   api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
-    // }
-    // if (rightward) {
-    //   state.current.intendedDifferenceInAngle = 0;
-    //   api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
-    // }
+    // Turn ship from gamepad input
+    if (gamepad.axes[0] < -0.1) {
+      api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
+    }
+    if (gamepad.axes[0] > 0.1) {
+      api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
+    }
 
-    // Turn ship according to click
-    if (state.current.intendedDifferenceInAngle > 0.1) {
-      api.applyTorque([
-        0,
-        0,
-        state.current.intendedDirection * -5 * sailTurnModifier * delta,
-      ]);
-      state.current.intendedDifferenceInAngle =
-        state.current.intendedPosition.angleTo(state.current.forward);
-    } else {
-      state.current.intendedDifferenceInAngle = 0;
+    // Set sails from gamepad input
+    if (gamepad.buttons[0].pressed) {
+      incrementSails(1);
+    }
+    if (gamepad.buttons[1].pressed) {
+      incrementSails(-1);
+    }
+
+    // Fire cannons from gamepad input
+    if (gamepad.buttons[6].pressed) {
+      fireCannon(-1);
+    }
+    if (gamepad.buttons[7].pressed) {
+      fireCannon(1);
     }
 
     // Move ship forward
@@ -127,42 +128,6 @@ export default function Player() {
       state.current.forward.copy(direction);
     });
   }, [api]);
-
-  // Listen to keys and clicks
-  useEffect(() => {
-    // subscribeKeys(
-    //   (state) => state.forward,
-    //   (value) => {
-    //     if (value) {
-    //       incrementSails(1);
-    //     }
-    //   }
-    // );
-    // subscribeKeys(
-    //   (state) => state.backward,
-    //   (value) => {
-    //     if (value) {
-    //       incrementSails(-1);
-    //     }
-    //   }
-    // );
-    // subscribeKeys(
-    //   (state) => state.cannonleft,
-    //   (value) => {
-    //     if (value) {
-    //       fireCannon(-1);
-    //     }
-    //   }
-    // );
-    // subscribeKeys(
-    //   (state) => state.cannonright,
-    //   (value) => {
-    //     if (value) {
-    //       fireCannon(1);
-    //     }
-    //   }
-    // );
-  }, []);
 
   const incrementSails = (value: number) => {
     setSails((sails) => {

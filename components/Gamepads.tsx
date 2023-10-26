@@ -1,44 +1,26 @@
-import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useConnectionStore } from "stores/gamepadStore";
+import { useConnectionStore, useGamepadStore } from "stores/gamepadStore";
 
 export default function Gamepads() {
-  const gamepads = useRef([]);
-  const addGamepadConnection = useConnectionStore((state) => state.addGamepad);
-  const removeGamepadConnection = useConnectionStore(
-    (state) => state.removeGamepad
-  );
-
-  const updateGamepad = (gamepad: Gamepad) => {
-    gamepads.current = {
-      ...gamepads.current,
-      [gamepad.index]: gamepad,
-    };
-  };
-
-  const addGamepad = (gamepad: Gamepad) => {
-    console.log("Gamepad " + gamepad.index + " connected");
-    addGamepadConnection(gamepad.index);
-    updateGamepad(gamepad);
-  };
-
-  const removeGamepad = (index: number) => {
-    console.log("Gamepad " + index + " disconnected");
-    removeGamepadConnection(index);
-    delete gamepads.current[index];
-  };
+  const connections = useConnectionStore((state) => state.connections);
+  const addGamepad = useConnectionStore((state) => state.addGamepad);
+  const removeGamepad = useConnectionStore((state) => state.removeGamepad);
+  const updateGamepad = useGamepadStore((state) => state.updateGamepad);
 
   useFrame((_, delta) => {
     const detectedGamepads = navigator.getGamepads();
     for (var i = 0; i < detectedGamepads.length; i++) {
-      const gamePad = detectedGamepads[i];
-      if (gamePad && gamePad !== null) {
-        if (gamePad.index in gamepads.current) {
-          updateGamepad(gamePad);
+      const gamepad = detectedGamepads[i];
+      if (gamepad && gamepad !== null) {
+        if (gamepad.index in connections) {
+          updateGamepad(gamepad);
         } else {
-          addGamepad(gamePad);
+          console.log("Gamepad connected", gamepad.index);
+          addGamepad(gamepad.index);
+          updateGamepad(gamepad);
         }
-      } else if (i in gamepads.current) {
+      } else if (i in connections) {
+        console.log("Gamepad disconnected", i);
         removeGamepad(i);
       }
     }

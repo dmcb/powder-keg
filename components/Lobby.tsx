@@ -116,7 +116,7 @@ export default function Interface() {
   }, [connections]);
 
   const formValid =
-    players.filter((player) => player.connected).length >= 2 &&
+    players.filter((player) => player.connected).length >= 1 &&
     seedName.trim().length > 0; // && playerName.trim().length > 0
 
   const startGame = (e) => {
