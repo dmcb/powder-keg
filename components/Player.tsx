@@ -12,6 +12,8 @@ const cannonCoolDown = 800;
 
 export default function Player() {
   const gamepad = useGamepadStore((state) => state.gamepad0);
+  const button0PreviouslyPressed = useRef(false);
+  const button1PreviouslyPressed = useRef(false);
 
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
@@ -89,11 +91,17 @@ export default function Player() {
     }
 
     // Set sails from gamepad input
-    if (gamepad.buttons[0].pressed) {
+    if (gamepad.buttons[0].pressed && !button0PreviouslyPressed.current) {
       incrementSails(1);
+      button0PreviouslyPressed.current = true;
+    } else if (!gamepad.buttons[0].pressed) {
+      button0PreviouslyPressed.current = false;
     }
-    if (gamepad.buttons[1].pressed) {
+    if (gamepad.buttons[1].pressed && !button1PreviouslyPressed.current) {
       incrementSails(-1);
+      button1PreviouslyPressed.current = true;
+    } else if (!gamepad.buttons[1].pressed) {
+      button1PreviouslyPressed.current = false;
     }
 
     // Fire cannons from gamepad input

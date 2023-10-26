@@ -15,6 +15,7 @@ import { useGameStore } from "stores/gameStore";
 export default function Page() {
   const searchParams = useSearchParams();
   const debug = searchParams.has("debug");
+  const gameStarted = useGameStore((state) => state.gameStarted);
   const seed = useGameStore((state) => state.seed);
 
   return (
@@ -23,7 +24,7 @@ export default function Page() {
       <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 100] }}>
         {debug && <Perf position="top-left" />}
         {debug && <OrbitControls />}
-        {seed && (
+        {gameStarted && (
           <Suspense>
             <Board seed={seed} debug={debug} />
             <Sun />
@@ -31,7 +32,7 @@ export default function Page() {
         )}
         <Gamepads />
       </Canvas>
-      {!seed && <Lobby />}
+      {!gameStarted && <Lobby />}
     </>
   );
 }

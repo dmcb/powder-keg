@@ -78,6 +78,7 @@ export default function PlayerConfig(props: {
         id="playername"
         disabled={!props.connected}
         autoComplete="off"
+        autoCorrect="off"
         onChange={(e) => setPlayerName(e.target.value)}
       />
     </fieldset>
