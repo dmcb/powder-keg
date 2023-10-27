@@ -3,11 +3,9 @@
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { Leva } from "leva";
-import Board from "components/Board";
-import Sun from "components/Sun";
 import { useSearchParams } from "next/navigation";
 import { OrbitControls } from "@react-three/drei";
-import { Suspense } from "react";
+import Game from "components/Game";
 import Lobby from "components/Lobby";
 import Gamepads from "components/Gamepads";
 import { useGameStore } from "stores/gameStore";
@@ -21,15 +19,10 @@ export default function Page() {
   return (
     <>
       <Leva hidden={debug ? false : true} />
-      <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 100] }}>
+      <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 16.5] }}>
         {debug && <Perf position="top-left" />}
         {debug && <OrbitControls />}
-        {gameStarted && (
-          <Suspense>
-            <Board seed={seed} debug={debug} />
-            <Sun />
-          </Suspense>
-        )}
+        {gameStarted && <Game seed={seed} debug={debug} />}
         <Gamepads />
       </Canvas>
       {!gameStarted && <Lobby />}

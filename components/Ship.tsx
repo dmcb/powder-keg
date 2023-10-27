@@ -333,6 +333,7 @@ type GLTFResult = GLTF & {
 
 type Props = {
   sails: number;
+  playerNumber: number;
 };
 
 const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
@@ -359,7 +360,20 @@ const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
   }, []);
 
   useEffect(() => {
-    flagMaterial.color.setHex(0xff0000);
+    switch (props.playerNumber) {
+      case 0:
+        flagMaterial.color.setHex(0x0000ff);
+        break;
+      case 1:
+        flagMaterial.color.setHex(0xff0000);
+        break;
+      case 2:
+        flagMaterial.color.setHex(0x00ff00);
+        break;
+      case 3:
+        flagMaterial.color.setHex(0xffff00);
+        break;
+    }
   }, []);
 
   return (

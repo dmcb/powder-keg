@@ -10,8 +10,11 @@ import { useGamepadStore } from "stores/gamepadStore";
 
 const cannonCoolDown = 800;
 
-export default function Player() {
-  const gamepad = useGamepadStore((state) => state.gamepad0);
+export default function Player(props: { playerNumber: number }) {
+  const gamepad = useGamepadStore(
+    // (state) => state["gamepad" + props.playerNumber]
+    (state) => state["gamepad0"]
+  );
   const button0PreviouslyPressed = useRef(false);
   const button1PreviouslyPressed = useRef(false);
 
@@ -61,7 +64,7 @@ export default function Player() {
     useRef<Group>(null)
   );
   const [sails, setSails] = useState(0);
-  const playerCamera = usePlayerCamera();
+  // const playerCamera = usePlayerCamera();
 
   // Player state
   const [cannonballs, setCannonballs] = useState([]);
@@ -122,7 +125,7 @@ export default function Player() {
       [0, 0, 0]
     );
 
-    playerCamera.position.copy(state.current.position);
+    // playerCamera.position.copy(state.current.position);
   });
 
   // Set state from physics
@@ -201,7 +204,7 @@ export default function Player() {
 
   return (
     <>
-      <Ship ref={shipRef} sails={sails} />
+      <Ship ref={shipRef} sails={sails} playerNumber={props.playerNumber} />
       {cannonballs.map((cannonball) => {
         return (
           <Cannonball

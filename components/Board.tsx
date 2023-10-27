@@ -6,7 +6,7 @@ import Player from "components/Player";
 import Border from "components/Border";
 import { Group } from "three";
 
-const BoardPieces = (props: { seed: string }) => {
+const BoardPieces = (props: { seed: string; players: { index: number }[] }) => {
   return (
     <>
       <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
@@ -15,12 +15,18 @@ const BoardPieces = (props: { seed: string }) => {
       <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       <Ocean />
       <Terrain seed={props.seed} />
-      <Player />
+      {props.players.map((player) => {
+        return <Player key={player.index} playerNumber={player.index} />;
+      })}
     </>
   );
 };
 
-export default function Board(props: { seed: string; debug: boolean }) {
+export default function Board(props: {
+  seed: string;
+  debug: boolean;
+  players: { index: number }[];
+}) {
   const boardRef = useRef<Group>(null!);
 
   return (
@@ -28,9 +34,9 @@ export default function Board(props: { seed: string; debug: boolean }) {
       <Physics gravity={[0, 0, -1]}>
         {(props.debug && (
           <Debug color="green">
-            <BoardPieces seed={props.seed} />
+            <BoardPieces seed={props.seed} players={props.players} />
           </Debug>
-        )) || <BoardPieces seed={props.seed} />}
+        )) || <BoardPieces seed={props.seed} players={props.players} />}
       </Physics>
     </group>
   );
