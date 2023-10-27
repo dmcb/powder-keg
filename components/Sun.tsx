@@ -15,8 +15,13 @@ export default function Sun() {
       sunRotationsPerDay,
       middayExaggeration,
       dayProgress,
+      maxDirectBrightness,
+      directColorTempGradient,
+      directMaxColorTemp,
       ambientBrightnessGradient,
-      colorTempGradient,
+      maxAmbientBrightness,
+      ambientColorTempGradient,
+      ambientMaxColorTemp,
     },
     set,
   ] = useControls(() => ({
@@ -44,17 +49,47 @@ export default function Sun() {
       max: 1,
       step: 0.01,
     },
+    maxDirectBrightness: {
+      value: 1.5,
+      min: 0,
+      max: 2,
+      step: 0.01,
+    },
+    directColorTempGradient: {
+      value: 1.85,
+      min: 0,
+      max: 2,
+      step: 0.01,
+    },
+    directMaxColorTemp: {
+      value: 5800,
+      min: 0,
+      max: 10000,
+      step: 1,
+    },
     ambientBrightnessGradient: {
       value: 0.5,
       min: 0,
       max: 2,
       step: 0.01,
     },
-    colorTempGradient: {
+    maxAmbientBrightness: {
+      value: 0.6,
+      min: 0,
+      max: 2,
+      step: 0.01,
+    },
+    ambientColorTempGradient: {
       value: 1.85,
       min: 0,
       max: 2,
       step: 0.01,
+    },
+    ambientMaxColorTemp: {
+      value: 5800,
+      min: 0,
+      max: 10000,
+      step: 1,
     },
   }));
 
@@ -82,12 +117,16 @@ export default function Sun() {
       0
     );
     ambientRef.current.intensity =
-      Math.pow(heightOfSun, ambientBrightnessGradient) * 0.6;
+      Math.pow(heightOfSun, ambientBrightnessGradient) * maxAmbientBrightness;
     ambientRef.current.color.set(
-      kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 5800)
+      kelvinToRGB(
+        Math.pow(heightOfSun, ambientColorTempGradient) * ambientMaxColorTemp
+      )
     );
     directionalRef.current.color.set(
-      kelvinToRGB(Math.pow(heightOfSun, colorTempGradient) * 5800)
+      kelvinToRGB(
+        Math.pow(heightOfSun, directColorTempGradient) * directMaxColorTemp
+      )
     );
   });
 
@@ -98,7 +137,7 @@ export default function Sun() {
         ref={directionalRef}
         position={[0, 0, 2]}
         castShadow={true}
-        intensity={1.5}
+        intensity={maxDirectBrightness}
         shadow-mapSize={[2048, 2048]}
         shadow-radius={0}
         shadow-normalBias={0.000001}
