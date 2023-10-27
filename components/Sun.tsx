@@ -21,19 +21,19 @@ export default function Sun() {
     set,
   ] = useControls(() => ({
     dayLength: {
-      value: 20,
+      value: 300,
       min: 1,
       max: 600,
       step: 1,
     },
     sunRotationsPerDay: {
-      value: 0.7,
+      value: 0.5,
       min: 0.01,
       max: 1,
       step: 0.01,
     },
     middayExaggeration: {
-      value: 0.25,
+      value: 0.5,
       min: 0,
       max: 1,
       step: 0.01,
@@ -45,13 +45,13 @@ export default function Sun() {
       step: 0.01,
     },
     ambientBrightnessGradient: {
-      value: 0.3,
+      value: 0.5,
       min: 0,
       max: 2,
       step: 0.01,
     },
     colorTempGradient: {
-      value: 0.8,
+      value: 1.85,
       min: 0,
       max: 2,
       step: 0.01,
@@ -64,17 +64,16 @@ export default function Sun() {
 
     // Get time of day
     const middayness = 1 - Math.abs(0.5 - dayProgress) * 2;
-    set({
-      dayProgress:
-        dayProgress +
-        Math.pow(delta / dayLength, 1 + middayExaggeration * middayness),
-    });
+    set({ dayProgress: dayProgress + delta / dayLength });
     if (dayProgress >= 1) {
       set({ dayProgress: 0 });
     }
 
     // Rotate sun
-    sunRef.current.rotation.y = (dayProgress - 0.5) * sunArcPerDay * -1;
+    sunRef.current.rotation.y =
+      (dayProgress - 0.5) *
+      Math.pow(sunArcPerDay, 1 + middayExaggeration * middayness) *
+      -1;
 
     // Get height of sun in sky to determine ambient light intensity and colour
     const sunnyPercentageOfDay = Math.PI / sunArcPerDay;
