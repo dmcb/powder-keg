@@ -19,7 +19,7 @@ export default function Interface() {
         players.map((player) => {
           return {
             ...player,
-            connected: connections.includes(player.index),
+            joined: connections.includes(player.index),
           };
         })
       ),
@@ -27,7 +27,7 @@ export default function Interface() {
   );
 
   const formValid =
-    players.filter((player) => player.connected).length >= 1 &&
+    players.filter((player) => player.joined).length >= 1 &&
     seed.trim().length > 0; // && playerName.trim().length > 0
 
   const startGame = (e) => {
@@ -58,7 +58,7 @@ export default function Interface() {
             <PlayerConfig
               key={player.index}
               playerNumber={player.index + 1}
-              connected={player.connected}
+              joined={player.joined}
             />
           );
         })}

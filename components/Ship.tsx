@@ -362,10 +362,10 @@ const Ship = forwardRef<THREE.Group, Props>((props, ref) => {
   useEffect(() => {
     switch (props.playerNumber) {
       case 0:
-        flagMaterial.color.setHex(0x0000ff);
+        flagMaterial.color.setHex(0xff0000);
         break;
       case 1:
-        flagMaterial.color.setHex(0xff0000);
+        flagMaterial.color.setHex(0x0000ff);
         break;
       case 2:
         flagMaterial.color.setHex(0x00ff00);

@@ -6,7 +6,10 @@ import Player from "components/Player";
 import Border from "components/Border";
 import { Group } from "three";
 
-const BoardPieces = (props: { seed: string; players: { index: number }[] }) => {
+const BoardPieces = (props: {
+  seed: string;
+  players: { index: number; joined: boolean }[];
+}) => {
   return (
     <>
       <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
@@ -15,9 +18,11 @@ const BoardPieces = (props: { seed: string; players: { index: number }[] }) => {
       <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       <Ocean />
       <Terrain seed={props.seed} />
-      {props.players.map((player) => {
-        return <Player key={player.index} playerNumber={player.index} />;
-      })}
+      {props.players
+        .filter((player) => player.joined)
+        .map((player) => {
+          return <Player key={player.index} playerNumber={player.index} />;
+        })}
     </>
   );
 };
@@ -25,7 +30,7 @@ const BoardPieces = (props: { seed: string; players: { index: number }[] }) => {
 export default function Board(props: {
   seed: string;
   debug: boolean;
-  players: { index: number }[];
+  players: { index: number; joined: boolean }[];
 }) {
   const boardRef = useRef<Group>(null!);
 

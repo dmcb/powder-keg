@@ -1,4 +1,3 @@
-import { connected } from "process";
 import { useState } from "react";
 
 const nameAdjective = [
@@ -57,17 +56,17 @@ const nameNoun = [
 
 export default function PlayerConfig(props: {
   playerNumber: number;
-  connected: boolean;
+  joined: boolean;
 }) {
   const [playerName, setPlayerName] = useState(
     nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
       nameNoun[Math.floor(Math.random() * nameNoun.length)]
   );
 
-  const conditionalPlayerLabel = props.connected
+  const conditionalPlayerLabel = props.joined
     ? "Player " + props.playerNumber
     : "Connect gamepad";
-  const conditionalPlayerName = props.connected ? playerName : "";
+  const conditionalPlayerName = props.joined ? playerName : "";
 
   return (
     <fieldset>
@@ -76,7 +75,7 @@ export default function PlayerConfig(props: {
         value={conditionalPlayerName}
         type="text"
         id="playername"
-        disabled={!props.connected}
+        disabled={!props.joined}
         autoComplete="off"
         autoCorrect="off"
         onChange={(e) => setPlayerName(e.target.value)}

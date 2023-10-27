@@ -12,8 +12,7 @@ const cannonCoolDown = 800;
 
 export default function Player(props: { playerNumber: number }) {
   const gamepad = useGamepadStore(
-    // (state) => state["gamepad" + props.playerNumber]
-    (state) => state["gamepad0"]
+    (state) => state["gamepad" + props.playerNumber]
   );
   const button0PreviouslyPressed = useRef(false);
   const button1PreviouslyPressed = useRef(false);
@@ -85,34 +84,37 @@ export default function Player(props: { playerNumber: number }) {
     if (sails < 0) sailTurnModifier = 0.5;
     if (sails > 0) sailTurnModifier = 1;
 
-    // Turn ship from gamepad input
-    if (gamepad.axes[0] < -0.1) {
-      api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
-    }
-    if (gamepad.axes[0] > 0.1) {
-      api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
-    }
+    // Get gamepad input
+    if (gamepad) {
+      // Turn ship from gamepad input
+      if (gamepad.axes[0] < -0.1) {
+        api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
+      }
+      if (gamepad.axes[0] > 0.1) {
+        api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
+      }
 
-    // Set sails from gamepad input
-    if (gamepad.buttons[0].pressed && !button0PreviouslyPressed.current) {
-      incrementSails(1);
-      button0PreviouslyPressed.current = true;
-    } else if (!gamepad.buttons[0].pressed) {
-      button0PreviouslyPressed.current = false;
-    }
-    if (gamepad.buttons[1].pressed && !button1PreviouslyPressed.current) {
-      incrementSails(-1);
-      button1PreviouslyPressed.current = true;
-    } else if (!gamepad.buttons[1].pressed) {
-      button1PreviouslyPressed.current = false;
-    }
+      // Set sails from gamepad input
+      if (gamepad.buttons[0].pressed && !button0PreviouslyPressed.current) {
+        incrementSails(1);
+        button0PreviouslyPressed.current = true;
+      } else if (!gamepad.buttons[0].pressed) {
+        button0PreviouslyPressed.current = false;
+      }
+      if (gamepad.buttons[1].pressed && !button1PreviouslyPressed.current) {
+        incrementSails(-1);
+        button1PreviouslyPressed.current = true;
+      } else if (!gamepad.buttons[1].pressed) {
+        button1PreviouslyPressed.current = false;
+      }
 
-    // Fire cannons from gamepad input
-    if (gamepad.buttons[6].pressed) {
-      fireCannon(-1);
-    }
-    if (gamepad.buttons[7].pressed) {
-      fireCannon(1);
+      // Fire cannons from gamepad input
+      if (gamepad.buttons[6].pressed) {
+        fireCannon(-1);
+      }
+      if (gamepad.buttons[7].pressed) {
+        fireCannon(1);
+      }
     }
 
     // Move ship forward
