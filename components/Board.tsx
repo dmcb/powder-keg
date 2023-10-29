@@ -22,7 +22,7 @@ const BoardPieces = (props: {
       {props.players
         .filter((player) => player.joined)
         .map((player) => {
-          return <Player key={player.index} playerNumber={player.index} />;
+          return <Player key={player.index} number={player.index} />;
         })}
     </>
   );
@@ -35,7 +35,7 @@ export default function Board(props: {
 }) {
   const boardRef = useRef<Group>(null!);
 
-  const { physicsOverlay } = useControls("Physics Overlay", {
+  const { physicsOverlay } = useControls("Physics", {
     physicsOverlay: true,
   });
 

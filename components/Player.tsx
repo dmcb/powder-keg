@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useCompoundBody } from "@react-three/cannon";
+import { Triplet, useCompoundBody } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
 import Ship from "components/Ship";
@@ -10,12 +10,36 @@ import { useGamepadStore } from "stores/gamepadStore";
 
 const cannonCoolDown = 800;
 
-export default function Player(props: { playerNumber: number }) {
-  const gamepad = useGamepadStore(
-    (state) => state["gamepad" + props.playerNumber]
-  );
+export default function Player(props: { number: number }) {
+  const gamepad = useGamepadStore((state) => state["gamepad" + props.number]);
   const button0PreviouslyPressed = useRef(false);
   const button1PreviouslyPressed = useRef(false);
+
+  const initialPosition = useMemo<Triplet>(() => {
+    switch (props.number) {
+      case 0:
+        return [-0.92, 0.92, 0];
+      case 1:
+        return [0.92, -0.92, 0];
+      case 2:
+        return [-0.92, -0.92, 0];
+      case 3:
+        return [0.92, 0.92, 0];
+    }
+  }, [props.number]);
+
+  const initialRotation = useMemo<Triplet>(() => {
+    switch (props.number) {
+      case 0:
+        return [0, 0, (-3 * Math.PI) / 4];
+      case 1:
+        return [0, 0, Math.PI / 4];
+      case 2:
+        return [0, 0, -Math.PI / 4];
+      case 3:
+        return [0, 0, (3 * Math.PI) / 4];
+    }
+  }, [props.number]);
 
   const [playSails] = useSound("sounds/sail.mp3", {
     volume: 0.5,
@@ -35,8 +59,8 @@ export default function Player(props: { playerNumber: number }) {
       type: "Dynamic",
       angularDamping: 1,
       linearDamping: 0.999,
-      rotation: [0, 0, -Math.PI / 4],
-      position: [-0.92, -0.92, 0],
+      rotation: initialRotation,
+      position: initialPosition,
       collisionFilterGroup: 1,
       collisionFilterMask: 1 | 2,
       shapes: [
@@ -206,7 +230,7 @@ export default function Player(props: { playerNumber: number }) {
 
   return (
     <>
-      <Ship ref={shipRef} sails={sails} playerNumber={props.playerNumber} />
+      <Ship ref={shipRef} sails={sails} playerNumber={props.number} />
       {cannonballs.map((cannonball) => {
         return (
           <Cannonball
