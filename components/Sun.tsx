@@ -24,7 +24,7 @@ export default function Sun() {
       ambientMaxColorTemp,
     },
     set,
-  ] = useControls(() => ({
+  ] = useControls("Sun", () => ({
     dayLength: {
       value: 300,
       min: 1,
@@ -56,7 +56,7 @@ export default function Sun() {
       step: 0.01,
     },
     directColorTempGradient: {
-      value: 1.85,
+      value: 1.9,
       min: 0,
       max: 2,
       step: 0.01,
@@ -68,19 +68,19 @@ export default function Sun() {
       step: 1,
     },
     ambientBrightnessGradient: {
-      value: 0.5,
+      value: 0.3,
       min: 0,
       max: 2,
       step: 0.01,
     },
     maxAmbientBrightness: {
-      value: 0.6,
+      value: 0.7,
       min: 0,
       max: 2,
       step: 0.01,
     },
     ambientColorTempGradient: {
-      value: 1.85,
+      value: 0.9,
       min: 0,
       max: 2,
       step: 0.01,

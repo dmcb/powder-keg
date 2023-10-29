@@ -28,7 +28,7 @@ export default function Terrain(props: { seed: string }) {
   let prng = new Alea(props.seed);
 
   const [{ seed, biome, amplitude, frequency, gradientEdge, octaves }, set] =
-    useControls(() => ({
+    useControls("Terrain", () => ({
       seed: {
         value: props.seed,
       },

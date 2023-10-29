@@ -5,6 +5,7 @@ import Ocean from "components/Ocean";
 import Player from "components/Player";
 import Border from "components/Border";
 import { Group } from "three";
+import { useControls } from "leva";
 
 const BoardPieces = (props: {
   seed: string;
@@ -34,10 +35,14 @@ export default function Board(props: {
 }) {
   const boardRef = useRef<Group>(null!);
 
+  const { physicsOverlay } = useControls("Physics Overlay", {
+    physicsOverlay: true,
+  });
+
   return (
     <group ref={boardRef}>
       <Physics gravity={[0, 0, -1]}>
-        {(props.debug && (
+        {(props.debug && physicsOverlay && (
           <Debug color="green">
             <BoardPieces seed={props.seed} players={props.players} />
           </Debug>
