@@ -19,7 +19,7 @@ export default function Gamepads() {
           addGamepad(gamepad.index);
           updateGamepad(gamepad);
         }
-      } else if (i in connections) {
+      } else if (connections.includes(i)) {
         console.log("Gamepad disconnected", i);
         removeGamepad(i);
       }

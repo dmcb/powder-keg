@@ -97,6 +97,7 @@ type Store = {
   players: Player[];
   setSeed: (seed: string) => void;
   startGame: () => void;
+  updatePlayer: (player: Player) => void;
   updatePlayers: (players: Player[]) => void;
 };
 
@@ -121,5 +122,16 @@ export const useGameStore = create<Store>()((set) => ({
     set({ seed });
   },
   startGame: () => set({ gameStarted: true }),
-  updatePlayers: (players: []) => set({ players }),
+  updatePlayer: (player: Player) => {
+    set((state) => {
+      const players = state.players.map((p) => {
+        if (p.index === player.index) {
+          return player;
+        }
+        return p;
+      });
+      return { players };
+    });
+  },
+  updatePlayers: (players: Player[]) => set({ players }),
 }));

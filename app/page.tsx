@@ -25,7 +25,7 @@ export default function Page() {
         {gameStarted && <Game seed={seed} debug={debug} />}
         <Gamepads />
       </Canvas>
-      {!gameStarted && <Lobby />}
+      {!gameStarted && <Lobby debug={debug} />}
     </>
   );
 }

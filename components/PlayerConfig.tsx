@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const nameAdjective = [
   "captain",
@@ -55,30 +55,44 @@ const nameNoun = [
 ];
 
 export default function PlayerConfig(props: {
-  playerNumber: number;
+  number: number;
   joined: boolean;
+  updatePlayerName: (index: number, name: string) => void;
 }) {
-  const [playerName, setPlayerName] = useState(
-    nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
-      nameNoun[Math.floor(Math.random() * nameNoun.length)]
-  );
+  const [playerName, setPlayerName] = useState("");
+
+  useEffect(() => {
+    props.updatePlayerName(props.number - 1, playerName);
+  }, [playerName]);
+
+  useEffect(() => {
+    if (!props.joined) setPlayerName("");
+    else {
+      console.log("Player joined, generating name");
+      setPlayerName(
+        nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
+          nameNoun[Math.floor(Math.random() * nameNoun.length)]
+      );
+    }
+  }, [props.joined]);
 
   const conditionalPlayerLabel = props.joined
-    ? "Player " + props.playerNumber
+    ? "Player " + props.number
     : "Connect gamepad";
-  const conditionalPlayerName = props.joined ? playerName : "";
 
   return (
     <fieldset>
       <label htmlFor="playername">{conditionalPlayerLabel}</label>
       <input
-        value={conditionalPlayerName}
+        value={playerName}
         type="text"
         id="playername"
         disabled={!props.joined}
         autoComplete="off"
         autoCorrect="off"
-        onChange={(e) => setPlayerName(e.target.value)}
+        onChange={(e) => {
+          setPlayerName(e.target.value);
+        }}
       />
     </fieldset>
   );
