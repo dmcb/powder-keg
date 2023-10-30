@@ -13,6 +13,9 @@ import { useControls } from "leva";
 import type { Mesh } from "three";
 import { useTrimesh } from "@react-three/cannon";
 
+const minAmplitude = 0.1;
+const maxAmplitude = 0.4;
+
 export default function Terrain(props: { seed: string }) {
   const [trimeshRef, trimeshApi] = useTrimesh(
     () => ({
@@ -39,9 +42,9 @@ export default function Terrain(props: { seed: string }) {
         step: 1,
       },
       amplitude: {
-        value: prng() * 0.3 + 0.1,
-        min: 0.1,
-        max: 0.4,
+        value: prng() * (maxAmplitude - minAmplitude) + minAmplitude,
+        min: minAmplitude,
+        max: maxAmplitude,
         step: 0.01,
       },
       frequency: {
@@ -192,7 +195,7 @@ export default function Terrain(props: { seed: string }) {
     prng.restart();
     set({
       biome: Math.round(prng() * 2),
-      amplitude: prng() * 0.3 + 0.1,
+      amplitude: prng() * (maxAmplitude - minAmplitude) + minAmplitude,
       frequency: prng() * 0.7 + 1,
       gradientEdge: prng() * 0.36 + 0.5,
     });
@@ -217,9 +220,11 @@ export default function Terrain(props: { seed: string }) {
       const colours = [];
       for (let i = 0; i < positionAttribute.count; i += 3) {
         const avgHeightOfFace =
-          positionAttribute.getZ(i) +
-          positionAttribute.getZ(i + 1) +
-          positionAttribute.getZ(i + 2) / 3;
+          (positionAttribute.getZ(i) +
+            positionAttribute.getZ(i + 1) +
+            positionAttribute.getZ(i + 2)) /
+          3 /
+          maxAmplitude;
         const [r, g, b] = colourScale(avgHeightOfFace).get("rgb");
         colours.push(r / 255, g / 255, b / 255);
         colours.push(r / 255, g / 255, b / 255);
