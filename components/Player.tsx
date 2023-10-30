@@ -5,7 +5,6 @@ import { Vector3, Group } from "three";
 import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
-import usePlayerCamera from "hooks/usePlayerCamera";
 import { useGamepadStore } from "stores/gamepadStore";
 
 const cannonCoolDown = 800;
@@ -87,7 +86,6 @@ export default function Player(props: { number: number }) {
     useRef<Group>(null)
   );
   const [sails, setSails] = useState(0);
-  // const playerCamera = usePlayerCamera();
 
   // Player state
   const [cannonballs, setCannonballs] = useState([]);

@@ -89,6 +89,7 @@ type Player = {
   index: number;
   name: string;
   joined: boolean;
+  health: number;
 };
 
 type Store = {
@@ -107,10 +108,10 @@ export const useGameStore = create<Store>()((set) => ({
     seedNoun[Math.floor(Math.random() * seedNoun.length)],
   gameStarted: false,
   players: [
-    { index: 0, name: "", joined: false },
-    { index: 1, name: "", joined: false },
-    { index: 2, name: "", joined: false },
-    { index: 3, name: "", joined: false },
+    { index: 0, name: "", joined: false, health: 100 },
+    { index: 1, name: "", joined: false, health: 100 },
+    { index: 2, name: "", joined: false, health: 100 },
+    { index: 3, name: "", joined: false, health: 100 },
   ],
   setSeed: (seed: string) => {
     if (seed.trim() === "") {
