@@ -14,7 +14,6 @@ export default function Page() {
   const searchParams = useSearchParams();
   const debug = searchParams.has("debug");
   const gameStarted = useGameStore((state) => state.gameStarted);
-  const seed = useGameStore((state) => state.seed);
 
   return (
     <>
@@ -22,7 +21,7 @@ export default function Page() {
       <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 16.5] }}>
         {debug && <Perf position="top-left" />}
         {debug && <OrbitControls />}
-        {gameStarted && <Game seed={seed} debug={debug} />}
+        {gameStarted && <Game debug={debug} />}
         <Gamepads />
       </Canvas>
       {!gameStarted && <Lobby debug={debug} />}

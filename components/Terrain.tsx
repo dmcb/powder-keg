@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useMemo } from "react";
+import React, { useRef, useEffect, useLayoutEffect, useMemo } from "react";
 import {
   Vector2,
   Vector3,
@@ -12,11 +12,16 @@ import chroma from "chroma-js";
 import { useControls } from "leva";
 import type { Mesh } from "three";
 import { useTrimesh } from "@react-three/cannon";
+import { useGameStore } from "stores/gameStore";
 
 const minAmplitude = 0.1;
 const maxAmplitude = 0.4;
 
 export default function Terrain(props: { seed: string }) {
+  // State hooks
+  const setLatitude = useGameStore((state) => state.setLatitude);
+
+  // Refs
   const [trimeshRef, trimeshApi] = useTrimesh(
     () => ({
       args: [points, meshIndex],
@@ -26,46 +31,75 @@ export default function Terrain(props: { seed: string }) {
     }),
     useRef<Mesh>(null)
   );
-
   const geometryRef = useRef<BufferGeometry>(null!);
-  let prng = new Alea(props.seed);
 
-  const [{ seed, biome, amplitude, frequency, gradientEdge, octaves }, set] =
-    useControls("Terrain", () => ({
-      seed: {
-        value: props.seed,
-      },
-      biome: {
-        value: Math.round(prng() * 2),
-        min: 0,
-        max: 2,
-        step: 1,
-      },
-      amplitude: {
-        value: prng() * (maxAmplitude - minAmplitude) + minAmplitude,
-        min: minAmplitude,
-        max: maxAmplitude,
-        step: 0.01,
-      },
-      frequency: {
-        value: prng() * 0.7 + 1.0,
-        min: 1,
-        max: 1.7,
-        step: 0.01,
-      },
-      gradientEdge: {
-        value: prng() * 0.36 + 0.5,
-        min: 0.5,
-        max: 0.86,
-        step: 0.01,
-      },
-      octaves: {
-        value: 3,
-        min: 1,
-        max: 8,
-        step: 1,
-      },
-    }));
+  // Initialize terrain with seed
+  const {
+    prng,
+    initialLatitude,
+    initialBiome,
+    initialAmplitude,
+    initialFrequency,
+    initialGradientEdge,
+    initialOctaves,
+  } = useMemo(() => {
+    console.log("Initializing terrain with " + props.seed);
+    const prng = new Alea(props.seed);
+    const initialLatitude = prng() * 180 - 90;
+    prng.restart();
+    return {
+      prng: prng,
+      initialLatitude: initialLatitude,
+      initialBiome: Math.floor(Math.abs(initialLatitude) / 30),
+      initialAmplitude: prng() * (maxAmplitude - minAmplitude) + minAmplitude,
+      initialFrequency: prng() * 0.7 + 1,
+      initialGradientEdge: prng() * 0.36 + 0.5,
+      initialOctaves: 3,
+    };
+  }, [props.seed]);
+
+  // Debug controls
+  const [
+    { latitude, biome, amplitude, frequency, gradientEdge, octaves },
+    set,
+  ] = useControls("Terrain", () => ({
+    latitude: {
+      value: initialLatitude,
+      min: -90,
+      max: 90,
+      step: 1,
+    },
+    biome: {
+      value: initialBiome,
+      min: 0,
+      max: 2,
+      step: 1,
+    },
+    amplitude: {
+      value: initialAmplitude,
+      min: minAmplitude,
+      max: maxAmplitude,
+      step: 0.01,
+    },
+    frequency: {
+      value: initialFrequency,
+      min: 1,
+      max: 1.7,
+      step: 0.01,
+    },
+    gradientEdge: {
+      value: initialGradientEdge,
+      min: 0.5,
+      max: 0.86,
+      step: 0.01,
+    },
+    octaves: {
+      value: initialOctaves,
+      min: 1,
+      max: 8,
+      step: 1,
+    },
+  }));
 
   const baseNoise = (noise2D: NoiseFunction2D, x: number, y: number) => {
     // Generate noise
@@ -96,7 +130,6 @@ export default function Terrain(props: { seed: string }) {
   };
 
   const points: number[] = useMemo(() => {
-    prng = new Alea(seed);
     prng.restart();
     const noise2D = createNoise2D(prng);
     const insidePointsCount = 8000;
@@ -150,7 +183,7 @@ export default function Terrain(props: { seed: string }) {
     }
 
     return points;
-  }, [seed, octaves, amplitude, frequency, gradientEdge]);
+  }, [props.seed, octaves, amplitude, frequency, gradientEdge]);
 
   const meshIndex: number[] = useMemo(() => {
     // Triangulate
@@ -189,17 +222,23 @@ export default function Terrain(props: { seed: string }) {
     }
   }, [biome]);
 
-  // Set new random values from prng for amplitude and frequency and gradientEdge when seed changes
+  // Changes in latitude effect sun and biome
   useLayoutEffect(() => {
-    prng = new Alea(seed);
-    prng.restart();
+    set({ biome: Math.floor(Math.abs(latitude) / 30) });
+    setLatitude(latitude);
+  }, [latitude]);
+
+  // Changes in initial value update debug controls
+  useLayoutEffect(() => {
     set({
-      biome: Math.round(prng() * 2),
-      amplitude: prng() * (maxAmplitude - minAmplitude) + minAmplitude,
-      frequency: prng() * 0.7 + 1,
-      gradientEdge: prng() * 0.36 + 0.5,
+      latitude: initialLatitude,
+      biome: initialBiome,
+      amplitude: initialAmplitude,
+      frequency: initialFrequency,
+      gradientEdge: initialGradientEdge,
+      octaves: initialOctaves,
     });
-  }, [seed]);
+  }, [props.seed]);
 
   // Update geometry with points, faces, and colouring
   useLayoutEffect(() => {
@@ -238,7 +277,7 @@ export default function Terrain(props: { seed: string }) {
       // Reset trimesh
       // Is there a way to dynamically update the trimesh geometry?
     }
-  }, [seed, biome, octaves, amplitude, frequency, gradientEdge]);
+  }, [props.seed, biome, octaves, amplitude, frequency, gradientEdge]);
 
   return (
     <mesh

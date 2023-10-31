@@ -6,6 +6,7 @@ import Player from "components/Player";
 import Border from "components/Border";
 import { Group } from "three";
 import { useControls } from "leva";
+import { useGameStore } from "stores/gameStore";
 
 const BoardPieces = (props: { seed: string; players: number[] }) => {
   return (
@@ -23,25 +24,27 @@ const BoardPieces = (props: { seed: string; players: number[] }) => {
   );
 };
 
-export default function Board(props: {
-  seed: string;
-  debug: boolean;
-  players: number[];
-}) {
+export default function Board(props: { debug: boolean; players: number[] }) {
   const boardRef = useRef<Group>(null!);
+  const initialSeed = useGameStore((state) => state.seed);
 
-  const { physicsOverlay } = useControls("Physics", {
-    physicsOverlay: true,
+  const { physicsOverlay, seed } = useControls("Game", {
+    physicsOverlay: {
+      value: true,
+    },
+    seed: {
+      value: initialSeed,
+    },
   });
 
   return (
     <group ref={boardRef}>
       <Physics gravity={[0, 0, -1]}>
         {(props.debug && physicsOverlay && (
-          <Debug color="green">
-            <BoardPieces seed={props.seed} players={props.players} />
+          <Debug color="green" key={seed}>
+            <BoardPieces seed={seed} players={props.players} />
           </Debug>
-        )) || <BoardPieces seed={props.seed} players={props.players} />}
+        )) || <BoardPieces seed={seed} players={props.players} />}
       </Physics>
     </group>
   );

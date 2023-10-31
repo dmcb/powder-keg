@@ -3,12 +3,12 @@ import Sun from "components/Sun";
 import Camera from "components/Camera";
 import { usePlayerStore } from "stores/playerStore";
 
-export default function Game(props: { seed: string; debug: boolean }) {
+export default function Game(props: { debug: boolean }) {
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
 
   return (
     <>
-      <Board seed={props.seed} debug={props.debug} players={joinedPlayers} />
+      <Board debug={props.debug} players={joinedPlayers} />
       <Sun />
       <Camera />
     </>

@@ -3,11 +3,13 @@ import { useFrame } from "@react-three/fiber";
 import { AmbientLight, DirectionalLight, Group } from "three";
 import kelvinToRGB from "lib/kelvin";
 import { useControls } from "leva";
+import { useGameStore } from "stores/gameStore";
 
 export default function Sun() {
   const sunRef = useRef<Group>(null!);
   const ambientRef = useRef<AmbientLight>(null!);
   const directionalRef = useRef<DirectionalLight>(null!);
+  const latitude = useGameStore((state) => state.latitude);
 
   const [
     {
@@ -104,7 +106,10 @@ export default function Sun() {
       set({ dayProgress: 0 });
     }
 
-    // Rotate sun
+    // Rotate sun based on latitude
+    sunRef.current.rotation.x = ((latitude / 90) * Math.PI) / 2;
+
+    // Rotate sun over the day
     sunRef.current.rotation.y =
       (dayProgress - 0.5) *
       Math.pow(sunArcPerDay, 1 + middayExaggeration * middayness) *

@@ -88,8 +88,10 @@ const seedNoun = [
 type Store = {
   seed: string;
   gameStarted: boolean;
+  latitude: number;
   setSeed: (seed: string) => void;
   startGame: () => void;
+  setLatitude: (latitude: number) => void;
 };
 
 export const useGameStore = create<Store>()((set) => ({
@@ -97,6 +99,7 @@ export const useGameStore = create<Store>()((set) => ({
     seedAdjective[Math.floor(Math.random() * seedAdjective.length)] +
     seedNoun[Math.floor(Math.random() * seedNoun.length)],
   gameStarted: false,
+  latitude: 0,
   setSeed: (seed: string) => {
     if (seed.trim() === "") {
       seed = cryptoRandomString({
@@ -107,4 +110,5 @@ export const useGameStore = create<Store>()((set) => ({
     set({ seed });
   },
   startGame: () => set({ gameStarted: true }),
+  setLatitude: (latitude: number) => set({ latitude }),
 }));
