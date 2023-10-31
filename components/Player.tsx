@@ -6,11 +6,14 @@ import useSound from "use-sound";
 import Ship from "components/Ship";
 import Cannonball from "components/Cannonball";
 import { useGamepadStore } from "stores/gamepadStore";
+import { usePlayerStore } from "stores/playerStore";
 
 const cannonCoolDown = 800;
 
 export default function Player(props: { number: number }) {
   const gamepad = useGamepadStore((state) => state["gamepad" + props.number]);
+  const player = usePlayerStore((state) => state["player" + props.number]);
+  const updatePlayer = usePlayerStore((state) => state.updatePlayer);
   const button0PreviouslyPressed = useRef(false);
   const button1PreviouslyPressed = useRef(false);
 
@@ -149,7 +152,10 @@ export default function Player(props: { number: number }) {
       [0, 0, 0]
     );
 
-    // playerCamera.position.copy(state.current.position);
+    updatePlayer(props.number, {
+      ...player,
+      position: [state.current.position.x, state.current.position.y],
+    });
   });
 
   // Set state from physics

@@ -24,7 +24,7 @@ export default function Lobby(props: { debug: boolean }) {
 
   // Update player name into store
   const updatePlayerName = (name, number) => {
-    updatePlayer({ ...players[number], name: name }, number);
+    updatePlayer(number, { ...players[number], name: name });
   };
 
   // When controllers connect, update joined players

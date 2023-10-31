@@ -13,7 +13,7 @@ type Store = {
   player2: Player;
   player3: Player;
   updateJoinedPlayers: (joinedPlayers: number[]) => void;
-  updatePlayer: (player: Player, number: number) => void;
+  updatePlayer: (number: number, player: Player) => void;
 };
 
 export const usePlayerStore = create<Store>()((set) => ({
@@ -39,7 +39,7 @@ export const usePlayerStore = create<Store>()((set) => ({
     position: [0, 0],
   },
   updateJoinedPlayers: (joinedPlayers: number[]) => set({ joinedPlayers }),
-  updatePlayer: (player: Player, number: number) => {
+  updatePlayer: (number: number, player: Player) => {
     if (number == 0) {
       set({ player0: player });
     } else if (number == 1) {
