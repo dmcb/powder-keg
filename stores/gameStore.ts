@@ -86,20 +86,23 @@ const seedNoun = [
 ];
 
 type Player = {
-  index: number;
   name: string;
-  joined: boolean;
   health: number;
+  position: [number, number];
 };
 
 type Store = {
   seed: string;
   gameStarted: boolean;
-  players: Player[];
+  joinedPlayers: number[];
+  player0: Player;
+  player1: Player;
+  player2: Player;
+  player3: Player;
   setSeed: (seed: string) => void;
   startGame: () => void;
-  updatePlayer: (player: Player) => void;
-  updatePlayers: (players: Player[]) => void;
+  updateJoinedPlayers: (joinedPlayers: number[]) => void;
+  updatePlayer: (player: Player, number: number) => void;
 };
 
 export const useGameStore = create<Store>()((set) => ({
@@ -107,12 +110,27 @@ export const useGameStore = create<Store>()((set) => ({
     seedAdjective[Math.floor(Math.random() * seedAdjective.length)] +
     seedNoun[Math.floor(Math.random() * seedNoun.length)],
   gameStarted: false,
-  players: [
-    { index: 0, name: "", joined: false, health: 100 },
-    { index: 1, name: "", joined: false, health: 100 },
-    { index: 2, name: "", joined: false, health: 100 },
-    { index: 3, name: "", joined: false, health: 100 },
-  ],
+  joinedPlayers: [],
+  player0: {
+    name: "",
+    health: 100,
+    position: [0, 0],
+  },
+  player1: {
+    name: "",
+    health: 100,
+    position: [0, 0],
+  },
+  player2: {
+    name: "",
+    health: 100,
+    position: [0, 0],
+  },
+  player3: {
+    name: "",
+    health: 100,
+    position: [0, 0],
+  },
   setSeed: (seed: string) => {
     if (seed.trim() === "") {
       seed = cryptoRandomString({
@@ -123,16 +141,16 @@ export const useGameStore = create<Store>()((set) => ({
     set({ seed });
   },
   startGame: () => set({ gameStarted: true }),
-  updatePlayer: (player: Player) => {
-    set((state) => {
-      const players = state.players.map((p) => {
-        if (p.index === player.index) {
-          return player;
-        }
-        return p;
-      });
-      return { players };
-    });
+  updateJoinedPlayers: (joinedPlayers: number[]) => set({ joinedPlayers }),
+  updatePlayer: (player: Player, number: number) => {
+    if (number == 0) {
+      set({ player0: player });
+    } else if (number == 1) {
+      set({ player1: player });
+    } else if (number == 2) {
+      set({ player2: player });
+    } else if (number == 3) {
+      set({ player3: player });
+    }
   },
-  updatePlayers: (players: Player[]) => set({ players }),
 }));

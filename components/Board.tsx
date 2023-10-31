@@ -7,10 +7,7 @@ import Border from "components/Border";
 import { Group } from "three";
 import { useControls } from "leva";
 
-const BoardPieces = (props: {
-  seed: string;
-  players: { index: number; joined: boolean }[];
-}) => {
+const BoardPieces = (props: { seed: string; players: number[] }) => {
   return (
     <>
       <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
@@ -19,11 +16,9 @@ const BoardPieces = (props: {
       <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       <Ocean />
       <Terrain seed={props.seed} />
-      {props.players
-        .filter((player) => player.joined)
-        .map((player) => {
-          return <Player key={player.index} number={player.index} />;
-        })}
+      {props.players.map((player, index) => {
+        return <Player key={index} number={index} />;
+      })}
     </>
   );
 };
@@ -31,7 +26,7 @@ const BoardPieces = (props: {
 export default function Board(props: {
   seed: string;
   debug: boolean;
-  players: { index: number; joined: boolean }[];
+  players: number[];
 }) {
   const boardRef = useRef<Group>(null!);
 

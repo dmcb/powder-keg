@@ -57,12 +57,12 @@ const nameNoun = [
 export default function PlayerConfig(props: {
   number: number;
   joined: boolean;
-  updatePlayerName: (index: number, name: string) => void;
+  updatePlayerName: (name: string, number: number) => void;
 }) {
   const [playerName, setPlayerName] = useState("");
 
   useEffect(() => {
-    props.updatePlayerName(props.number - 1, playerName);
+    props.updatePlayerName(playerName, props.number - 1);
   }, [playerName]);
 
   useEffect(() => {
