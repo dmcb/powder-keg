@@ -1,10 +1,10 @@
 import Board from "components/Board";
 import Sun from "components/Sun";
 import Camera from "components/Camera";
-import { useGameStore } from "stores/gameStore";
+import { usePlayerStore } from "stores/playerStore";
 
 export default function Game(props: { seed: string; debug: boolean }) {
-  const joinedPlayers = useGameStore((state) => state.joinedPlayers);
+  const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
 
   return (
     <>

@@ -3,22 +3,23 @@ import GameCount from "components/GameCount";
 import PlayerConfig from "components/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
+import { usePlayerStore } from "stores/playerStore";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);
   const connections = useConnectionStore((state) => state.connections);
   const players = [
-    useGameStore((state) => state.player0),
-    useGameStore((state) => state.player1),
-    useGameStore((state) => state.player2),
-    useGameStore((state) => state.player3),
+    usePlayerStore((state) => state.player0),
+    usePlayerStore((state) => state.player1),
+    usePlayerStore((state) => state.player2),
+    usePlayerStore((state) => state.player3),
   ];
-  const joinedPlayers = useGameStore((state) => state.joinedPlayers);
+  const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
   const setSeed = useGameStore((state) => state.setSeed);
-  const updateJoinedPlayers = useGameStore(
+  const updateJoinedPlayers = usePlayerStore(
     (state) => state.updateJoinedPlayers
   );
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
+  const updatePlayer = usePlayerStore((state) => state.updatePlayer);
   const setStartGame = useGameStore((state) => state.startGame);
 
   // Update player name into store
