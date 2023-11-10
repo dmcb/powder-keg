@@ -9,6 +9,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(90, 105, 117, 1);
 }
 
 body {
