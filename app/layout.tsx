@@ -17,6 +17,10 @@ export default function RootLayout({
           name="description"
           content="Powder Keg is a pirate battle game made with React Three Fiber."
         />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
