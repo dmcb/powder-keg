@@ -84,14 +84,16 @@ export default function Camera() {
     camera.position.copy(cameraPosition.position);
 
     // Adjust zoom based on player position
-    const adjustedPlayerDistance =
-      Math.pow(playerDistance / defaultPlayerDistance, 0.6) *
-      defaultPlayerDistance;
-    camera.position.z = Math.max(
-      (cameraPosition.position.z * adjustedPlayerDistance) /
-        defaultPlayerDistance,
-      cameraMinDistance
-    );
+    if (players.length) {
+      const adjustedPlayerDistance =
+        Math.pow(playerDistance / defaultPlayerDistance, 0.6) *
+        defaultPlayerDistance;
+      camera.position.z = Math.max(
+        (cameraPosition.position.z * adjustedPlayerDistance) /
+          defaultPlayerDistance,
+        cameraMinDistance
+      );
+    }
 
     // Tilt camera
     camera.position.add(
