@@ -1,18 +1,14 @@
-import React, { useRef, useEffect, useLayoutEffect, useMemo } from "react";
-import {
-  Vector2,
-  Vector3,
-  BufferGeometry,
-  Float32BufferAttribute,
-} from "three";
+import React, { useRef, useLayoutEffect, useMemo } from "react";
+import { Vector3, BufferGeometry, Float32BufferAttribute } from "three";
 import Delaunator from "delaunator";
-import { NoiseFunction2D, createNoise2D } from "simplex-noise";
+import { createNoise2D } from "simplex-noise";
 import Alea from "aleaprng";
 import chroma from "chroma-js";
 import { useControls } from "leva";
 import type { Mesh } from "three";
 import { useTrimesh } from "@react-three/cannon";
 import { useGameStore } from "stores/gameStore";
+import baseNoise from "lib/baseNoise";
 
 const minAmplitude = 0.1;
 const maxAmplitude = 0.4;
@@ -101,34 +97,6 @@ export default function Terrain(props: { seed: string }) {
     },
   }));
 
-  const baseNoise = (noise2D: NoiseFunction2D, x: number, y: number) => {
-    // Generate noise
-    const position = new Vector2(x, y);
-    let adjustedAmp = amplitude;
-    let adjustedFreq = frequency;
-    let value = 0;
-    for (let i = 0; i < octaves; i++) {
-      value += adjustedAmp * noise2D(x * adjustedFreq, y * adjustedFreq);
-      adjustedAmp *= 0.5;
-      adjustedFreq *= 2;
-    }
-
-    // Drop off the edges
-    let gradient = 1;
-    let dropoff = 0.5;
-    let closenessToEdge = 0;
-    const distance = position.distanceTo(new Vector2(0, 0));
-    if (distance - gradientEdge > 0) {
-      closenessToEdge = Math.min(
-        1,
-        (distance - gradientEdge) / (1 - gradientEdge)
-      );
-    }
-    dropoff *= closenessToEdge;
-    gradient = Math.pow(1 - closenessToEdge, 0.1);
-    return Math.max(-0.1, value * gradient - dropoff);
-  };
-
   const points: number[] = useMemo(() => {
     prng.restart();
     const noise2D = createNoise2D(prng);
@@ -140,16 +108,16 @@ export default function Terrain(props: { seed: string }) {
     const points = [
       -1,
       -1,
-      baseNoise(noise2D, -1, -1),
+      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, -1, -1),
       1,
       -1,
-      baseNoise(noise2D, 1, -1),
+      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, 1, -1),
       1,
       1,
-      baseNoise(noise2D, 1, 1),
+      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, 1, 1),
       -1,
       1,
-      baseNoise(noise2D, -1, 1),
+      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, -1, 1),
     ];
 
     // Add edges
@@ -171,7 +139,11 @@ export default function Terrain(props: { seed: string }) {
             x = -1;
             break;
         }
-        points.push(x, y, baseNoise(noise2D, x, y));
+        points.push(
+          x,
+          y,
+          baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y)
+        );
       }
     }
 
@@ -179,7 +151,11 @@ export default function Terrain(props: { seed: string }) {
     for (let i = 0; i < insidePointsCount; i++) {
       let x = prng() * size * 0.98 - (size * 0.98) / 2;
       let y = prng() * size * 0.98 - (size * 0.98) / 2;
-      points.push(x, y, baseNoise(noise2D, x, y));
+      points.push(
+        x,
+        y,
+        baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y)
+      );
     }
 
     return points;
