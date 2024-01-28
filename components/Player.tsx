@@ -11,7 +11,7 @@ import { usePlayerStore } from "stores/playerStore";
 const cannonCoolDown = 800;
 
 export default function Player(props: { number: number }) {
-  const gamepad = useGamepadStore((state) => state["gamepad" + props.number]);
+  const gamepads = useGamepadStore((state) => state["gamepads"]);
   const player = usePlayerStore((state) => state["player" + props.number]);
   const updatePlayer = usePlayerStore((state) => state.updatePlayer);
   const button0PreviouslyPressed = useRef(false);
@@ -110,34 +110,40 @@ export default function Player(props: { number: number }) {
     if (sails > 0) sailTurnModifier = 1;
 
     // Get gamepad input
-    if (gamepad) {
+    if (gamepads && gamepads[props.number]) {
       // Turn ship from gamepad input
-      if (gamepad.axes[0] < -0.1) {
+      if (gamepads[props.number].axes[0] < -0.1) {
         api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
       }
-      if (gamepad.axes[0] > 0.1) {
+      if (gamepads[props.number].axes[0] > 0.1) {
         api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
       }
 
-      // Set sails from gamepad input
-      if (gamepad.buttons[0].pressed && !button0PreviouslyPressed.current) {
+      // Set sails from gamepad
+      if (
+        gamepads[props.number].buttons[0].pressed &&
+        !button0PreviouslyPressed.current
+      ) {
         incrementSails(1);
         button0PreviouslyPressed.current = true;
-      } else if (!gamepad.buttons[0].pressed) {
+      } else if (!gamepads[props.number].buttons[0].pressed) {
         button0PreviouslyPressed.current = false;
       }
-      if (gamepad.buttons[1].pressed && !button1PreviouslyPressed.current) {
+      if (
+        gamepads[props.number].buttons[1].pressed &&
+        !button1PreviouslyPressed.current
+      ) {
         incrementSails(-1);
         button1PreviouslyPressed.current = true;
-      } else if (!gamepad.buttons[1].pressed) {
+      } else if (!gamepads[props.number].buttons[1].pressed) {
         button1PreviouslyPressed.current = false;
       }
 
-      // Fire cannons from gamepad input
-      if (gamepad.buttons[6].pressed) {
+      // Fire cannons from gamepads
+      if (gamepads[props.number].buttons[6].pressed) {
         fireCannon(-1);
       }
-      if (gamepad.buttons[7].pressed) {
+      if (gamepads[props.number].buttons[7].pressed) {
         fireCannon(1);
       }
     }

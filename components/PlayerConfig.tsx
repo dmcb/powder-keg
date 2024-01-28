@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useGamepadStore } from "stores/gamepadStore";
+import GamepadButtonHelper from "components/GamepadButtonHelper";
 
 const nameAdjective = [
   "captain",
   "salty",
   "stormy",
+  "white",
   "red",
   "black",
   "gold",
@@ -15,7 +18,6 @@ const nameAdjective = [
   "sea",
   "dagger",
   "skull",
-  "barrel",
   "iron",
   "stone",
   "stinky",
@@ -30,6 +32,22 @@ const nameAdjective = [
   "wooden",
   "barnacle",
   "commodore",
+  "kid",
+  "mad",
+  "rum",
+  "rogue",
+  "death",
+  "sunken",
+  "scar",
+  "long",
+  "scarlett",
+  "feather",
+  "blunder",
+  "stumpy",
+  "blind",
+  "shifty",
+  "rip",
+  "thirsty",
 ];
 const nameNoun = [
   "beard",
@@ -52,6 +70,26 @@ const nameNoun = [
   "morgan",
   "flint",
   "kraken",
+  "nose",
+  "crimson",
+  "maiden",
+  "corsair",
+  "patch",
+  "dreadnought",
+  "scourge",
+  "barrel",
+  "hand",
+  "mark",
+  "flag",
+  "wave",
+  "malone",
+  "quill",
+  "belly",
+  "squall",
+  "roger",
+  "tide",
+  "runner",
+  "calico",
 ];
 
 export default function PlayerConfig(props: {
@@ -60,6 +98,15 @@ export default function PlayerConfig(props: {
   updatePlayerName: (name: string, number: number) => void;
 }) {
   const [playerName, setPlayerName] = useState("");
+  const gamepads = useGamepadStore((state) => state["gamepads"]);
+  const [button1Pressed, setButton1Pressed] = useState(false);
+
+  const generateName = () => {
+    setPlayerName(
+      nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
+        nameNoun[Math.floor(Math.random() * nameNoun.length)]
+    );
+  };
 
   useEffect(() => {
     props.updatePlayerName(playerName, props.number - 1);
@@ -69,12 +116,22 @@ export default function PlayerConfig(props: {
     if (!props.joined) setPlayerName("");
     else {
       console.log("Player joined, generating name");
-      setPlayerName(
-        nameAdjective[Math.floor(Math.random() * nameAdjective.length)] +
-          nameNoun[Math.floor(Math.random() * nameNoun.length)]
-      );
+      generateName();
     }
   }, [props.joined]);
+
+  useEffect(() => {
+    if (gamepads) {
+      if (gamepads[props.number - 1]?.buttons[1]?.pressed) {
+        if (!button1Pressed) {
+          setButton1Pressed(true);
+          generateName();
+        }
+      } else {
+        setButton1Pressed(false);
+      }
+    }
+  }, [gamepads]);
 
   const conditionalPlayerLabel = props.joined
     ? "Player " + props.number
@@ -94,6 +151,7 @@ export default function PlayerConfig(props: {
           setPlayerName(e.target.value);
         }}
       />
+      <GamepadButtonHelper buttonToPress={1} pressed={button1Pressed} />
     </fieldset>
   );
 }

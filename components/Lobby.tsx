@@ -4,6 +4,7 @@ import PlayerConfig from "components/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
+import GamepadButtonHelper from "components/GamepadButtonHelper";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);
@@ -71,7 +72,7 @@ export default function Lobby(props: { debug: boolean }) {
           );
         })}
         <button type="submit" disabled={!formValid} onClick={startGame}>
-          Start
+          Hold <GamepadButtonHelper buttonToPress={0} light={true} /> to start
         </button>
       </form>
     </div>
