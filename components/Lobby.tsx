@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import GameCount from "components/GameCount";
 import PlayerConfig from "components/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
 import GamepadButtonHelper from "components/GamepadButtonHelper";
+import { useGamepadStore } from "stores/gamepadStore";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);
@@ -23,6 +24,10 @@ export default function Lobby(props: { debug: boolean }) {
   const updatePlayer = usePlayerStore((state) => state.updatePlayer);
   const setStartGame = useGameStore((state) => state.startGame);
 
+  const gamepads = useGamepadStore((state) => state.gamepads);
+  const readyProgress = useRef(0);
+  const lastGamepadTimestamp = useRef(0);
+
   // Update player name into store
   const updatePlayerName = (name, number) => {
     updatePlayer(number, { ...players[number], name: name });
@@ -32,6 +37,28 @@ export default function Lobby(props: { debug: boolean }) {
   useEffect(() => {
     updateJoinedPlayers(connections);
   }, [connections]);
+
+  // When controllers hold ready button, update ready progress
+  useEffect(() => {
+    if (gamepads && gamepads.length) {
+      if (lastGamepadTimestamp.current !== 0) {
+        const readyDelta = Date.now() - lastGamepadTimestamp.current;
+        let readyChange = 0;
+        gamepads.forEach((gamepad) => {
+          readyChange -= (0.125 * readyDelta) / 1000;
+          if (gamepad.buttons[0].pressed) {
+            readyChange += readyDelta / 1000;
+          }
+        });
+        readyProgress.current += readyChange / connections.length;
+        if (readyProgress.current < 0) readyProgress.current = 0;
+        if (readyProgress.current >= 1) {
+          setStartGame();
+        }
+      }
+      lastGamepadTimestamp.current = Date.now();
+    }
+  }, [gamepads]);
 
   const formValid =
     props.debug ||
@@ -71,7 +98,16 @@ export default function Lobby(props: { debug: boolean }) {
             />
           );
         })}
-        <button type="submit" disabled={!formValid} onClick={startGame}>
+        <button
+          type="submit"
+          disabled={!formValid}
+          onClick={startGame}
+          style={{
+            background: `linear-gradient(90deg, #498207 ${
+              readyProgress.current * 100
+            }%, #433a32 ${readyProgress.current * 100}%)`,
+          }}
+        >
           Hold <GamepadButtonHelper buttonToPress={0} light={true} /> to start
         </button>
       </form>

@@ -96,10 +96,11 @@ body {
   font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 0.25em solid #433a32;
+  border: 0;
   background-color: #433a32;
   transition: 0.3s ease-in-out all;
   color: #fff;
+  padding: 0.75em 1em;
 }
 
 .menu button:disabled {
@@ -107,7 +108,7 @@ body {
 }
 
 .menu button:not(:disabled):hover {
-  background-color: #498207;
+  background: linear-gradient(90deg, #498207 100%, #433a32 100%) !important;
   cursor: pointer;
 }
 

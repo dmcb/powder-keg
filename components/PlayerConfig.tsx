@@ -151,7 +151,9 @@ export default function PlayerConfig(props: {
           setPlayerName(e.target.value);
         }}
       />
-      <GamepadButtonHelper buttonToPress={1} pressed={button1Pressed} />
+      {props.joined && (
+        <GamepadButtonHelper buttonToPress={1} pressed={button1Pressed} />
+      )}
     </fieldset>
   );
 }
