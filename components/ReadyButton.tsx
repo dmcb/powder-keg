@@ -8,6 +8,7 @@ export default function ReadyButton(
     connections: any[];
   }>
 ) {
+  const buttonRef = useRef(null);
   const gamepads = useGamepadStore((state) => state.gamepads);
   const readyProgress = useRef(0);
   const lastGamepadTimestamp = useRef(0);
@@ -27,7 +28,7 @@ export default function ReadyButton(
         readyProgress.current += readyChange / props.connections.length;
         if (readyProgress.current < 0) readyProgress.current = 0;
         else if (readyProgress.current >= 1) {
-          props.executeFunction();
+          buttonRef.current.click();
         }
       }
       lastGamepadTimestamp.current = Date.now();
@@ -42,6 +43,7 @@ export default function ReadyButton(
 
   return (
     <button
+      ref={buttonRef}
       type="submit"
       disabled={!props.enabled}
       onClick={execute}
