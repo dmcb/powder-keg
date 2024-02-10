@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import GameCount from "components/GameCount";
 import PlayerConfig from "components/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
+import ReadyButton from "./ReadyButton";
 import GamepadButtonHelper from "components/GamepadButtonHelper";
-import { useGamepadStore } from "stores/gamepadStore";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);
@@ -24,20 +24,12 @@ export default function Lobby(props: { debug: boolean }) {
   const updatePlayer = usePlayerStore((state) => state.updatePlayer);
   const setStartGame = useGameStore((state) => state.startGame);
 
-  const gamepads = useGamepadStore((state) => state.gamepads);
-  const readyProgress = useRef(0);
-  const lastGamepadTimestamp = useRef(0);
-
+  // Forms valid when at least 2 players have joined and all players have a name
   const formValid =
     props.debug ||
     (players.filter((player, index) => index in joinedPlayers).length >= 2 &&
       players.filter((player) => player.name.trim().length).length >= 2 &&
       seed.trim().length > 0);
-
-  const startGame = (e) => {
-    e.preventDefault();
-    setStartGame();
-  };
 
   // Update player name into store
   const updatePlayerName = (name, number) => {
@@ -48,28 +40,6 @@ export default function Lobby(props: { debug: boolean }) {
   useEffect(() => {
     updateJoinedPlayers(connections);
   }, [connections]);
-
-  // When controllers hold ready button, update ready progress
-  useEffect(() => {
-    if (formValid && gamepads && gamepads.length) {
-      if (lastGamepadTimestamp.current !== 0) {
-        const readyDelta = Date.now() - lastGamepadTimestamp.current;
-        let readyChange = 0;
-        gamepads.forEach((gamepad) => {
-          readyChange -= (0.125 * readyDelta) / 1000;
-          if (gamepad.buttons[0].pressed) {
-            readyChange += readyDelta / 1000;
-          }
-        });
-        readyProgress.current += readyChange / connections.length;
-        if (readyProgress.current < 0) readyProgress.current = 0;
-        else if (readyProgress.current >= 1) {
-          setStartGame();
-        }
-      }
-      lastGamepadTimestamp.current = Date.now();
-    }
-  }, [gamepads]);
 
   return (
     <div className="menu">
@@ -96,18 +66,13 @@ export default function Lobby(props: { debug: boolean }) {
             />
           );
         })}
-        <button
-          type="submit"
-          disabled={!formValid}
-          onClick={startGame}
-          style={{
-            background: `linear-gradient(90deg, #498207 ${
-              readyProgress.current * 100
-            }%, #433a32 ${readyProgress.current * 100}%)`,
-          }}
+        <ReadyButton
+          enabled={formValid}
+          executeFunction={setStartGame}
+          connections={connections}
         >
           Hold <GamepadButtonHelper buttonToPress={0} light={true} /> to start
-        </button>
+        </ReadyButton>
       </form>
     </div>
   );
