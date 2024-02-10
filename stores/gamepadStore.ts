@@ -22,13 +22,16 @@ export const useConnectionStore = create<ConnectionStore>()((set) => ({
 
 type GamepadStore = {
   gamepads: Gamepad[];
-  updateGamepads: (gamepads: Gamepad[]) => void;
+  delta: number;
+  updateGamepads: (gamepads: Gamepad[], delta: number) => void;
 };
 
 export const useGamepadStore = create<GamepadStore>()((set) => ({
   gamepads: [],
-  updateGamepads: (gamepads: Gamepad[]) =>
+  delta: 0,
+  updateGamepads: (gamepads: Gamepad[], delta: number) =>
     set((state) => ({
       gamepads: gamepads,
+      delta: delta,
     })),
 }));

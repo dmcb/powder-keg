@@ -27,13 +27,13 @@ export default function Gamepads() {
   const removeGamepad = useConnectionStore((state) => state.removeGamepad);
   const updateGamepads = useGamepadStore((state) => state.updateGamepads);
 
-  const pollGamepads = () => {
+  const pollGamepads = (delta) => {
     const detectedGamepads = navigator.getGamepads();
-    updateGamepads(detectedGamepads);
+    updateGamepads(detectedGamepads, delta);
   };
 
-  useAnimationFrame((deltaTime) => {
-    pollGamepads();
+  useAnimationFrame((delta) => {
+    pollGamepads(delta);
   });
 
   useEffect(() => {

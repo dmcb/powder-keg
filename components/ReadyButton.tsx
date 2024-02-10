@@ -10,28 +10,24 @@ export default function ReadyButton(
 ) {
   const buttonRef = useRef(null);
   const gamepads = useGamepadStore((state) => state.gamepads);
+  const delta = useGamepadStore((state) => state.delta);
   const readyProgress = useRef(0);
-  const lastGamepadTimestamp = useRef(0);
 
   // When controllers hold ready button, update ready progress
   useEffect(() => {
     if (props.enabled && gamepads && gamepads.length) {
-      if (lastGamepadTimestamp.current !== 0) {
-        const readyDelta = Date.now() - lastGamepadTimestamp.current;
-        let readyChange = 0;
-        gamepads.forEach((gamepad) => {
-          readyChange -= (0.125 * readyDelta) / 1000;
-          if (gamepad.buttons[0].pressed) {
-            readyChange += readyDelta / 1000;
-          }
-        });
-        readyProgress.current += readyChange / props.connections.length;
-        if (readyProgress.current < 0) readyProgress.current = 0;
-        else if (readyProgress.current >= 1) {
-          buttonRef.current.click();
+      let readyChange = 0;
+      gamepads.forEach((gamepad) => {
+        readyChange -= (0.125 * delta) / 1000;
+        if (gamepad.buttons[0].pressed) {
+          readyChange += delta / 1000;
         }
+      });
+      readyProgress.current += readyChange / props.connections.length;
+      if (readyProgress.current < 0) readyProgress.current = 0;
+      else if (readyProgress.current >= 1) {
+        buttonRef.current.click();
       }
-      lastGamepadTimestamp.current = Date.now();
     }
   }, [gamepads]);
 
