@@ -28,6 +28,17 @@ export default function Lobby(props: { debug: boolean }) {
   const readyProgress = useRef(0);
   const lastGamepadTimestamp = useRef(0);
 
+  const formValid =
+    props.debug ||
+    (players.filter((player, index) => index in joinedPlayers).length >= 2 &&
+      players.filter((player) => player.name.trim().length).length >= 2 &&
+      seed.trim().length > 0);
+
+  const startGame = (e) => {
+    e.preventDefault();
+    setStartGame();
+  };
+
   // Update player name into store
   const updatePlayerName = (name, number) => {
     updatePlayer(number, { ...players[number], name: name });
@@ -40,7 +51,7 @@ export default function Lobby(props: { debug: boolean }) {
 
   // When controllers hold ready button, update ready progress
   useEffect(() => {
-    if (gamepads && gamepads.length) {
+    if (formValid && gamepads && gamepads.length) {
       if (lastGamepadTimestamp.current !== 0) {
         const readyDelta = Date.now() - lastGamepadTimestamp.current;
         let readyChange = 0;
@@ -59,17 +70,6 @@ export default function Lobby(props: { debug: boolean }) {
       lastGamepadTimestamp.current = Date.now();
     }
   }, [gamepads]);
-
-  const formValid =
-    props.debug ||
-    (players.filter((player, index) => index in joinedPlayers).length >= 2 &&
-      players.filter((player) => player.name.trim().length).length >= 2 &&
-      seed.trim().length > 0);
-
-  const startGame = (e) => {
-    e.preventDefault();
-    setStartGame();
-  };
 
   return (
     <div className="menu">
