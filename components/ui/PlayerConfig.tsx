@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGamepadStore } from "stores/gamepadStore";
-import GamepadButtonHelper from "components/GamepadButtonHelper";
+import GamepadButtonHelper from "components/ui/GamepadButtonHelper";
 
 const nameAdjective = [
   "captain",

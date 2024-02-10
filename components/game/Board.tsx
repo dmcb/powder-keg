@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { Physics, Debug } from "@react-three/cannon";
-import Terrain from "components/Terrain";
-import Ocean from "components/Ocean";
-import Player from "components/Player";
-import Border from "components/Border";
+import Terrain from "components/game/Terrain";
+import Ocean from "components/game/Ocean";
+import Player from "components/game/Player";
+import Border from "components/game/Border";
 import { Group } from "three";
 import { useControls } from "leva";
 import { useGameStore } from "stores/gameStore";

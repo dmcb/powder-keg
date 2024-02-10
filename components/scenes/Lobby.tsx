@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import GameCount from "components/GameCount";
-import PlayerConfig from "components/PlayerConfig";
+import GameCount from "components/ui/GameCount";
+import PlayerConfig from "components/ui/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
-import ReadyButton from "./ReadyButton";
-import GamepadButtonHelper from "components/GamepadButtonHelper";
+import ReadyButton from "components/ui/ReadyButton";
+import GamepadButtonHelper from "components/ui/GamepadButtonHelper";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);

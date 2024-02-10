@@ -5,9 +5,9 @@ import { Perf } from "r3f-perf";
 import { Leva } from "leva";
 import { useSearchParams } from "next/navigation";
 import { OrbitControls } from "@react-three/drei";
-import Game from "components/Game";
-import Lobby from "components/Lobby";
-import Gamepads from "components/Gamepads";
+import Game from "components/scenes/Game";
+import Lobby from "components/scenes/Lobby";
+import Gamepads from "components/ui/Gamepads";
 import { useGameStore } from "stores/gameStore";
 
 export default function Page() {

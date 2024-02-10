@@ -1,6 +1,6 @@
-import Board from "components/Board";
-import Sun from "components/Sun";
-import Camera from "components/Camera";
+import Board from "components/game/Board";
+import Sun from "components/game/Sun";
+import Camera from "components/game/Camera";
 import { useEffect, useState } from "react";
 import { usePlayerStore } from "stores/playerStore";
 import { useGameStore } from "stores/gameStore";

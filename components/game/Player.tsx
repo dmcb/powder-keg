@@ -3,8 +3,8 @@ import { useFrame } from "@react-three/fiber";
 import { Triplet, useCompoundBody } from "@react-three/cannon";
 import { Vector3, Group } from "three";
 import useSound from "use-sound";
-import Ship from "components/Ship";
-import Cannonball from "components/Cannonball";
+import Ship from "components/game/Ship";
+import Cannonball from "components/game/Cannonball";
 import { useGamepadStore } from "stores/gamepadStore";
 import { usePlayerStore } from "stores/playerStore";
 
