@@ -18,12 +18,14 @@ export default function Page() {
   return (
     <>
       <Leva hidden={debug ? false : true} />
-      <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
-        {debug && <Perf position="top-left" />}
-        {debug && <OrbitControls />}
-        {gameStarted && <Game debug={debug} />}
-        <Gamepads />
-      </Canvas>
+      <Gamepads />
+      {gameStarted && (
+        <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
+          {debug && <Perf position="top-left" />}
+          {debug && <OrbitControls />}
+          <Game debug={debug} />
+        </Canvas>
+      )}
       {!gameStarted && <Lobby debug={debug} />}
     </>
   );

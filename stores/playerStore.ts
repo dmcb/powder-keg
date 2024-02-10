@@ -38,7 +38,10 @@ export const usePlayerStore = create<Store>()((set) => ({
     health: 100,
     position: [0, 0],
   },
-  updateJoinedPlayers: (joinedPlayers: number[]) => set({ joinedPlayers }),
+  updateJoinedPlayers: (joinedPlayers: number[]) => {
+    console.log("Updating joined players", joinedPlayers);
+    set({ joinedPlayers });
+  },
   updatePlayer: (number: number, player: Player) => {
     if (number == 0) {
       set({ player0: player });

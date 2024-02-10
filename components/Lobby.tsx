@@ -38,6 +38,7 @@ export default function Lobby(props: { debug: boolean }) {
 
   // When controllers connect, update joined players
   useEffect(() => {
+    console.log("connections updated");
     updateJoinedPlayers(connections);
   }, [connections]);
 

@@ -1,28 +1,53 @@
-import { useFrame } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
 import { useConnectionStore, useGamepadStore } from "stores/gamepadStore";
+
+const useAnimationFrame = (callback) => {
+  const requestRef = useRef(0);
+  const previousTimeRef = useRef(0);
+
+  const frame = (time) => {
+    if (previousTimeRef.current != undefined) {
+      const deltaTime = time - previousTimeRef.current;
+      callback(deltaTime);
+    }
+    previousTimeRef.current = time;
+    requestRef.current = requestAnimationFrame(frame);
+  };
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []);
+};
 
 export default function Gamepads() {
   const connections = useConnectionStore((state) => state.connections);
+  const gamepads = useGamepadStore((state) => state.gamepads);
   const addGamepad = useConnectionStore((state) => state.addGamepad);
   const removeGamepad = useConnectionStore((state) => state.removeGamepad);
   const updateGamepads = useGamepadStore((state) => state.updateGamepads);
 
-  useFrame((_, delta) => {
+  const pollGamepads = () => {
     const detectedGamepads = navigator.getGamepads();
-    for (var i = 0; i < detectedGamepads.length; i++) {
-      const gamepad = detectedGamepads[i];
+    updateGamepads(detectedGamepads);
+  };
+
+  useAnimationFrame((deltaTime) => {
+    pollGamepads();
+  });
+
+  useEffect(() => {
+    for (var i = 0; i < gamepads.length; i++) {
+      const gamepad = gamepads[i];
       if (gamepad && gamepad !== null) {
         if (!connections.includes(gamepad.index)) {
-          console.log("Gamepad connected", gamepad.index);
           addGamepad(gamepad.index);
         }
       } else if (connections.includes(i)) {
-        console.log("Gamepad disconnected", i);
         removeGamepad(i);
       }
     }
-    updateGamepads(detectedGamepads);
-  });
+  }, [gamepads]);
 
   return <></>;
 }
