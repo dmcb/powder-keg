@@ -9,7 +9,6 @@ export default function Gamepads() {
 
   useFrame((_, delta) => {
     const detectedGamepads = navigator.getGamepads();
-    console.log("detectedGamepads", detectedGamepads);
     for (var i = 0; i < detectedGamepads.length; i++) {
       const gamepad = detectedGamepads[i];
       if (gamepad && gamepad !== null) {
