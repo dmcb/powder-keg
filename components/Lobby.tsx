@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import GameCount from "components/GameCount";
 import PlayerConfig from "components/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
@@ -52,7 +52,7 @@ export default function Lobby(props: { debug: boolean }) {
         });
         readyProgress.current += readyChange / connections.length;
         if (readyProgress.current < 0) readyProgress.current = 0;
-        if (readyProgress.current >= 1) {
+        else if (readyProgress.current >= 1) {
           setStartGame();
         }
       }
@@ -68,8 +68,6 @@ export default function Lobby(props: { debug: boolean }) {
 
   const startGame = (e) => {
     e.preventDefault();
-    console.log("Game start");
-    console.log(players);
     setStartGame();
   };
 

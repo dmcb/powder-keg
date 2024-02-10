@@ -9,6 +9,8 @@ import { useControls } from "leva";
 import { useGameStore } from "stores/gameStore";
 
 const BoardPieces = (props: { seed: string; players: number[] }) => {
+  const gameplayStarted = useGameStore((state) => state.gameplayStarted);
+
   return (
     <>
       <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
@@ -17,9 +19,10 @@ const BoardPieces = (props: { seed: string; players: number[] }) => {
       <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       <Ocean />
       <Terrain seed={props.seed} />
-      {props.players.map((player, index) => {
-        return <Player key={index} number={index} />;
-      })}
+      {gameplayStarted &&
+        props.players.map((player, index) => {
+          return <Player key={index} number={index} />;
+        })}
     </>
   );
 };
