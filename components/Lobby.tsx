@@ -60,7 +60,7 @@ export default function Lobby(props: { debug: boolean }) {
           return (
             <PlayerConfig
               key={index}
-              number={index + 1}
+              number={index}
               joined={joinedPlayers.includes(index)}
               updatePlayerName={updatePlayerName}
             />

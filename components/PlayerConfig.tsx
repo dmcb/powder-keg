@@ -109,7 +109,7 @@ export default function PlayerConfig(props: {
   };
 
   useEffect(() => {
-    props.updatePlayerName(playerName, props.number - 1);
+    props.updatePlayerName(playerName, props.number);
   }, [playerName]);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function PlayerConfig(props: {
 
   useEffect(() => {
     if (gamepads) {
-      if (gamepads[props.number - 1]?.buttons[1]?.pressed) {
+      if (gamepads[props.number]?.buttons[1]?.pressed) {
         if (!button1Pressed) {
           setButton1Pressed(true);
           generateName();
@@ -134,7 +134,7 @@ export default function PlayerConfig(props: {
   }, [gamepads]);
 
   const conditionalPlayerLabel = props.joined
-    ? "Player " + props.number
+    ? "Player " + (props.number + 1)
     : "Connect gamepad";
 
   return (
