@@ -1,10 +1,7 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { Perf } from "r3f-perf";
 import { Leva } from "leva";
 import { useSearchParams } from "next/navigation";
-import { OrbitControls } from "@react-three/drei";
 import Game from "components/scenes/Game";
 import Lobby from "components/scenes/Lobby";
 import Gamepads from "components/ui/Gamepads";
@@ -19,13 +16,7 @@ export default function Page() {
     <>
       <Leva hidden={debug ? false : true} />
       <Gamepads />
-      {gameStarted && (
-        <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
-          {debug && <Perf position="top-left" />}
-          {debug && <OrbitControls />}
-          <Game debug={debug} />
-        </Canvas>
-      )}
+      {gameStarted && <Game debug={debug} />}
       {!gameStarted && <Lobby debug={debug} />}
     </>
   );

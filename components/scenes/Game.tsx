@@ -4,6 +4,9 @@ import Camera from "components/game/Camera";
 import { useEffect, useState } from "react";
 import { usePlayerStore } from "stores/playerStore";
 import { useGameStore } from "stores/gameStore";
+import { Canvas } from "@react-three/fiber";
+import { Perf } from "r3f-perf";
+import { OrbitControls } from "@react-three/drei";
 
 export default function Game(props: { debug: boolean }) {
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
@@ -27,10 +30,12 @@ export default function Game(props: { debug: boolean }) {
   }, [gameStarted, timeToStart]);
 
   return (
-    <>
+    <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
+      {props.debug && <Perf position="top-left" />}
+      {props.debug && <OrbitControls />}
       <Board debug={props.debug} players={joinedPlayers} />
       <Sun />
       <Camera />
-    </>
+    </Canvas>
   );
 }
