@@ -48,7 +48,7 @@ export default function Lobby(props: { debug: boolean }) {
   }, [connections]);
 
   return (
-    <div className="menu">
+    <div id="lobby">
       <h1>Powder Keg</h1>
       <GameCount />
       <form>

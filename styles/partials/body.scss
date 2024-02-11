@@ -1,0 +1,14 @@
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(90, 105, 117, 1);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(90, 105, 117, 1) 100%
+  );
+}

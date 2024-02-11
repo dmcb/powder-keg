@@ -1,0 +1,19 @@
+#scoreboard {
+  @include background-pattern();
+  position: absolute;
+  border: solid 0.25em #433a32;
+  color: #fff;
+  z-index: 1;
+  top: 0rem;
+  display: flex;
+  border-radius: 0 0 1em 1em;
+  border-top: 0;
+  padding: 0.5em;
+
+  .player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+  }
+}

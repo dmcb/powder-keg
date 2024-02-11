@@ -1,0 +1,51 @@
+.gamepad-buttons {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 0.5rem;
+  margin-top: -0.25rem;
+  margin-right: 1.25rem;
+
+  .gamepad-button {
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+    border: 2px solid black;
+    background-color: transparent;
+    position: absolute;
+    opacity: 0.3;
+    transition: transform 0.1s ease-in-out;
+  }
+
+  .gamepad-button.press-me {
+    background-color: black;
+    opacity: 1;
+  }
+
+  &.light .gamepad-button {
+    border-color: white;
+  }
+
+  &.light .gamepad-button.press-me {
+    background-color: white;
+  }
+
+  .gamepad-button.pressed {
+    transform: scale(1.3);
+    background-color: #fee715;
+  }
+
+  .gamepad-button.left {
+    top: 0.5rem;
+    left: -0.5rem;
+  }
+
+  .gamepad-button.right {
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .gamepad-button.down {
+    top: 1rem;
+  }
+}

@@ -1,0 +1,80 @@
+#lobby {
+  @include background-pattern();
+  position: absolute;
+  border-radius: 1em;
+  border: solid 0.25em #433a32;
+  padding: 1em;
+  color: #fff;
+
+  .count {
+    display: block;
+    margin-top: -2em;
+    padding-bottom: 0.8em;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #498207;
+    text-align: right;
+  }
+
+  label {
+    background-color: #433a32;
+    padding: 0.75em 1em;
+    border-radius: 8px;
+    display: inline-block;
+    z-index: 1;
+    position: relative;
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+
+  input {
+    font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+    display: block;
+    border-radius: 8px;
+    border: 0px none;
+    background-color: #d1c3b7;
+    margin-top: -0.75rem;
+    margin-left: 3rem;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem 0.5rem 1rem;
+    font-size: 1rem;
+
+    &:disabled {
+      opacity: 0.2;
+    }
+  }
+
+  button {
+    width: 100%;
+    font-size: 1rem;
+    font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 0;
+    background-color: #433a32;
+    transition: 0.3s ease-in-out all;
+    color: #fff;
+    padding: 0.75em 1em;
+
+    :disabled {
+      opacity: 0.2;
+    }
+
+    :not(:disabled):hover {
+      background: linear-gradient(90deg, #498207 100%, #433a32 100%) !important;
+      cursor: pointer;
+    }
+  }
+
+  fieldset .gamepad-buttons {
+    position: absolute;
+    right: 1.5rem;
+    top: 2.35rem;
+    margin: 0;
+  }
+}
