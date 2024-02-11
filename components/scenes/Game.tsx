@@ -7,6 +7,7 @@ import { useGameStore } from "stores/gameStore";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { OrbitControls } from "@react-three/drei";
+import Scoreboard from "components/ui/Scoreboard";
 
 export default function Game(props: { debug: boolean }) {
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
@@ -28,12 +29,15 @@ export default function Game(props: { debug: boolean }) {
   }, [timeToStart]);
 
   return (
-    <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
-      {props.debug && <Perf position="top-left" />}
-      {props.debug && <OrbitControls />}
-      <Board debug={props.debug} players={joinedPlayers} />
-      <Sun />
-      <Camera />
-    </Canvas>
+    <>
+      <Scoreboard />
+      <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
+        {props.debug && <Perf position="top-left" />}
+        {props.debug && <OrbitControls />}
+        <Board debug={props.debug} players={joinedPlayers} />
+        <Sun />
+        <Camera />
+      </Canvas>
+    </>
   );
 }

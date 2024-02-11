@@ -20,7 +20,8 @@ body {
   );
 }
 
-.menu {
+.menu,
+#scoreboard {
   position: absolute;
   border-radius: 1em;
   border: solid 0.25em #433a32;
@@ -177,4 +178,17 @@ h1 {
 
 .gamepad-buttons .gamepad-button.down {
   top: 1rem;
+}
+
+#scoreboard {
+  z-index: 1;
+  top: 0.5rem;
+  display: flex;
+}
+
+#scoreboard .player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 1rem;
 }
