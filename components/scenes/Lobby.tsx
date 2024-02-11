@@ -22,7 +22,7 @@ export default function Lobby(props: { debug: boolean }) {
     (state) => state.updateJoinedPlayers
   );
   const updatePlayer = usePlayerStore((state) => state.updatePlayer);
-  const setStartGame = useGameStore((state) => state.startGame);
+  const setScene = useGameStore((state) => state.setScene);
 
   // Forms valid when at least 2 players have joined and all players have a name
   const formValid =
@@ -34,6 +34,11 @@ export default function Lobby(props: { debug: boolean }) {
   // Update player name into store
   const updatePlayerName = (name, number) => {
     updatePlayer(number, { ...players[number], name: name });
+  };
+
+  // Start game
+  const startGame = () => {
+    setScene("game");
   };
 
   // When controllers connect, update joined players
@@ -69,7 +74,7 @@ export default function Lobby(props: { debug: boolean }) {
         })}
         <ReadyButton
           enabled={formValid}
-          executeFunction={setStartGame}
+          executeFunction={startGame}
           connections={connections}
         >
           Hold <GamepadButtonHelper buttonToPress={0} light={true} /> to start

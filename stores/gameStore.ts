@@ -87,11 +87,11 @@ const seedNoun = [
 
 type Store = {
   seed: string;
-  gameStarted: boolean;
+  gameScene: string;
   gameplayStarted: boolean;
   latitude: number;
+  setScene: (scene: string) => void;
   setSeed: (seed: string) => void;
-  startGame: () => void;
   startGameplay: () => void;
   setLatitude: (latitude: number) => void;
 };
@@ -100,7 +100,7 @@ export const useGameStore = create<Store>()((set) => ({
   seed:
     seedAdjective[Math.floor(Math.random() * seedAdjective.length)] +
     seedNoun[Math.floor(Math.random() * seedNoun.length)],
-  gameStarted: false,
+  gameScene: "lobby",
   gameplayStarted: false,
   latitude: 0,
   setSeed: (seed: string) => {
@@ -112,7 +112,7 @@ export const useGameStore = create<Store>()((set) => ({
     }
     set({ seed });
   },
-  startGame: () => set({ gameStarted: true }),
+  setScene: (gameScene: string) => set({ gameScene }),
   startGameplay: () => set({ gameplayStarted: true }),
   setLatitude: (latitude: number) => set({ latitude }),
 }));

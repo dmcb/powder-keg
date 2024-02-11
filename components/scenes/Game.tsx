@@ -11,23 +11,21 @@ import { OrbitControls } from "@react-three/drei";
 export default function Game(props: { debug: boolean }) {
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
   const [timeToStart, setTimeToStart] = useState(3);
-  const gameStarted = useGameStore((state) => state.gameStarted);
   const setStartGameplay = useGameStore((state) => state.startGameplay);
 
   useEffect(() => {
     let interval = null;
-    if (gameStarted) {
-      interval = setInterval(() => {
-        setTimeToStart((timeToStart) => timeToStart - 1);
-      }, 1000);
-    } else if (!gameStarted || timeToStart === 0) {
+    interval = setInterval(() => {
+      setTimeToStart((timeToStart) => timeToStart - 1);
+    }, 1000);
+    if (timeToStart === 0) {
       clearInterval(interval);
     }
     if (timeToStart === 0) {
       setStartGameplay();
     }
     return () => clearInterval(interval);
-  }, [gameStarted, timeToStart]);
+  }, [timeToStart]);
 
   return (
     <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>

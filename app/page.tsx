@@ -10,14 +10,14 @@ import { useGameStore } from "stores/gameStore";
 export default function Page() {
   const searchParams = useSearchParams();
   const debug = searchParams.has("debug");
-  const gameStarted = useGameStore((state) => state.gameStarted);
+  const gameScene = useGameStore((state) => state.gameScene);
 
   return (
     <>
       <Leva hidden={debug ? false : true} />
       <Gamepads />
-      {gameStarted && <Game debug={debug} />}
-      {!gameStarted && <Lobby debug={debug} />}
+      {gameScene === "lobby" && <Lobby debug={debug} />}
+      {gameScene === "game" && <Game debug={debug} />}
     </>
   );
 }
