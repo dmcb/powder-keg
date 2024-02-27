@@ -31,7 +31,11 @@ export default function Game(props: { debug: boolean }) {
   return (
     <>
       <Scoreboard />
-      <Canvas shadows={true} camera={{ fov: 9, position: [0, 0, 17] }}>
+      <Canvas
+        shadows={true}
+        camera={{ fov: 9, position: [0, 0, 17] }}
+        style={{ height: "100svh" }}
+      >
         {props.debug && <Perf position="top-left" />}
         {props.debug && <OrbitControls />}
         <Board debug={props.debug} players={joinedPlayers} />
