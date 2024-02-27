@@ -27,19 +27,19 @@ function Ocean(props) {
       step: 1,
     },
     deltaAmplifier: {
-      value: 1,
+      value: 0.8,
       min: 0,
       max: 2,
-      step: 0.1,
+      step: 0.01,
     },
     amplitude: {
-      value: 0,
+      value: 0.6,
       min: 0,
-      max: 0.1,
-      step: 0.001,
+      max: 2,
+      step: 0.01,
     },
     frequency: {
-      value: 5,
+      value: 12,
       min: 1,
       max: 20,
       step: 0.1,
@@ -62,10 +62,18 @@ function Ocean(props) {
     const time = state.clock.getElapsedTime();
     const positions = meshRef.current.geometry.attributes.position.array;
     for (let i = 0; i < positions.length; i += 3) {
-      positions[i + 2] =
-        Math.sin(positions[i] * frequency + time * deltaAmplifier) *
-        Math.cos(positions[i + 1] * frequency + time * deltaAmplifier) *
-        amplitude;
+      if (
+        positions[i] !== -1 &&
+        positions[i] !== 1 &&
+        positions[i + 1] !== -1 &&
+        positions[i + 1] !== 1
+      ) {
+        positions[i + 2] =
+          Math.sin(positions[i] * frequency + time * deltaAmplifier) *
+          Math.cos(positions[i + 1] * frequency + time * deltaAmplifier) *
+          amplitude *
+          0.01;
+      }
     }
     meshRef.current.geometry.attributes.position.needsUpdate = true;
   });
