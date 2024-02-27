@@ -14,9 +14,12 @@ export default function Sun() {
   const [
     {
       dayLength,
-      sunRotationsPerDay,
+      nightLength,
+      sunRotationPerDay,
+      sunRotationPerNight,
       middayExaggeration,
       dayProgress,
+      nightProgress,
       maxDirectBrightness,
       directColorTempGradient,
       directMaxColorTemp,
@@ -33,8 +36,20 @@ export default function Sun() {
       max: 600,
       step: 1,
     },
-    sunRotationsPerDay: {
+    nightLength: {
+      value: 300,
+      min: 1,
+      max: 600,
+      step: 1,
+    },
+    sunRotationPerDay: {
       value: 0.5,
+      min: 0.01,
+      max: 1,
+      step: 0.01,
+    },
+    sunRotationPerNight: {
+      value: 0.2,
       min: 0.01,
       max: 1,
       step: 0.01,
@@ -46,6 +61,12 @@ export default function Sun() {
       step: 0.01,
     },
     dayProgress: {
+      value: 0,
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    nightProgress: {
       value: 0,
       min: 0,
       max: 1,
@@ -97,7 +118,7 @@ export default function Sun() {
 
   useFrame((_, delta) => {
     // Get total rotation per day
-    const sunArcPerDay = sunRotationsPerDay * Math.PI * 2;
+    const sunArcPerDay = sunRotationPerDay * Math.PI * 2;
 
     // Get time of day
     const middayness = 1 - Math.abs(0.5 - dayProgress) * 2;
