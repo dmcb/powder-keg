@@ -37,7 +37,7 @@ export default function Sun() {
       step: 1,
     },
     nightLength: {
-      value: 10,
+      value: 6,
       min: 0,
       max: 600,
       step: 1,

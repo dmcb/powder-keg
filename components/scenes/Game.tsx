@@ -8,6 +8,7 @@ import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import { OrbitControls } from "@react-three/drei";
 import Scoreboard from "components/ui/Scoreboard";
+import Countdown from "components/ui/Countdown";
 
 export default function Game(props: { debug: boolean }) {
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
@@ -31,6 +32,7 @@ export default function Game(props: { debug: boolean }) {
   return (
     <>
       <Scoreboard />
+      <Countdown timeToStart={timeToStart} />
       <Canvas
         shadows={true}
         camera={{ fov: 9, position: [0, 0, 17] }}
