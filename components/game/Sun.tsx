@@ -31,31 +31,31 @@ export default function Sun() {
     set,
   ] = useControls("Sun", () => ({
     dayLength: {
-      value: 300,
+      value: 180,
       min: 1,
       max: 600,
       step: 1,
     },
     nightLength: {
-      value: 300,
-      min: 1,
+      value: 10,
+      min: 0,
       max: 600,
       step: 1,
     },
     sunRotationPerDay: {
-      value: 0.5,
+      value: 0.32,
       min: 0.01,
       max: 1,
       step: 0.01,
     },
     sunRotationPerNight: {
-      value: 0.2,
+      value: 0.18,
       min: 0.01,
       max: 1,
       step: 0.01,
     },
     middayExaggeration: {
-      value: 0.5,
+      value: 0.8,
       min: 0,
       max: 1,
       step: 0.01,
@@ -97,13 +97,13 @@ export default function Sun() {
       step: 0.01,
     },
     maxAmbientBrightness: {
-      value: 0.7,
+      value: 1,
       min: 0,
       max: 2,
       step: 0.01,
     },
     ambientColorTempGradient: {
-      value: 0.9,
+      value: 1.1,
       min: 0,
       max: 2,
       step: 0.01,
@@ -117,29 +117,37 @@ export default function Sun() {
   }));
 
   useFrame((_, delta) => {
-    // Get total rotation per day
+    // Get total rotation per day and night
     const sunArcPerDay = sunRotationPerDay * Math.PI * 2;
+    const sunArcPerNight = sunRotationPerNight * Math.PI * 2;
 
-    // Get time of day
-    const middayness = 1 - Math.abs(0.5 - dayProgress) * 2;
-    set({ dayProgress: dayProgress + delta / dayLength });
-    if (dayProgress >= 1) {
-      set({ dayProgress: 0 });
+    // Get time of day (or night)
+    if (nightProgress <= 0.5 && dayProgress < 1) {
+      set({ nightProgress: nightProgress + delta / nightLength });
+    } else if (dayProgress < 1) {
+      set({ dayProgress: dayProgress + delta / dayLength });
+    } else {
+      set({ nightProgress: nightProgress + delta / nightLength });
+      if (nightProgress >= 1) {
+        set({ nightProgress: 0 });
+        set({ dayProgress: 0 });
+      }
     }
 
     // Rotate sun based on latitude
     sunRef.current.rotation.x = ((latitude / 90) * Math.PI) / 2;
 
     // Rotate sun over the day
+    const middayness = 1 - Math.abs(0.5 - dayProgress) * 2;
     sunRef.current.rotation.y =
+      (0.5 - nightProgress) * sunArcPerNight +
       (dayProgress - 0.5) *
-      Math.pow(sunArcPerDay, 1 + middayExaggeration * middayness) *
-      -1;
+        Math.pow(sunArcPerDay, 1 + middayExaggeration * middayness) *
+        -1;
 
     // Get height of sun in sky to determine ambient light intensity and colour
-    const sunnyPercentageOfDay = Math.PI / sunArcPerDay;
     const heightOfSun = Math.max(
-      sunnyPercentageOfDay * 1.3 - Math.abs(0.5 - dayProgress) * 2,
+      Math.PI / 2 - Math.abs(sunRef.current.rotation.y),
       0
     );
     ambientRef.current.intensity =

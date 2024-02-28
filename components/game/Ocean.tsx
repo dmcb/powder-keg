@@ -27,13 +27,13 @@ function Ocean(props) {
       step: 1,
     },
     deltaAmplifier: {
-      value: 0.8,
+      value: 0.9,
       min: 0,
       max: 2,
       step: 0.01,
     },
     amplitude: {
-      value: 0.6,
+      value: 0.48,
       min: 0,
       max: 2,
       step: 0.01,
