@@ -4,4 +4,6 @@ h1 {
   font-weight: 400;
   text-align: center;
   margin-top: 0;
+  user-select: none;
+  pointer-events: none;
 }

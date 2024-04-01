@@ -30,6 +30,8 @@
   }
 
   label {
+    user-select: none;
+    pointer-events: none;
     background-color: #433a32;
     padding: 0.75em 1em;
     border-radius: 8px;

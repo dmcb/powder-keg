@@ -19,7 +19,7 @@ export default function ReadyButton(
       let readyChange = 0;
       gamepads.forEach((gamepad) => {
         readyChange -= (0.125 * delta) / 1000;
-        if (gamepad.buttons[0].pressed) {
+        if (gamepad && gamepad.buttons[0].pressed) {
           readyChange += delta / 1000;
         }
       });
