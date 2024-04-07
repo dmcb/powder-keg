@@ -257,6 +257,7 @@ export default function Terrain(props: { seed: string }) {
 
   return (
     <mesh
+      name="terrain"
       key={props.seed}
       ref={trimeshRef}
       castShadow={true}

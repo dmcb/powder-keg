@@ -22,7 +22,7 @@ export default function Border(props) {
 
   return (
     <>
-      <mesh ref={barrierRef}>
+      <mesh ref={barrierRef} name="border">
         <planeGeometry args={[2, 1]} />
         <meshStandardMaterial visible={false} />
       </mesh>

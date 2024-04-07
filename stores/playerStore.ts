@@ -14,6 +14,7 @@ type Store = {
   player3: Player;
   updateJoinedPlayers: (joinedPlayers: number[]) => void;
   updatePlayer: (number: number, player: Player) => void;
+  updatePlayerHealth: (number: number, health: number) => void;
 };
 
 export const usePlayerStore = create<Store>()((set) => ({
@@ -52,5 +53,10 @@ export const usePlayerStore = create<Store>()((set) => ({
     } else if (number == 3) {
       set({ player3: player });
     }
+  },
+  updatePlayerHealth: (number: number, delta: number) => {
+    const player = { ...usePlayerStore.getState()["player" + number] };
+    player.health += delta;
+    usePlayerStore.getState().updatePlayer(number, player);
   },
 }));

@@ -14,6 +14,9 @@ export default function Player(props: { number: number }) {
   const gamepads = useGamepadStore((state) => state["gamepads"]);
   const player = usePlayerStore((state) => state["player" + props.number]);
   const updatePlayer = usePlayerStore((state) => state.updatePlayer);
+  const updatePlayerHealth = usePlayerStore(
+    (state) => state.updatePlayerHealth
+  );
   const button0PreviouslyPressed = useRef(false);
   const button1PreviouslyPressed = useRef(false);
 
@@ -67,6 +70,14 @@ export default function Player(props: { number: number }) {
       collisionFilterMask: 1 | 2,
       onCollide: (e) => {
         console.log(e);
+        if (e.body.name != "border" && e.contact.impactVelocity > 0.1) {
+          if (e.body.name == "terrain") {
+            updatePlayerHealth(props.number, -e.contact.impactVelocity * 10);
+          }
+          if (e.body.name == "cannonball") {
+            updatePlayerHealth(props.number, -10);
+          }
+        }
       },
       shapes: [
         {

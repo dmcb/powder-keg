@@ -17,7 +17,7 @@ export default function Cannonball(Props) {
   );
 
   return (
-    <mesh ref={sphereRef} castShadow>
+    <mesh ref={sphereRef} castShadow name="cannonball">
       <sphereGeometry args={[0.004, 16, 16]} />
       <meshStandardMaterial color={"black"} />
     </mesh>
