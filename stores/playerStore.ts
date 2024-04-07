@@ -57,6 +57,9 @@ export const usePlayerStore = create<Store>()((set) => ({
   updatePlayerHealth: (number: number, delta: number) => {
     const player = { ...usePlayerStore.getState()["player" + number] };
     player.health += delta;
+    if (player.health < 0) {
+      player.health = 0;
+    }
     usePlayerStore.getState().updatePlayer(number, player);
   },
 }));
