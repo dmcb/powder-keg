@@ -65,6 +65,9 @@ export default function Player(props: { number: number }) {
       position: initialPosition,
       collisionFilterGroup: 1,
       collisionFilterMask: 1 | 2,
+      onCollide: (e) => {
+        console.log(e);
+      },
       shapes: [
         {
           args: [0.035, 0.085, 0.1],
@@ -112,10 +115,10 @@ export default function Player(props: { number: number }) {
     // Get gamepad input
     if (gamepads && gamepads[props.number]) {
       // Turn ship from gamepad input
-      if (gamepads[props.number].axes[0] < -0.1) {
+      if (gamepads[props.number].axes[0] < -0.2) {
         api.applyTorque([0, 0, 5 * sailTurnModifier * delta]);
       }
-      if (gamepads[props.number].axes[0] > 0.1) {
+      if (gamepads[props.number].axes[0] > 0.2) {
         api.applyTorque([0, 0, -5 * sailTurnModifier * delta]);
       }
 
