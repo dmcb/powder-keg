@@ -6,7 +6,7 @@ type ConnectionStore = {
   removeGamepad: (connection: number) => void;
 };
 
-export const useConnectionStore = create<ConnectionStore>()((set) => ({
+export const useConnectionStore = create<ConnectionStore>((set) => ({
   connections: [],
   addGamepad: (connection: number) => {
     console.log("Adding gamepad", connection);
@@ -26,7 +26,7 @@ type GamepadStore = {
   updateGamepads: (gamepads: Gamepad[], delta: number) => void;
 };
 
-export const useGamepadStore = create<GamepadStore>()((set) => ({
+export const useGamepadStore = create<GamepadStore>((set) => ({
   gamepads: [],
   delta: 0,
   updateGamepads: (gamepads: Gamepad[], delta: number) =>

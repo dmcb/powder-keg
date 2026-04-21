@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useLayoutEffect, useRef } from "react";
 import { Object3D, Vector2, Vector3 } from "three";
-import { lerp } from "three/src/math/MathUtils";
+import { MathUtils } from "three";
 import { usePlayerStore } from "stores/playerStore";
 
 const cameraTiltDistance = 4.3;
@@ -53,7 +53,9 @@ export default function Camera() {
     players.forEach((player) => {
       playerDistance = Math.max(
         playerDistance,
-        new Vector2(player.position[0], player.position[1]).distanceTo(midpoint)
+        new Vector2(player.position[0], player.position[1]).distanceTo(
+          midpoint,
+        ),
       );
     });
 
@@ -78,7 +80,7 @@ export default function Camera() {
     const cameraTarget = new Vector3(
       cameraPosition.position.x,
       cameraPosition.position.y,
-      -0.1
+      -0.1,
     );
     camera.up.set(1, 1, 0);
     camera.position.copy(cameraPosition.position);
@@ -91,7 +93,7 @@ export default function Camera() {
       camera.position.z = Math.max(
         (cameraPosition.position.z * adjustedPlayerDistance) /
           defaultPlayerDistance,
-        cameraMinDistance
+        cameraMinDistance,
       );
     }
 
@@ -100,8 +102,8 @@ export default function Camera() {
       new Vector3(
         -cameraTiltDistance * (camera.position.z / cameraMaxDistance),
         -cameraTiltDistance * (camera.position.z / cameraMaxDistance),
-        0
-      )
+        0,
+      ),
     );
     camera.lookAt(cameraTarget);
   });

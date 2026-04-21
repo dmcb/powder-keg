@@ -96,7 +96,7 @@ type Store = {
   setLatitude: (latitude: number) => void;
 };
 
-export const useGameStore = create<Store>()((set) => ({
+export const useGameStore = create<Store>((set) => ({
   seed:
     seedAdjective[Math.floor(Math.random() * seedAdjective.length)] +
     seedNoun[Math.floor(Math.random() * seedNoun.length)],

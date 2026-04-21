@@ -17,7 +17,7 @@ type Store = {
   updatePlayerHealth: (number: number, health: number) => void;
 };
 
-export const usePlayerStore = create<Store>()((set) => ({
+export const usePlayerStore = create<Store>((set) => ({
   joinedPlayers: [],
   player0: {
     name: "",
