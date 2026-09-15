@@ -1,12 +1,13 @@
 import React, { useRef } from "react";
 import { Physics, Debug } from "@react-three/cannon";
-import Terrain from "components/game/Terrain";
-import Ocean from "components/game/Ocean";
-import Player from "components/game/Player";
-import Border from "components/game/Border";
+import Terrain from "components/environment/Terrain";
+import Ocean from "components/environment/Ocean";
+import Player from "components/entities/Player/Player";
+import Border from "components/environment/Border";
 import { Group } from "three";
 import { useControls } from "leva";
 import { useGameStore } from "stores/gameStore";
+import { boardGravity } from "config/physics";
 
 const BoardPieces = (props: { seed: string; players: number[] }) => {
   return (
@@ -39,7 +40,7 @@ export default function Board(props: { debug: boolean; players: number[] }) {
 
   return (
     <group ref={boardRef}>
-      <Physics gravity={[0, 0, -1]}>
+      <Physics gravity={boardGravity}>
         {(props.debug && physicsOverlay && (
           <Debug color="green" key={seed}>
             <BoardPieces seed={seed} players={props.players} />

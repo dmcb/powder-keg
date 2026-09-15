@@ -3,15 +3,18 @@ import { Vector3, BufferGeometry, Float32BufferAttribute } from "three";
 import Delaunator from "delaunator";
 import { createNoise2D } from "simplex-noise";
 import Alea from "aleaprng";
-import chroma from "chroma-js";
 import { useControls } from "leva";
 import type { Mesh } from "three";
 import { useTrimesh } from "@react-three/cannon";
 import { useGameStore } from "stores/gameStore";
-import baseNoise from "lib/baseNoise";
+import baseNoise from "lib/noise";
+import {
+  getBiomeColorScale,
+  getBiomeFromLatitude,
+  terrainAmplitudeRange,
+} from "config/biomes";
 
-const minAmplitude = 0.1;
-const maxAmplitude = 0.4;
+const { min: minAmplitude, max: maxAmplitude } = terrainAmplitudeRange;
 
 export default function Terrain(props: { seed: string }) {
   // State hooks
@@ -25,7 +28,7 @@ export default function Terrain(props: { seed: string }) {
       collisionFilterGroup: 1,
       collisionFilterMask: 1,
     }),
-    useRef<Mesh>(null)
+    useRef<Mesh>(null),
   );
   const geometryRef = useRef<BufferGeometry>(null!);
 
@@ -39,14 +42,13 @@ export default function Terrain(props: { seed: string }) {
     initialGradientEdge,
     initialOctaves,
   } = useMemo(() => {
-    console.log("Initializing terrain with " + props.seed);
     const prng = new Alea(props.seed);
     const initialLatitude = prng() * 180 - 90;
     prng.restart();
     return {
       prng: prng,
       initialLatitude: initialLatitude,
-      initialBiome: Math.floor(Math.abs(initialLatitude) / 30),
+      initialBiome: getBiomeFromLatitude(initialLatitude),
       initialAmplitude: prng() * (maxAmplitude - minAmplitude) + minAmplitude,
       initialFrequency: prng() * 0.7 + 1,
       initialGradientEdge: prng() * 0.36 + 0.5,
@@ -142,7 +144,7 @@ export default function Terrain(props: { seed: string }) {
         points.push(
           x,
           y,
-          baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y)
+          baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y),
         );
       }
     }
@@ -154,7 +156,7 @@ export default function Terrain(props: { seed: string }) {
       points.push(
         x,
         y,
-        baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y)
+        baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y),
       );
     }
 
@@ -163,49 +165,35 @@ export default function Terrain(props: { seed: string }) {
 
   const meshIndex: number[] = useMemo(() => {
     // Triangulate
-    const pointsAs2D = [];
+    const pointsAs2D: [number, number][] = [];
     for (let i = 0; i < points.length; i += 3) {
       pointsAs2D.push([points[i], points[i + 1]]);
     }
     const delaunayIndex = Delaunator.from(pointsAs2D);
 
     // Create faces
-    const meshIndex = [];
-    for (let i = 0; i < delaunayIndex.triangles.length; i++) {
-      meshIndex.push(delaunayIndex.triangles[i]);
-    }
-
-    return meshIndex.reverse();
+    return Array.from(delaunayIndex.triangles).reverse();
   }, [points]);
 
-  const colourScale: chroma = useMemo(() => {
-    switch (biome) {
-      case 0:
-        return chroma
-          .scale(["dcd39f", "749909", "215322", "152A15", "746354", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.6, 0.95, 1.0])
-          .classes(20);
-      case 1:
-        return chroma
-          .scale(["FBD5A2", "F8D0AE", "A06743", "754228", "451304", "FFFFFF"])
-          .domain([0.0, 0.05, 0.2, 0.3, 0.9, 1.0])
-          .classes(20);
-      case 2:
-        return chroma
-          .scale(["827369", "54596D", "BED6DB", "F4F5F6", "FFFFFF"])
-          .domain([0.0, 0.1, 0.2, 0.6, 0.8])
-          .classes(20);
-    }
-  }, [biome]);
+  const colourScale = useMemo(() => getBiomeColorScale(biome), [biome]);
 
   // Changes in latitude effect sun and biome
+  const previousLatitude = useRef(latitude);
   useLayoutEffect(() => {
-    set({ biome: Math.floor(Math.abs(latitude) / 30) });
+    // Skip the redundant initial set(); the Leva inputs are not registered
+    // yet on mount and the control already holds the initial value.
+    if (previousLatitude.current !== latitude) {
+      set({ biome: getBiomeFromLatitude(latitude) });
+    }
+    previousLatitude.current = latitude;
     setLatitude(latitude);
   }, [latitude]);
 
-  // Changes in initial value update debug controls
+  // Changes in seed update debug controls
+  const previousSeed = useRef(props.seed);
   useLayoutEffect(() => {
+    if (previousSeed.current === props.seed) return;
+    previousSeed.current = props.seed;
     set({
       latitude: initialLatitude,
       biome: initialBiome,
@@ -216,44 +204,59 @@ export default function Terrain(props: { seed: string }) {
     });
   }, [props.seed]);
 
-  // Update geometry with points, faces, and colouring
+  const pointsAsVector3 = useMemo(() => {
+    const pointsAsVector3: Vector3[] = [];
+    for (let i = 0; i < points.length; i += 3) {
+      pointsAsVector3.push(
+        new Vector3(points[i], points[i + 1], points[i + 2]),
+      );
+    }
+    return pointsAsVector3;
+  }, [points]);
+
+  // Update geometry with points and faces
   useLayoutEffect(() => {
     if (geometryRef.current) {
-      const pointsAsVector3 = [];
-      for (let i = 0; i < points.length; i += 3) {
-        pointsAsVector3.push(
-          new Vector3(points[i], points[i + 1], points[i + 2])
-        );
-      }
-      geometryRef.current.setFromPoints(pointsAsVector3);
-      geometryRef.current.setIndex(meshIndex);
-      geometryRef.current.computeVertexNormals();
-      geometryRef.current.copy(geometryRef.current.toNonIndexed());
-
-      // Set colours per face
-      const positionAttribute = geometryRef.current.getAttribute("position");
-      const colours = [];
-      for (let i = 0; i < positionAttribute.count; i += 3) {
-        const avgHeightOfFace =
-          (positionAttribute.getZ(i) +
-            positionAttribute.getZ(i + 1) +
-            positionAttribute.getZ(i + 2)) /
-          3 /
-          maxAmplitude;
-        const [r, g, b] = colourScale(avgHeightOfFace).get("rgb");
-        colours.push(r / 255, g / 255, b / 255);
-        colours.push(r / 255, g / 255, b / 255);
-        colours.push(r / 255, g / 255, b / 255);
-      }
-      geometryRef.current.setAttribute(
-        "color",
-        new Float32BufferAttribute(colours, 3)
-      );
+      // Build a fresh geometry: setFromPoints() iterates an existing position
+      // attribute's count, so reusing the non-indexed geometry (whose vertex
+      // count exceeds the source points) reads past the end of the array.
+      const geometry = new BufferGeometry();
+      geometry.setFromPoints(pointsAsVector3);
+      geometry.setIndex(meshIndex);
+      geometry.computeVertexNormals();
+      const nonIndexed = geometry.toNonIndexed();
+      geometryRef.current.copy(nonIndexed);
+      geometry.dispose();
+      nonIndexed.dispose();
 
       // Reset trimesh
       // Is there a way to dynamically update the trimesh geometry?
     }
-  }, [props.seed, biome, octaves, amplitude, frequency, gradientEdge]);
+  }, [pointsAsVector3, meshIndex]);
+
+  // Update face colours
+  useLayoutEffect(() => {
+    const positionAttribute = geometryRef.current?.getAttribute("position");
+    if (!positionAttribute) return;
+
+    const colours: number[] = [];
+    for (let i = 0; i < positionAttribute.count; i += 3) {
+      const avgHeightOfFace =
+        (positionAttribute.getZ(i) +
+          positionAttribute.getZ(i + 1) +
+          positionAttribute.getZ(i + 2)) /
+        3 /
+        maxAmplitude;
+      const [r, g, b] = colourScale(avgHeightOfFace).rgb();
+      colours.push(r / 255, g / 255, b / 255);
+      colours.push(r / 255, g / 255, b / 255);
+      colours.push(r / 255, g / 255, b / 255);
+    }
+    geometryRef.current.setAttribute(
+      "color",
+      new Float32BufferAttribute(colours, 3),
+    );
+  }, [pointsAsVector3, colourScale]);
 
   return (
     <mesh

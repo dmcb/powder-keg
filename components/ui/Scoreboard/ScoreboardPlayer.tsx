@@ -1,19 +1,7 @@
 import { usePlayerStore } from "stores/playerStore";
 
 export default function ScoreboardPlayer(props: { playerNumber: number }) {
-  let player = null;
-  if (props.playerNumber == 0) {
-    player = usePlayerStore((state) => state.player0);
-  }
-  if (props.playerNumber == 1) {
-    player = usePlayerStore((state) => state.player1);
-  }
-  if (props.playerNumber == 2) {
-    player = usePlayerStore((state) => state.player2);
-  }
-  if (props.playerNumber == 3) {
-    player = usePlayerStore((state) => state.player3);
-  }
+  const player = usePlayerStore((state) => state.players[props.playerNumber]);
 
   return (
     <div className={"player player" + props.playerNumber}>

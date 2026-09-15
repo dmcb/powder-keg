@@ -1,25 +1,24 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useLayoutEffect, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Object3D, Vector2, Vector3 } from "three";
-import { MathUtils } from "three";
 import { usePlayerStore } from "stores/playerStore";
-
-const cameraTiltDistance = 4.3;
-const cameraMaxDistance = 17.0;
-const cameraMinDistance = 7;
-const defaultPlayerDistance = 1.3;
+import {
+  cameraTiltDistance,
+  cameraMaxDistance,
+  cameraMinDistance,
+  defaultPlayerDistance,
+} from "config/camera";
 
 export default function Camera() {
   const { camera } = useThree();
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
-  const players = [
-    usePlayerStore((state) => state.player0),
-    usePlayerStore((state) => state.player1),
-    usePlayerStore((state) => state.player2),
-    usePlayerStore((state) => state.player3),
-  ].filter((player, index) => index in joinedPlayers);
+  const allPlayers = usePlayerStore((state) => state.players);
+  const players = useMemo(
+    () => allPlayers.filter((_, index) => joinedPlayers.includes(index)),
+    [allPlayers, joinedPlayers],
+  );
 
-  let aspectRatio = useRef(0);
+  const aspectRatio = useRef(0);
 
   const cameraPosition = useMemo(() => {
     const newCamera = new Object3D();
@@ -58,23 +57,6 @@ export default function Camera() {
         ),
       );
     });
-
-    // // Lerp to targeted camera distance
-    // if (Math.abs(followPoint.position.z - targetCameraDistance.current) > 0.1) {
-    //   followPoint.position.z = lerp(
-    //     followPoint.position.z,
-    //     targetCameraDistance.current,
-    //     0.1
-    //   );
-    // }
-
-    // More zoom in, more adjustment to player's position
-    // focusPoint.lerp(
-    //   attachPoint.position,
-    //   1 -
-    //     (followPoint.position.z - cameraMinDistance) /
-    //       (cameraMaxDistance - cameraMinDistance)
-    // );
 
     // Move camera to its position
     const cameraTarget = new Vector3(

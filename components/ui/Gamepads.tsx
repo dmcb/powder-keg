@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useConnectionStore, useGamepadStore } from "stores/gamepadStore";
 
-const useAnimationFrame = (callback) => {
+const useAnimationFrame = (callback: (deltaTime: number) => void) => {
   const requestRef = useRef(0);
-  const previousTimeRef = useRef(0);
+  const previousTimeRef = useRef<number | undefined>(undefined);
 
-  const frame = (time) => {
+  const frame = (time: number) => {
     if (previousTimeRef.current != undefined) {
       const deltaTime = time - previousTimeRef.current;
       callback(deltaTime);
@@ -27,7 +27,7 @@ export default function Gamepads() {
   const removeGamepad = useConnectionStore((state) => state.removeGamepad);
   const updateGamepads = useGamepadStore((state) => state.updateGamepads);
 
-  const pollGamepads = (delta) => {
+  const pollGamepads = (delta: number) => {
     const detectedGamepads = navigator.getGamepads();
     updateGamepads(detectedGamepads, delta);
   };
@@ -37,7 +37,7 @@ export default function Gamepads() {
   });
 
   useEffect(() => {
-    for (var i = 0; i < gamepads.length; i++) {
+    for (let i = 0; i < gamepads.length; i++) {
       const gamepad = gamepads[i];
       if (gamepad && gamepad !== null) {
         if (!connections.includes(gamepad.index)) {

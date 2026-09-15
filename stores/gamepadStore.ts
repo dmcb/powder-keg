@@ -9,11 +9,9 @@ type ConnectionStore = {
 export const useConnectionStore = create<ConnectionStore>((set) => ({
   connections: [],
   addGamepad: (connection: number) => {
-    console.log("Adding gamepad", connection);
     set((state) => ({ connections: [...state.connections, connection] }));
   },
   removeGamepad: (connection: number) => {
-    console.log("Gamepad disconnected", connection);
     set((state) => ({
       connections: state.connections.filter((c) => c !== connection),
     }));
@@ -21,17 +19,14 @@ export const useConnectionStore = create<ConnectionStore>((set) => ({
 }));
 
 type GamepadStore = {
-  gamepads: Gamepad[];
+  gamepads: (Gamepad | null)[];
   delta: number;
-  updateGamepads: (gamepads: Gamepad[], delta: number) => void;
+  updateGamepads: (gamepads: (Gamepad | null)[], delta: number) => void;
 };
 
 export const useGamepadStore = create<GamepadStore>((set) => ({
   gamepads: [],
   delta: 0,
-  updateGamepads: (gamepads: Gamepad[], delta: number) =>
-    set((state) => ({
-      gamepads: gamepads,
-      delta: delta,
-    })),
+  updateGamepads: (gamepads: (Gamepad | null)[], delta: number) =>
+    set({ gamepads, delta }),
 }));

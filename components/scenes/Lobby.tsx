@@ -1,25 +1,20 @@
 import React, { useEffect } from "react";
-import GameCount from "components/ui/GameCount";
-import PlayerConfig from "components/ui/PlayerConfig";
+import GameCount from "components/ui/Lobby/GameCount";
+import PlayerConfig from "components/ui/Lobby/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
-import ReadyButton from "components/ui/ReadyButton";
-import GamepadButtonHelper from "components/ui/GamepadButtonHelper";
+import ReadyButton from "components/ui/Lobby/ReadyButton";
+import GamepadButtonHelper from "components/ui/Lobby/GamepadButtonHelper";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);
   const connections = useConnectionStore((state) => state.connections);
-  const players = [
-    usePlayerStore((state) => state.player0),
-    usePlayerStore((state) => state.player1),
-    usePlayerStore((state) => state.player2),
-    usePlayerStore((state) => state.player3),
-  ];
+  const players = usePlayerStore((state) => state.players);
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);
   const setSeed = useGameStore((state) => state.setSeed);
   const updateJoinedPlayers = usePlayerStore(
-    (state) => state.updateJoinedPlayers
+    (state) => state.updateJoinedPlayers,
   );
   const updatePlayer = usePlayerStore((state) => state.updatePlayer);
   const setScene = useGameStore((state) => state.setScene);
@@ -27,23 +22,22 @@ export default function Lobby(props: { debug: boolean }) {
   // Forms valid when at least 2 players have joined and all players have a name
   const formValid =
     props.debug ||
-    (players.filter((player, index) => index in joinedPlayers).length >= 2 &&
+    (players.filter((_, index) => joinedPlayers.includes(index)).length >= 2 &&
       players.filter((player) => player.name.trim().length).length >= 2 &&
       seed.trim().length > 0);
 
   // Update player name into store
-  const updatePlayerName = (name, number) => {
-    updatePlayer(number, { ...players[number], name: name });
+  const updatePlayerName = (name: string, number: number) => {
+    updatePlayer(number, { name });
   };
 
   // Start game
   const startGame = () => {
-    setScene("game");
+    setScene("countdown");
   };
 
   // When controllers connect, update joined players
   useEffect(() => {
-    console.log("connections updated");
     updateJoinedPlayers(connections);
   }, [connections]);
 

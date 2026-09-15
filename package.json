@@ -28,7 +28,10 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@types/chroma-js": "^3.1.2",
     "@types/node": "^22.0.0",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "r3f-perf": "^7.2.0",
     "typescript": "^5.7.0"
   }

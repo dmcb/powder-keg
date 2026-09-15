@@ -2,8 +2,9 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import * as THREE from "three";
+import type { ThreeElements } from "@react-three/fiber";
 
-function Ocean(props) {
+function Ocean(props: ThreeElements["mesh"]) {
   const meshRef = useRef<THREE.Mesh>(null!);
 
   // Debug controls
@@ -17,7 +18,6 @@ function Ocean(props) {
       roughness,
       opacity,
     },
-    set,
   ] = useControls("Ocean", () => ({
     colour: "#0000ff",
     points: {

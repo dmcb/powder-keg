@@ -1,8 +1,14 @@
 import { useSphere } from "@react-three/cannon";
 import { useRef } from "react";
 import type { Mesh } from "three";
+import type { Triplet } from "@react-three/cannon";
 
-export default function Cannonball(Props) {
+type CannonballProps = {
+  position: Triplet;
+  velocity: Triplet;
+};
+
+export default function Cannonball(props: CannonballProps) {
   const [sphereRef] = useSphere(
     () => ({
       allowSleep: true,
@@ -10,10 +16,10 @@ export default function Cannonball(Props) {
       mass: 0.1,
       collisionFilterGroup: 1,
       collisionFilterMask: 1,
-      position: Props.position,
-      velocity: Props.velocity,
+      position: props.position,
+      velocity: props.velocity,
     }),
-    useRef<Mesh>(null)
+    useRef<Mesh>(null),
   );
 
   return (

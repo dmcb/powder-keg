@@ -1,65 +1,46 @@
 import { create } from "zustand";
 
-type Player = {
+export type Player = {
   name: string;
   health: number;
   position: [number, number];
 };
 
-type Store = {
+const createDefaultPlayer = (): Player => ({
+  name: "",
+  health: 100,
+  position: [0, 0],
+});
+
+type PlayerStore = {
+  players: Player[];
   joinedPlayers: number[];
-  player0: Player;
-  player1: Player;
-  player2: Player;
-  player3: Player;
   updateJoinedPlayers: (joinedPlayers: number[]) => void;
-  updatePlayer: (number: number, player: Player) => void;
-  updatePlayerHealth: (number: number, health: number) => void;
+  updatePlayer: (index: number, data: Partial<Player>) => void;
+  updatePlayerHealth: (index: number, delta: number) => void;
 };
 
-export const usePlayerStore = create<Store>((set) => ({
+export const usePlayerStore = create<PlayerStore>((set, get) => ({
   joinedPlayers: [],
-  player0: {
-    name: "",
-    health: 100,
-    position: [0, 0],
-  },
-  player1: {
-    name: "",
-    health: 100,
-    position: [0, 0],
-  },
-  player2: {
-    name: "",
-    health: 100,
-    position: [0, 0],
-  },
-  player3: {
-    name: "",
-    health: 100,
-    position: [0, 0],
-  },
+  players: [
+    createDefaultPlayer(),
+    createDefaultPlayer(),
+    createDefaultPlayer(),
+    createDefaultPlayer(),
+  ],
   updateJoinedPlayers: (joinedPlayers: number[]) => {
-    console.log("Updating joined players", joinedPlayers);
     set({ joinedPlayers });
   },
-  updatePlayer: (number: number, player: Player) => {
-    if (number == 0) {
-      set({ player0: player });
-    } else if (number == 1) {
-      set({ player1: player });
-    } else if (number == 2) {
-      set({ player2: player });
-    } else if (number == 3) {
-      set({ player3: player });
-    }
+  updatePlayer: (index: number, data: Partial<Player>) => {
+    set((state) => ({
+      players: state.players.map((player, playerIndex) =>
+        playerIndex === index ? { ...player, ...data } : player,
+      ),
+    }));
   },
-  updatePlayerHealth: (number: number, delta: number) => {
-    const player = { ...usePlayerStore.getState()["player" + number] };
-    player.health += delta;
-    if (player.health < 0) {
-      player.health = 0;
-    }
-    usePlayerStore.getState().updatePlayer(number, player);
+  updatePlayerHealth: (index: number, delta: number) => {
+    const player = get().players[index];
+    const health = Math.max(0, player.health + delta);
+    get().updatePlayer(index, { health });
   },
 }));
