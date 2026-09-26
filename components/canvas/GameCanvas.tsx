@@ -3,7 +3,7 @@ import { Perf } from "r3f-perf";
 import { OrbitControls } from "@react-three/drei";
 import Board from "components/canvas/Board";
 import Sun from "components/environment/Sun";
-import Camera from "components/canvas/Camera";
+import SplitScreen from "components/canvas/SplitScreen";
 
 type GameCanvasProps = {
   debug: boolean;
@@ -25,7 +25,7 @@ export default function GameCanvas(props: GameCanvasProps) {
       {props.debug && <OrbitControls />}
       <Board debug={props.debug} players={props.players} />
       <Sun />
-      <Camera />
+      <SplitScreen debug={props.debug} />
     </Canvas>
   );
 }
