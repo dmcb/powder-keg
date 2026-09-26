@@ -1,4 +1,3 @@
-import GamepadButtonHelper from "components/ui/Menu/GamepadButtonHelper";
 import PlayerSlot from "components/ui/Menu/PlayerSlot";
 import { useGamepadButtonPress } from "hooks/useGamepadButtonPress";
 import { usePlayerStore } from "stores/playerStore";
@@ -10,24 +9,31 @@ export default function ResumePlayer(props: {
   onToggleReady: (number: number) => void;
 }) {
   const name = usePlayerStore((state) => state.players[props.number].name);
-  const button0Pressed = useGamepadButtonPress(props.number, 0, () =>
+  useGamepadButtonPress(props.number, 0, () =>
     props.onToggleReady(props.number),
   );
 
-  let status = props.ready ? "Ready" : "Waiting";
-  if (!props.connected) status = "Disconnected";
-
   return (
-    <PlayerSlot
-      label={"Player " + (props.number + 1)}
-      className={props.ready ? "ready" : ""}
-    >
-      <div className="player-value">
-        {name}
-        <span className="status">{status}</span>
-      </div>
-      {props.connected && (
-        <GamepadButtonHelper buttonToPress={0} pressed={button0Pressed} />
+    <PlayerSlot label={"Player " + (props.number + 1)}>
+      <div className="player-value">{name}</div>
+      {!props.connected && <span className="status">Disconnected</span>}
+      {props.connected && props.ready && (
+        <svg
+          className="status"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Ready"
+        >
+          <path
+            d="M4 12.5L9.5 18L20 6"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       )}
     </PlayerSlot>
   );

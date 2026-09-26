@@ -53,14 +53,13 @@ export default function ResumeScreen() {
             />
           ))}
           <ProgressButton
-            autoFocus
             progress={
               requiredPlayers.length ? readyCount / requiredPlayers.length : 0
             }
             onClick={resume}
           >
             Press <GamepadButtonHelper buttonToPress={0} light={true} /> to
-            resume ({readyCount}/{requiredPlayers.length})
+            resume
           </ProgressButton>
         </form>
       </MenuPanel>
