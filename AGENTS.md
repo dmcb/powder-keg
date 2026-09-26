@@ -15,5 +15,9 @@
   resolve a mismatched v19 types package transitively (via zustand/r3f
   dependents), which breaks `@react-three/fiber`'s JSX.IntrinsicElements
   augmentation under `strict` type checking.
+- Audio goes through the `audio` singleton in `lib/audio.ts` (Web Audio, no
+  howler/use-sound). Register new sounds in `config/sounds.ts` and call
+  `audio.play(name)`. `components/ui/AudioUnlock.tsx` creates the context on
+  app load and resumes it on the first user activation.
 - `app/page.tsx` wraps its `useSearchParams()` usage in a `Suspense` boundary;
   Next.js requires this for static export of pages that read search params.

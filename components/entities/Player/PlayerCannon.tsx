@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Vector3 } from "three";
-import useSound from "use-sound";
+import { audio } from "lib/audio";
 import Cannonball from "components/entities/Cannonball";
 import type { PhysicsState } from "hooks/usePhysicsSubscription";
 import { cannonCoolDown, cannonballLifetime } from "config/physics";
@@ -26,15 +26,11 @@ export default function PlayerCannon(props: PlayerCannonProps) {
   const [cannonballs, setCannonballs] = useState<CannonballState[]>([]);
   const timeToShoot = useRef(0);
 
-  const [playCannonShot] = useSound("sounds/cannon-shot.mp3", {
-    volume: 0.5,
-    playbackRate: Math.random() * 0.4 + 0.8,
-  });
-
   const fireCannon = (direction: number) => {
     const now = Date.now();
     if (now < timeToShoot.current) return;
     timeToShoot.current = now + cannonCoolDown;
+    audio.play("cannonShot");
 
     const { position, rotation, forward } = props.physics.current;
     const velocity = new Vector3()
@@ -72,12 +68,6 @@ export default function PlayerCannon(props: PlayerCannonProps) {
     if (props.firePort) fireCannon(-1);
     if (props.fireStarboard) fireCannon(1);
   });
-
-  useEffect(() => {
-    if (cannonballs.length > 0) {
-      playCannonShot();
-    }
-  }, [cannonballs]);
 
   return (
     <>

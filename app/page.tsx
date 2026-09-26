@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Game from "components/scenes/Game";
 import Lobby from "components/scenes/Lobby";
 import Gamepads from "components/ui/Gamepads";
+import AudioUnlock from "components/ui/AudioUnlock";
 import { useGameStore } from "stores/gameStore";
 
 function PageContent() {
@@ -17,6 +18,7 @@ function PageContent() {
     <>
       <Leva hidden={debug ? false : true} />
       <Gamepads />
+      <AudioUnlock />
       {scene === "lobby" && <Lobby debug={debug} />}
       {(scene === "countdown" ||
         scene === "playing" ||

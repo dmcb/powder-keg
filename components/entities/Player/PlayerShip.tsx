@@ -1,6 +1,6 @@
 import { forwardRef, useEffect } from "react";
 import type { Group } from "three";
-import useSound from "use-sound";
+import { audio } from "lib/audio";
 import Ship from "components/entities/Player/Ship";
 
 type PlayerShipProps = {
@@ -13,18 +13,15 @@ type PlayerShipProps = {
  * sail sound when sails are raised.
  */
 const PlayerShip = forwardRef<Group, PlayerShipProps>((props, ref) => {
-  const [playSails] = useSound("sounds/sail.mp3", {
-    volume: 0.5,
-    playbackRate: Math.random() * 0.4 + 0.8,
-  });
-
   useEffect(() => {
     if (props.sails >= 1) {
-      playSails();
+      audio.play("sail");
     }
   }, [props.sails]);
 
-  return <Ship ref={ref} sails={props.sails} playerNumber={props.playerNumber} />;
+  return (
+    <Ship ref={ref} sails={props.sails} playerNumber={props.playerNumber} />
+  );
 });
 
 PlayerShip.displayName = "PlayerShip";
