@@ -19,6 +19,7 @@ import {
   Vector3,
 } from "three";
 import { usePlayerStore } from "stores/playerStore";
+import { gameClock } from "lib/gameClock";
 import { groupPlayers } from "lib/playerGroups";
 import { baseDistance, frameCamera, groupZoom } from "components/canvas/Camera";
 import {
@@ -216,7 +217,8 @@ export default function SplitScreen(props: { debug: boolean }) {
     [],
   );
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
+    const { delta, elapsed } = gameClock;
     const { gl, scene } = state;
     const { raycaster, hit, projected, target, centroid, groupCentroids } =
       scratch;
@@ -224,7 +226,7 @@ export default function SplitScreen(props: { debug: boolean }) {
     const { players, joinedPlayers } = usePlayerStore.getState();
     const viewPlayers: ViewPlayer[] =
       props.debug && simulatedPlayers > 0
-        ? simulatePlayers(simulatedPlayers, state.clock.getElapsedTime())
+        ? simulatePlayers(simulatedPlayers, elapsed)
         : joinedPlayers.map((id) => ({ id, position: players[id].position }));
 
     gl.setRenderTarget(null);

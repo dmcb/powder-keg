@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useGameFrame } from "hooks/useGameFrame";
 import { AmbientLight, DirectionalLight, Group } from "three";
 import kelvinToRGB from "lib/kelvin";
 import { useControls } from "leva";
@@ -116,7 +116,7 @@ export default function Sun() {
     },
   }));
 
-  useFrame((_, delta) => {
+  useGameFrame((_, delta) => {
     // Get total rotation per day and night
     const sunArcPerDay = sunRotationPerDay * Math.PI * 2;
     const sunArcPerNight = sunRotationPerNight * Math.PI * 2;
@@ -148,19 +148,19 @@ export default function Sun() {
     // Get height of sun in sky to determine ambient light intensity and colour
     const heightOfSun = Math.max(
       Math.PI / 2 - Math.abs(sunRef.current.rotation.y),
-      0
+      0,
     );
     ambientRef.current.intensity =
       Math.pow(heightOfSun, ambientBrightnessGradient) * maxAmbientBrightness;
     ambientRef.current.color.set(
       kelvinToRGB(
-        Math.pow(heightOfSun, ambientColorTempGradient) * ambientMaxColorTemp
-      )
+        Math.pow(heightOfSun, ambientColorTempGradient) * ambientMaxColorTemp,
+      ),
     );
     directionalRef.current.color.set(
       kelvinToRGB(
-        Math.pow(heightOfSun, directColorTempGradient) * directMaxColorTemp
-      )
+        Math.pow(heightOfSun, directColorTempGradient) * directMaxColorTemp,
+      ),
     );
   });
 

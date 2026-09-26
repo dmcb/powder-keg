@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, PropsWithChildren } from "react";
+import { useEffect, useRef, PropsWithChildren } from "react";
 import { useGamepadStore } from "stores/gamepadStore";
+import ProgressButton from "components/ui/Menu/ProgressButton";
 
 export default function ReadyButton(
   props: PropsWithChildren<{
@@ -31,25 +32,14 @@ export default function ReadyButton(
     }
   }, [gamepads]);
 
-  // Execute function when button is pressed
-  const execute = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    props.executeFunction();
-  };
-
   return (
-    <button
+    <ProgressButton
       ref={buttonRef}
-      type="submit"
-      disabled={!props.enabled}
-      onClick={execute}
-      style={{
-        background: `linear-gradient(90deg, #498207 ${
-          readyProgress.current * 100
-        }%, #433a32 ${readyProgress.current * 100}%)`,
-      }}
+      enabled={props.enabled}
+      progress={readyProgress.current}
+      onClick={props.executeFunction}
     >
       {props.children}
-    </button>
+    </ProgressButton>
   );
 }

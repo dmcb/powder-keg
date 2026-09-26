@@ -28,6 +28,7 @@ const BoardPieces = (props: { seed: string; players: number[] }) => {
 export default function Board(props: { debug: boolean; players: number[] }) {
   const boardRef = useRef<Group>(null!);
   const initialSeed = useGameStore((state) => state.seed);
+  const paused = useGameStore((state) => state.paused);
 
   const { physicsOverlay, seed } = useControls("Game", {
     physicsOverlay: {
@@ -40,7 +41,7 @@ export default function Board(props: { debug: boolean; players: number[] }) {
 
   return (
     <group ref={boardRef}>
-      <Physics gravity={boardGravity}>
+      <Physics gravity={boardGravity} isPaused={paused}>
         {(props.debug && physicsOverlay && (
           <Debug color="green" key={seed}>
             <BoardPieces seed={seed} players={props.players} />

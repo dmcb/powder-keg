@@ -8,15 +8,18 @@ type GameStore = {
   seed: string;
   scene: GameScene;
   latitude: number;
+  paused: boolean;
   setScene: (scene: GameScene) => void;
   setSeed: (seed: string) => void;
   setLatitude: (latitude: number) => void;
+  setPaused: (paused: boolean) => void;
 };
 
 export const useGameStore = create<GameStore>((set) => ({
   seed: generateGameSeed(),
   scene: "lobby",
   latitude: 0,
+  paused: false,
   setSeed: (seed: string) => {
     if (seed.trim() === "") {
       seed = cryptoRandomString({
@@ -28,4 +31,5 @@ export const useGameStore = create<GameStore>((set) => ({
   },
   setScene: (scene: GameScene) => set({ scene }),
   setLatitude: (latitude: number) => set({ latitude }),
+  setPaused: (paused: boolean) => set({ paused }),
 }));

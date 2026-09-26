@@ -4,6 +4,7 @@ import { OrbitControls } from "@react-three/drei";
 import Board from "components/canvas/Board";
 import Sun from "components/environment/Sun";
 import SplitScreen from "components/canvas/SplitScreen";
+import GameClock from "components/canvas/GameClock";
 
 type GameCanvasProps = {
   debug: boolean;
@@ -21,6 +22,7 @@ export default function GameCanvas(props: GameCanvasProps) {
       camera={{ fov: 9, position: [0, 0, 17] }}
       style={{ height: "100svh" }}
     >
+      <GameClock />
       {props.debug && <Perf position="top-left" />}
       {props.debug && <OrbitControls />}
       <Board debug={props.debug} players={props.players} />

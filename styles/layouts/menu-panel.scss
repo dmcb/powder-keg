@@ -1,4 +1,4 @@
-#lobby {
+.menu-panel {
   @include background-pattern();
   color: #fff;
   width: 100%;
@@ -19,16 +19,6 @@
     margin: 0 auto;
   }
 
-  .count {
-    display: block;
-    margin-top: -2em;
-    padding-bottom: 0.8em;
-    font-size: 0.8em;
-    font-weight: bold;
-    color: #498207;
-    text-align: right;
-  }
-
   label {
     user-select: none;
     pointer-events: none;
@@ -47,7 +37,8 @@
     position: relative;
   }
 
-  input {
+  input,
+  .player-value {
     font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
     display: block;
     border-radius: 8px;
@@ -63,6 +54,23 @@
     &:disabled {
       opacity: 0.2;
     }
+  }
+
+  .player-value {
+    color: #000;
+    min-height: 1.2em;
+    transition: 0.3s ease-in-out background-color;
+
+    .status {
+      display: block;
+      font-size: 0.75em;
+      opacity: 0.6;
+    }
+  }
+
+  .ready .player-value {
+    background-color: #498207;
+    color: #fff;
   }
 
   button {

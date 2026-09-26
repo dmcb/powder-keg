@@ -4,8 +4,9 @@ import PlayerConfig from "components/ui/Lobby/PlayerConfig";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
-import ReadyButton from "components/ui/Lobby/ReadyButton";
-import GamepadButtonHelper from "components/ui/Lobby/GamepadButtonHelper";
+import MenuPanel from "components/ui/Menu/MenuPanel";
+import ReadyButton from "components/ui/Menu/ReadyButton";
+import GamepadButtonHelper from "components/ui/Menu/GamepadButtonHelper";
 
 export default function Lobby(props: { debug: boolean }) {
   const seed = useGameStore((state) => state.seed);
@@ -42,8 +43,7 @@ export default function Lobby(props: { debug: boolean }) {
   }, [connections]);
 
   return (
-    <div id="lobby">
-      <h1>Powder Keg</h1>
+    <MenuPanel id="lobby" title="Powder Keg">
       <GameCount />
       <form>
         <label htmlFor="seed">Seed</label>
@@ -74,6 +74,6 @@ export default function Lobby(props: { debug: boolean }) {
           Hold <GamepadButtonHelper buttonToPress={0} light={true} /> to start
         </ReadyButton>
       </form>
-    </div>
+    </MenuPanel>
   );
 }

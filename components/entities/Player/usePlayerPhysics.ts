@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useGameFrame } from "hooks/useGameFrame";
 import { useCompoundBody } from "@react-three/cannon";
 import type { Group } from "three";
 import { usePhysicsSubscription } from "hooks/usePhysicsSubscription";
@@ -76,7 +76,7 @@ export function usePlayerPhysics(
 
   const physics = usePhysicsSubscription(api);
 
-  useFrame((_, delta) => {
+  useGameFrame((_, delta) => {
     const { sails, steer } = controls;
 
     const sailSpeedModifier = sails === -1 ? reverseSailSpeedModifier : sails;

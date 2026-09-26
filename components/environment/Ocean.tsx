@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useGameFrame } from "hooks/useGameFrame";
 import { useControls } from "leva";
 import * as THREE from "three";
 import type { ThreeElements } from "@react-three/fiber";
@@ -58,8 +58,7 @@ function Ocean(props: ThreeElements["mesh"]) {
     },
   }));
 
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
+  useGameFrame((_, __, time) => {
     const positions = meshRef.current.geometry.attributes.position.array;
     for (let i = 0; i < positions.length; i += 3) {
       if (

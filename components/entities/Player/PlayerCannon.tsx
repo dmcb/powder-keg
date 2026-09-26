@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
 import { Vector3 } from "three";
+import { useGameFrame } from "hooks/useGameFrame";
+import { gameClock } from "lib/gameClock";
 import { audio } from "lib/audio";
 import Cannonball from "components/entities/Cannonball";
 import type { PhysicsState } from "hooks/usePhysicsSubscription";
@@ -27,7 +28,7 @@ export default function PlayerCannon(props: PlayerCannonProps) {
   const timeToShoot = useRef(0);
 
   const fireCannon = (direction: number) => {
-    const now = Date.now();
+    const now = gameClock.elapsed * 1000;
     if (now < timeToShoot.current) return;
     timeToShoot.current = now + cannonCoolDown;
     audio.play("cannonShot");
@@ -64,7 +65,7 @@ export default function PlayerCannon(props: PlayerCannonProps) {
     ]);
   };
 
-  useFrame(() => {
+  useGameFrame(() => {
     if (props.firePort) fireCannon(-1);
     if (props.fireStarboard) fireCannon(1);
   });

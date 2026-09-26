@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useGamepadStore } from "stores/gamepadStore";
-import GamepadButtonHelper from "components/ui/Lobby/GamepadButtonHelper";
+import GamepadButtonHelper from "components/ui/Menu/GamepadButtonHelper";
+import PlayerSlot from "components/ui/Menu/PlayerSlot";
+import { useGamepadButtonPress } from "hooks/useGamepadButtonPress";
 import { generatePlayerName } from "config/seeds";
 
 export default function PlayerConfig(props: {
@@ -9,8 +10,9 @@ export default function PlayerConfig(props: {
   updatePlayerName: (name: string, number: number) => void;
 }) {
   const [playerName, setPlayerName] = useState("");
-  const gamepads = useGamepadStore((state) => state.gamepads);
-  const [button1Pressed, setButton1Pressed] = useState(false);
+  const button1Pressed = useGamepadButtonPress(props.number, 1, () =>
+    setPlayerName(generatePlayerName()),
+  );
 
   useEffect(() => {
     props.updatePlayerName(playerName, props.number);
@@ -23,26 +25,12 @@ export default function PlayerConfig(props: {
     }
   }, [props.joined]);
 
-  useEffect(() => {
-    if (gamepads) {
-      if (gamepads[props.number]?.buttons[1]?.pressed) {
-        if (!button1Pressed) {
-          setButton1Pressed(true);
-          setPlayerName(generatePlayerName());
-        }
-      } else {
-        setButton1Pressed(false);
-      }
-    }
-  }, [gamepads]);
-
   const conditionalPlayerLabel = props.joined
     ? "Player " + (props.number + 1)
     : "Connect gamepad";
 
   return (
-    <fieldset>
-      <label htmlFor="playername">{conditionalPlayerLabel}</label>
+    <PlayerSlot label={conditionalPlayerLabel} htmlFor="playername">
       <input
         value={playerName}
         type="text"
@@ -57,6 +45,6 @@ export default function PlayerConfig(props: {
       {props.joined && (
         <GamepadButtonHelper buttonToPress={1} pressed={button1Pressed} />
       )}
-    </fieldset>
+    </PlayerSlot>
   );
 }
