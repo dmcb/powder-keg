@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import "./MenuPanel.css";
 
 /**
  * Themed panel used by full-screen menus (lobby, resume): title plus content.

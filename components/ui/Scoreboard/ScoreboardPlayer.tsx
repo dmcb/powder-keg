@@ -1,12 +1,13 @@
 import { usePlayerStore } from "stores/playerStore";
+import "./ScoreboardPlayer.css";
 
 export default function ScoreboardPlayer(props: { playerNumber: number }) {
   const player = usePlayerStore((state) => state.players[props.playerNumber]);
 
   return (
-    <div className={"player player" + props.playerNumber}>
-      <div className="name">{player.name}</div>
-      <div className="health">
+    <div className={"scoreboard-player scoreboard-player" + props.playerNumber}>
+      <div className="scoreboard-player-name">{player.name}</div>
+      <div className="scoreboard-player-health">
         <svg
           width="800px"
           height="800px"
@@ -24,7 +25,10 @@ export default function ScoreboardPlayer(props: { playerNumber: number }) {
             stroke-linejoin="round"
           />
         </svg>
-        <div className="meter" style={{ width: `${player.health}%` }}></div>
+        <div
+          className="scoreboard-player-meter"
+          style={{ width: `${player.health}%` }}
+        ></div>
       </div>
     </div>
   );

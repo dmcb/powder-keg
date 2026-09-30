@@ -5,6 +5,7 @@ import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
 import MenuPanel from "components/ui/Menu/MenuPanel";
+import PlayerSlot from "components/ui/Menu/PlayerSlot";
 import ReadyButton from "components/ui/Menu/ReadyButton";
 import GamepadButtonHelper from "components/ui/Menu/GamepadButtonHelper";
 
@@ -46,16 +47,18 @@ export default function Lobby(props: { debug: boolean }) {
     <MenuPanel id="lobby" title="Powder Keg">
       <GameCount />
       <form>
-        <label htmlFor="seed">Seed</label>
-        <input
-          value={seed}
-          type="text"
-          id="seed"
-          autoComplete="off"
-          autoCorrect="off"
-          onFocus={(e) => e.target.select()}
-          onChange={(e) => setSeed(e.target.value)}
-        />
+        <PlayerSlot label="Seed" htmlFor="seed">
+          <input
+            className="player-slot-value"
+            value={seed}
+            type="text"
+            id="seed"
+            autoComplete="off"
+            autoCorrect="off"
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => setSeed(e.target.value)}
+          />
+        </PlayerSlot>
         {players.map((player, index) => {
           return (
             <PlayerConfig

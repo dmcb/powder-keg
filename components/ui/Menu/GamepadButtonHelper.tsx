@@ -1,3 +1,5 @@
+import "./GamepadButtonHelper.css";
+
 export default function GamepadButtonHelper(props: {
   buttonToPress: number;
   light?: boolean;

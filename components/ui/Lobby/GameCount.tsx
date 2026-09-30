@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Pusher from "pusher-js";
 import axios from "axios";
+import "./GameCount.css";
 
 interface PusherAuthResponse {
   auth: string;
@@ -51,6 +52,8 @@ export default function GameCount() {
   }, []);
 
   return (
-    gameCount > 1 && <span className="count">{gameCount} games running</span>
+    gameCount > 1 && (
+      <span className="game-count">{gameCount} games running</span>
+    )
   );
 }

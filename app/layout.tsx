@@ -1,4 +1,4 @@
-import "styles/main.scss";
+import "styles/main.css";
 
 export const metadata = {
   metadataBase: new URL("https://powderkeg.dmcb.dev"),

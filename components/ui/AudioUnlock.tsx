@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { audio } from "lib/audio";
 import { useGamepadStore } from "stores/gamepadStore";
+import "./AudioUnlock.css";
 
 const unlockEvents = ["pointerdown", "keydown", "touchend"] as const;
 
@@ -38,5 +39,9 @@ export default function AudioUnlock() {
     });
   }, [unlocked]);
 
-  return !unlocked && <div id="audio-hint">Click or press any key to enable sound</div>;
+  return (
+    !unlocked && (
+      <div id="audio-hint">Click or press any key to enable sound</div>
+    )
+  );
 }

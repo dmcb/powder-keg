@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import "./PlayerSlot.css";
 
 /**
  * A labelled per-player row in a menu (label tab over a value field, with an
@@ -12,8 +13,10 @@ export default function PlayerSlot(
   }>,
 ) {
   return (
-    <fieldset className={props.className}>
-      <label htmlFor={props.htmlFor}>{props.label}</label>
+    <fieldset className={`player-slot ${props.className ?? ""}`}>
+      <label className="player-slot-label" htmlFor={props.htmlFor}>
+        {props.label}
+      </label>
       {props.children}
     </fieldset>
   );

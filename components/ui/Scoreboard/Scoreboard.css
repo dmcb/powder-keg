@@ -1,0 +1,10 @@
+#scoreboard {
+  position: absolute;
+  color: #fff;
+  z-index: 1;
+  top: 0rem;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+}

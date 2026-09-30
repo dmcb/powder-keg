@@ -30,5 +30,18 @@
   `useFrame`, `state.clock` or `Date.now()`. Raw `useFrame` is only for work
   that must run while paused (rendering in `SplitScreen`, input edge tracking
   in `usePlayerControls`).
+- Styles are plain native CSS (global, non-module, no Sass — `sass` is not
+  installed) co-located with components: `Foo.tsx` does
+  `import "./Foo.css";`. Only `styles/globals.css` (imported in
+  `app/layout.tsx`) is shared — it holds `:root` CSS custom properties
+  (`--color-*`, `--font-*`) plus `html`/`body`/`h1`. Use `var(--color-…)`
+  rather than hex literals. Write flat selectors — no CSS nesting, since
+  Next 14's bundled PostCSS passes it through untranspiled. Since all CSS is
+  global, prefix class names with the component name (e.g.
+  `.scoreboard-player-health`) and don't rely on cross-file cascade order —
+  use specificity instead. `styles.d.ts` declares `*.css` so these
+  side-effect imports type-check under `noUncheckedSideEffectImports` (on by
+  default in newer TypeScript / editors; Next only ships types for
+  `*.module.css`).
 - `app/page.tsx` wraps its `useSearchParams()` usage in a `Suspense` boundary;
   Next.js requires this for static export of pages that read search params.

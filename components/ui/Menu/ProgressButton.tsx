@@ -1,4 +1,5 @@
 import React, { forwardRef, PropsWithChildren } from "react";
+import "./ProgressButton.css";
 
 type ProgressButtonProps = PropsWithChildren<{
   progress: number;
@@ -23,12 +24,13 @@ const ProgressButton = forwardRef<HTMLButtonElement, ProgressButtonProps>(
     return (
       <button
         ref={ref}
+        className="progress-button"
         type="submit"
         disabled={props.enabled === false}
         autoFocus={props.autoFocus}
         onClick={execute}
         style={{
-          background: `linear-gradient(90deg, #498207 ${percent}%, #433a32 ${percent}%)`,
+          background: `linear-gradient(90deg, var(--color-green) ${percent}%, var(--color-brown-dark) ${percent}%)`,
         }}
       >
         {props.children}

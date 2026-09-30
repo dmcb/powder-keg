@@ -6,6 +6,7 @@ import ResumePlayer from "components/ui/Resume/ResumePlayer";
 import { useConnectionStore } from "stores/gamepadStore";
 import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
+import "./ResumeScreen.css";
 
 /**
  * Shown while the game is paused. Resumes once every joined player with a

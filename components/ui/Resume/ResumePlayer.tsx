@@ -1,6 +1,7 @@
 import PlayerSlot from "components/ui/Menu/PlayerSlot";
 import { useGamepadButtonPress } from "hooks/useGamepadButtonPress";
 import { usePlayerStore } from "stores/playerStore";
+import "./ResumePlayer.css";
 
 export default function ResumePlayer(props: {
   number: number;
@@ -15,11 +16,13 @@ export default function ResumePlayer(props: {
 
   return (
     <PlayerSlot label={"Player " + (props.number + 1)}>
-      <div className="player-value">{name}</div>
-      {!props.connected && <span className="status">Disconnected</span>}
+      <div className="player-slot-value">{name}</div>
+      {!props.connected && (
+        <span className="resume-player-status">Disconnected</span>
+      )}
       {props.connected && props.ready && (
         <svg
-          className="status"
+          className="resume-player-status"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

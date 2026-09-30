@@ -1,5 +1,6 @@
 import { usePlayerStore } from "stores/playerStore";
 import ScoreboardPlayer from "components/ui/Scoreboard/ScoreboardPlayer";
+import "./Scoreboard.css";
 
 export default function Scoreboard() {
   const joinedPlayers = usePlayerStore((state) => state.joinedPlayers);

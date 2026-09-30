@@ -32,6 +32,7 @@ export default function PlayerConfig(props: {
   return (
     <PlayerSlot label={conditionalPlayerLabel} htmlFor="playername">
       <input
+        className="player-slot-value"
         value={playerName}
         type="text"
         id="playername"
