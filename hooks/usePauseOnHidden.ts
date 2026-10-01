@@ -6,17 +6,17 @@ import { useGameStore } from "stores/gameStore";
  * game stays paused until players resume it from the resume screen.
  */
 export function usePauseOnHidden() {
-  const setPaused = useGameStore((state) => state.setPaused);
+  const pause = useGameStore((state) => state.pause);
 
   useEffect(() => {
     const onVisibilityChange = () => {
-      if (document.hidden) setPaused(true);
+      if (document.hidden) pause();
     };
     onVisibilityChange();
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       document.removeEventListener("visibilitychange", onVisibilityChange);
-      setPaused(false);
+      useGameStore.setState({ paused: false });
     };
-  }, [setPaused]);
+  }, [pause]);
 }

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { gameClock } from "lib/gameClock";
-import { useGameStore } from "stores/gameStore";
+import { isFrozen, useGameStore } from "stores/gameStore";
 
 /**
  * Drives `gameClock` from the R3F frame loop. Runs at a negative priority so
@@ -11,7 +11,7 @@ export default function GameClock() {
   useEffect(() => gameClock.reset(), []);
 
   useFrame((_, delta) => {
-    gameClock.tick(delta, useGameStore.getState().paused);
+    gameClock.tick(delta, isFrozen(useGameStore.getState()));
   }, -1);
 
   return null;

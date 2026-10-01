@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGamepad } from "hooks/useGamepad";
 import { minSails, maxSails } from "config/physics";
-import { useGameStore } from "stores/gameStore";
+import { isFrozen, useGameStore } from "stores/gameStore";
 
 export type PlayerControls = {
   sails: number;
@@ -27,7 +27,7 @@ export function usePlayerControls(playerNumber: number): PlayerControls {
 
   useFrame(() => {
     const input = getInput();
-    if (useGameStore.getState().paused) {
+    if (isFrozen(useGameStore.getState())) {
       controls.current.steer = 0;
       controls.current.firePort = false;
       controls.current.fireStarboard = false;

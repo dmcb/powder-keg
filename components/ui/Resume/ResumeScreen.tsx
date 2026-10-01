@@ -7,16 +7,12 @@ import Modal from "components/ui/Modal/Modal";
  * have held their ready buttons long enough, or when the button is clicked.
  */
 export default function ResumeScreen(props: { open: boolean }) {
-  const setPaused = useGameStore((state) => state.setPaused);
+  const resume = useGameStore((state) => state.resume);
 
   return (
     <Modal id="resume" open={props.open}>
       <h1>Paused</h1>
-      <PlayerConnectMenu
-        speed={2}
-        action="resume"
-        onComplete={() => setPaused(false)}
-      />
+      <PlayerConnectMenu speed={2} action="resume" onComplete={resume} />
     </Modal>
   );
 }

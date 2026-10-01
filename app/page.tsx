@@ -23,10 +23,7 @@ function PageContent() {
       <Leva hidden={debug ? false : true} />
       <Gamepads />
       <AudioUnlock />
-      {scene === "lobby" && <Lobby debug={debug} />}
-      {(scene === "countdown" ||
-        scene === "playing" ||
-        scene === "results") && <Game debug={debug} />}
+      {scene === "lobby" ? <Lobby debug={debug} /> : <Game debug={debug} />}
     </>
   );
 }

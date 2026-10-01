@@ -17,7 +17,7 @@ export default function Lobby(props: { debug: boolean }) {
   const updateJoinedPlayers = usePlayerStore(
     (state) => state.updateJoinedPlayers,
   );
-  const setScene = useGameStore((state) => state.setScene);
+  const startGame = useGameStore((state) => state.startGame);
 
   // Forms valid when at least 2 players have joined and all players have a name
   const formValid =
@@ -27,9 +27,9 @@ export default function Lobby(props: { debug: boolean }) {
       seed.trim().length > 0);
 
   // Start game
-  const startGame = () => {
+  const onStart = () => {
     setSeed(seed);
-    setScene("countdown");
+    startGame();
   };
 
   // When controllers connect, update joined players
@@ -52,7 +52,7 @@ export default function Lobby(props: { debug: boolean }) {
             editable
             enabled={formValid}
             action="start"
-            onComplete={startGame}
+            onComplete={onStart}
           />
         </div>
       </div>
