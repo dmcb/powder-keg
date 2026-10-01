@@ -24,12 +24,17 @@
   `audio.play(name)`. `components/ui/AudioUnlock.tsx` creates the context on
   app load and resumes it on the first user activation.
 - Game time is centralized in `lib/gameClock.ts` (ticked by
-  `components/canvas/GameClock.tsx`) and only advances while unpaused. Game
-  logic/animation should use `useGameFrame` (`hooks/useGameFrame.ts`), which
-  is skipped while paused and receives game-time `delta`/`elapsed` — not raw
-  `useFrame`, `state.clock` or `Date.now()`. Raw `useFrame` is only for work
-  that must run while paused (rendering in `SplitScreen`, input edge tracking
-  in `usePlayerControls`).
+  `components/canvas/GameClock.tsx`) and only advances while the game isn't
+  frozen (`isFrozen` in `stores/gameStore.ts`: paused, or during the
+  countdown after starting/resuming). Game logic/animation should use
+  `useGameFrame` (`hooks/useGameFrame.ts`), which receives game-time
+  `delta`/`elapsed` — not raw `useFrame`, `state.clock` or `Date.now()`. It
+  still runs while frozen (with `delta` 0) so derived state (lighting, player
+  positions) is ready before play starts: scale logic by `delta`, and gate
+  anything that isn't (e.g. firing) on player input, which is locked while
+  frozen. Raw `useFrame` is for work that needs wall time (rendering and the
+  countdown zoom in `SplitScreen`, input edge tracking in
+  `usePlayerControls`).
 - Styles are plain native CSS (global, non-module, no Sass — `sass` is not
   installed) co-located with components: `Foo.tsx` does
   `import "./Foo.css";`. Only `styles/main.css` (imported in

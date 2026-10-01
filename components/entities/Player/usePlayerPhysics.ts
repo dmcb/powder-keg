@@ -74,7 +74,10 @@ export function usePlayerPhysics(
     useRef<Group>(null),
   );
 
-  const physics = usePhysicsSubscription(api);
+  const physics = usePhysicsSubscription(api, {
+    position: playerInitialPositions[playerNumber],
+    rotation: playerInitialRotations[playerNumber],
+  });
 
   useGameFrame((_, delta) => {
     const { sails, steer } = controls;
@@ -101,10 +104,12 @@ export function usePlayerPhysics(
       [0, 0, 0],
     );
 
+    // Skip unchanged positions (e.g. while frozen) to avoid store churn
     const position = physics.current.position;
-    updatePlayer(playerNumber, {
-      position: [position.x, position.y],
-    });
+    const [x, y] = usePlayerStore.getState().players[playerNumber].position;
+    if (x !== position.x || y !== position.y) {
+      updatePlayer(playerNumber, { position: [position.x, position.y] });
+    }
   });
 
   return { shipRef, api, physics };

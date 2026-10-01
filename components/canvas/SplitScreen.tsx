@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useFBO } from "@react-three/drei";
 import {
   Color,
+  MathUtils,
   Mesh,
   NoBlending,
   OrthographicCamera,
@@ -18,6 +19,7 @@ import {
   Vector3,
 } from "three";
 import { usePlayerStore } from "stores/playerStore";
+import { countdownSeconds, useGameStore } from "stores/gameStore";
 import { gameClock } from "lib/gameClock";
 import { groupPlayers } from "lib/playerGroups";
 import { baseDistance, frameCamera } from "components/canvas/Camera";
@@ -34,6 +36,7 @@ import {
 const maxViews = 4;
 const seedLimit = 0.75;
 const groundPlane = new Plane(new Vector3(0, 0, 1), 0);
+const boardCenter = new Vector2(0, 0);
 
 const vertexShader = /* glsl */ `
   varying vec2 vUv;
@@ -193,17 +196,48 @@ export default function SplitScreen() {
       target: new Vector2(),
       centroid: new Vector2(),
       groupCentroids: Array.from({ length: maxViews }, () => new Vector2()),
+      viewTarget: new Vector2(),
     }),
     [],
   );
 
-  useFrame((state) => {
+  // Zoom-in progress from the whole board (0) to the play views (1). Reset
+  // while paused and played out over the countdown, in real time since game
+  // time is frozen during the countdown.
+  const zoomIn = useRef(0);
+
+  useFrame((state, realDelta) => {
     const { delta } = gameClock;
     const { gl, scene } = state;
-    const { raycaster, hit, projected, target, centroid, groupCentroids } =
-      scratch;
+    const {
+      raycaster,
+      hit,
+      projected,
+      target,
+      centroid,
+      groupCentroids,
+      viewTarget,
+    } = scratch;
 
     const { players, joinedPlayers } = usePlayerStore.getState();
+    const { paused, countdown } = useGameStore.getState();
+
+    zoomIn.current = paused
+      ? 0
+      : countdown > 0
+        ? Math.min(zoomIn.current + realDelta / countdownSeconds, 1)
+        : 1;
+    const zoom = MathUtils.smootherstep(zoomIn.current, 0, 1);
+    const boardDistance = baseDistance(aspect);
+    // Interpolate distance geometrically so the zoom speed feels constant
+    const viewDistance = boardDistance * (cellDistance / boardDistance) ** zoom;
+    // Frames a play view, blended out towards the whole board while zooming in
+    const frameView = (camera: PerspectiveCamera, viewCenter: Vector2) =>
+      frameCamera(
+        camera,
+        viewTarget.lerpVectors(boardCenter, viewCenter, zoom),
+        viewDistance,
+      );
 
     gl.setRenderTarget(null);
 
@@ -238,7 +272,7 @@ export default function SplitScreen() {
     });
 
     if (groups.length === 1) {
-      frameCamera(cameras[0], groupCentroids[0], cellDistance);
+      frameView(cameras[0], groupCentroids[0]);
       gl.render(scene, cameras[0]);
       seeds.current.clear();
       return;
@@ -274,7 +308,7 @@ export default function SplitScreen() {
         hit.set(groupCentroid.x, groupCentroid.y, 0);
       }
       target.set(2 * groupCentroid.x - hit.x, 2 * groupCentroid.y - hit.y);
-      frameCamera(cameras[index], target, cellDistance);
+      frameView(cameras[index], target);
     });
 
     gl.shadowMap.autoUpdate = false;
@@ -289,7 +323,9 @@ export default function SplitScreen() {
     const { uniforms } = composite.material;
 
     // Each divider's width grows with the distance between the closest
-    // players of the two groups it separates, vanishing as they join
+    // players of the two groups it separates, vanishing as they join. Every
+    // cell shows the same whole-board view when zoomed out, so dividers fade
+    // in with the zoom.
     groups.forEach((group, i) => {
       groups.forEach((other, j) => {
         if (j <= i) return;
@@ -302,6 +338,7 @@ export default function SplitScreen() {
           });
         });
         const width =
+          zoom *
           splitLineMaxWidth *
           Math.min(
             Math.max(

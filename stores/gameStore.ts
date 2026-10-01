@@ -4,7 +4,7 @@ import { generateGameSeed } from "config/seeds";
 
 export type GameScene = "lobby" | "playing" | "results";
 
-const countdownSeconds = 3;
+export const countdownSeconds = 3;
 
 type GameStore = {
   seed: string;

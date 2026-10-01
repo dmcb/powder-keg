@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
-import type { PublicApi } from "@react-three/cannon";
+import type { PublicApi, Triplet } from "@react-three/cannon";
 
 export type PhysicsState = {
   position: Vector3;
@@ -12,13 +12,21 @@ export type PhysicsState = {
 /**
  * Mirrors a cannon body's position/velocity/rotation into a plain object that
  * can be read synchronously from `useFrame`, without triggering re-renders.
+ * Starts from the body's initial `position`/`rotation`, since the physics
+ * world doesn't report anything until it first steps.
  */
-export function usePhysicsSubscription(api: PublicApi) {
+export function usePhysicsSubscription(
+  api: PublicApi,
+  initial: { position: Triplet; rotation: Triplet },
+) {
   const state = useRef<PhysicsState>({
-    position: new Vector3(),
+    position: new Vector3(...initial.position),
     velocity: new Vector3(),
-    rotation: 0,
-    forward: new Vector3(0, 1, 0),
+    rotation: initial.rotation[2],
+    forward: new Vector3(0, 1, 0).applyAxisAngle(
+      new Vector3(0, 0, 1),
+      initial.rotation[2],
+    ),
   });
 
   useEffect(() => {
