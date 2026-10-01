@@ -30,7 +30,7 @@ const ProgressButton = forwardRef<HTMLButtonElement, ProgressButtonProps>(
         autoFocus={props.autoFocus}
         onClick={execute}
         style={{
-          background: `linear-gradient(90deg, var(--color-green) ${percent}%, var(--color-brown-dark) ${percent}%)`,
+          background: `linear-gradient(90deg, var(--color-active) ${percent}%, var(--color-brown-dark) ${percent}%)`,
         }}
       >
         {props.children}

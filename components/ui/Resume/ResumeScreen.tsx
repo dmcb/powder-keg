@@ -1,5 +1,6 @@
 import PlayerConnectMenu from "components/ui/Menu/PlayerConnectMenu";
 import { useGameStore } from "stores/gameStore";
+import Borders from "components/ui/Decoration/Borders";
 import "./ResumeScreen.css";
 
 /**
@@ -11,7 +12,12 @@ export default function ResumeScreen() {
 
   return (
     <div id="resume">
-      <PlayerConnectMenu action="resume" onComplete={() => setPaused(false)} />
+      <Borders />
+      <PlayerConnectMenu
+        speed={2}
+        action="resume"
+        onComplete={() => setPaused(false)}
+      />
     </div>
   );
 }

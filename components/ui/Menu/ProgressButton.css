@@ -17,7 +17,7 @@
 .progress-button:not(:disabled):hover {
   background: linear-gradient(
     90deg,
-    var(--color-green) 100%,
+    var(--color-active) 100%,
     var(--color-brown-dark) 100%
   ) !important;
   cursor: pointer;

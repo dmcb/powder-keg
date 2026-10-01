@@ -4,7 +4,8 @@ import { useGameStore } from "stores/gameStore";
 import { usePlayerStore } from "stores/playerStore";
 import PlayerConnectMenu from "components/ui/Menu/PlayerConnectMenu";
 import SeedInput from "components/ui/Lobby/SeedInput";
-import LobbyCorners from "components/ui/Lobby/LobbyCorners";
+import Borders from "components/ui/Decoration/Borders";
+import GameCount from "components/ui/Lobby/GameCount";
 import "./Lobby.css";
 
 export default function Lobby(props: { debug: boolean }) {
@@ -38,12 +39,13 @@ export default function Lobby(props: { debug: boolean }) {
 
   return (
     <div className="lobby">
-      <LobbyCorners />
+      <Borders />
       <div className="menu">
         <h1>Powder Keg</h1>
         <h2>
           A local multiplayer pirate battler, connect controllers to start
         </h2>
+        <GameCount />
         <SeedInput value={seed} onChange={setSeedDraft} />
         <PlayerConnectMenu
           editable

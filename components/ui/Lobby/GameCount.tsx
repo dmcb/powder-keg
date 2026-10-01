@@ -53,7 +53,7 @@ export default function GameCount() {
 
   return (
     gameCount > 1 && (
-      <span className="game-count">{gameCount} games running</span>
+      <span className="game-count">{gameCount} games playing right now</span>
     )
   );
 }

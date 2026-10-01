@@ -33,7 +33,7 @@
 
 .gamepad-buttons .gamepad-button.pressed {
   transform: scale(1.3);
-  background-color: var(--color-yellow);
+  background-color: var(--color-active);
 }
 
 .gamepad-buttons .gamepad-button.left {

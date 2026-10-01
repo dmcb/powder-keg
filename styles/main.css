@@ -2,9 +2,8 @@
   --color-brown: #64574d;
   --color-brown-dark: #433a32;
   --color-sand: #d1c3b7;
-  --color-green: #498207;
   --color-red: #b51c17;
-  --color-yellow: #fee715;
+  --color-active: #fce341;
 
   --font-serif: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
   --font-script: "WindSong", cursive;
@@ -32,14 +31,6 @@ body {
   font-family: "Pirata One", system-ui;
   font-weight: 400;
   font-style: normal;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 1rem;
-  border: 0.5rem solid var(--color-sand);
-  z-index: -1;
 }
 
 fieldset {

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import GameCount from "components/ui/Lobby/GameCount";
 import GamepadButtonHelper from "components/ui/Menu/GamepadButtonHelper";
 import PlayerConnectRow from "components/ui/Menu/PlayerConnectRow";
 import ProgressButton from "components/ui/Menu/ProgressButton";
@@ -11,6 +10,7 @@ const READY_BUTTON = 0;
 const DECAY_PER_SECOND = 0.125;
 
 type Props = {
+  speed?: number;
   editable?: boolean;
   enabled?: boolean;
   action: string;
@@ -34,7 +34,6 @@ export default function PlayerConnectMenu(props: Props) {
 
   return (
     <div className="player-connect-menu">
-      {props.editable && <GameCount />}
       <form>
         {rows.map((number) => (
           <PlayerConnectRow
@@ -66,7 +65,9 @@ function HoldButton(props: Props) {
     const held = required.filter(
       (p) => gamepads[p]?.buttons[READY_BUTTON]?.pressed,
     ).length;
-    const rate = (held - DECAY_PER_SECOND * required.length) / required.length;
+    const rate =
+      (held * (props.speed || 1) - DECAY_PER_SECOND * required.length) /
+      required.length;
     progress.current = Math.max(0, progress.current + (rate * delta) / 1000);
     if (progress.current >= 1) {
       progress.current = 0;
