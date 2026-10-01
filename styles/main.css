@@ -31,6 +31,10 @@ body {
   font-style: normal;
 }
 
+body.ingame *:focus {
+  outline: none;
+}
+
 fieldset {
   border: 0;
   padding: 0;
