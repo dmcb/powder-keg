@@ -40,7 +40,7 @@ export default function PlayerConnectRow(props: {
   if (!props.editable) {
     return (
       <PlayerSlot label={"Player " + (props.number + 1)}>
-        <div className="player-slot-value">{name}</div>
+        <div className="player-slot-value input">{name}</div>
         {!connected && (
           <span className="player-connect-row-status">Disconnected</span>
         )}

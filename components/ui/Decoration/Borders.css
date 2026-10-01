@@ -1,16 +1,20 @@
 .borders {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 1rem;
   border: 0.5rem solid var(--color-background-accent);
   z-index: -1;
+  background-color: var(--color-background);
+  background-image: url("/images/noise.svg");
+  background-blend-mode: multiply;
+  background-repeat: repeat;
+  background-size: 500px;
 }
 
 .corner {
   --corner-size: 10rem;
-  /* viewBox starts 16 of 176 units before the frame corner */
-  --corner-offset: calc(1rem - var(--corner-size) * 16 / 176);
-  position: fixed;
+  --corner-offset: calc(-0.5rem - var(--corner-size) * 16 / 176);
+  position: absolute;
   width: var(--corner-size);
   height: var(--corner-size);
   pointer-events: none;

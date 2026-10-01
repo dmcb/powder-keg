@@ -31,7 +31,7 @@ export default function Game(props: { debug: boolean }) {
       {scene === "countdown" && !paused && (
         <Countdown timeToStart={timeToStart} />
       )}
-      {paused && <ResumeScreen />}
+      <ResumeScreen open={paused} />
       <GameCanvas debug={props.debug} players={joinedPlayers} />
     </>
   );

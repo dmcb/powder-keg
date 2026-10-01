@@ -1,0 +1,14 @@
+.modal {
+  color: var(--color-text);
+  padding: 4rem;
+  background-color: transparent;
+  border: 0;
+}
+
+.modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal > h1 {
+  font-size: 2rem;
+}
