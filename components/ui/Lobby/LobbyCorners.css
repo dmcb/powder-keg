@@ -1,0 +1,59 @@
+.lobby-corner {
+  --corner-size: 10rem;
+  /* viewBox starts 16 of 176 units before the frame corner */
+  --corner-offset: calc(1rem - var(--corner-size) * 16 / 176);
+  position: fixed;
+  width: var(--corner-size);
+  height: var(--corner-size);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lobby-corner.top-left {
+  top: var(--corner-offset);
+  left: var(--corner-offset);
+}
+
+.lobby-corner.top-right {
+  top: var(--corner-offset);
+  right: var(--corner-offset);
+  transform: scaleX(-1);
+}
+
+.lobby-corner.bottom-left {
+  bottom: var(--corner-offset);
+  left: var(--corner-offset);
+  transform: scaleY(-1);
+}
+
+.lobby-corner.bottom-right {
+  bottom: var(--corner-offset);
+  right: var(--corner-offset);
+  transform: scale(-1, -1);
+}
+
+.lobby-corner-line {
+  fill: none;
+  stroke: var(--color-sand);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lobby-corner-line.thin {
+  stroke-width: 1.25;
+}
+
+.lobby-corner-fill {
+  fill: var(--color-sand);
+}
+
+.lobby-corner-medallion {
+  fill: var(--color-brown-dark);
+  stroke: var(--color-sand);
+  stroke-width: 3;
+}
+
+.lobby-corner-pin {
+  fill: var(--color-brown-dark);
+}

@@ -27,6 +27,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Charm&family=WindSong&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
+          rel="stylesheet"
+        ></link>
       </head>
       <body>{children}</body>
     </html>

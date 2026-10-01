@@ -1,0 +1,27 @@
+.lobby {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+  padding: 3rem;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-family: var(--font-script);
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 1rem 0;
+}
+
+h2 {
+  font-size: 1.25rem;
+  text-align: center;
+  margin: 0 0 2rem 0;
+}

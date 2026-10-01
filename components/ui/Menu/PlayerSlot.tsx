@@ -1,5 +1,4 @@
 import { PropsWithChildren } from "react";
-import "./PlayerSlot.css";
 
 /**
  * A labelled per-player row in a menu (label tab over a value field, with an

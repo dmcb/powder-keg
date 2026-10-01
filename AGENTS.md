@@ -32,7 +32,7 @@
   in `usePlayerControls`).
 - Styles are plain native CSS (global, non-module, no Sass — `sass` is not
   installed) co-located with components: `Foo.tsx` does
-  `import "./Foo.css";`. Only `styles/globals.css` (imported in
+  `import "./Foo.css";`. Only `styles/main.css` (imported in
   `app/layout.tsx`) is shared — it holds `:root` CSS custom properties
   (`--color-*`, `--font-*`) plus `html`/`body`/`h1`. Use `var(--color-…)`
   rather than hex literals. Write flat selectors — no CSS nesting, since
