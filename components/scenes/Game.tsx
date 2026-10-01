@@ -1,8 +1,7 @@
 import GameCanvas from "components/canvas/GameCanvas";
 import { usePlayerStore } from "stores/playerStore";
 import { useGameStore } from "stores/gameStore";
-import Scoreboard from "components/ui/Scoreboard/Scoreboard";
-import Countdown from "components/ui/HUD/Countdown";
+import HUD from "components/ui/HUD/HUD";
 import ResumeScreen from "components/ui/Resume/ResumeScreen";
 import { usePauseOnHidden } from "hooks/usePauseOnHidden";
 
@@ -14,8 +13,7 @@ export default function Game(props: { debug: boolean }) {
 
   return (
     <>
-      <Scoreboard />
-      {!paused && <Countdown />}
+      <HUD />
       <ResumeScreen open={paused} />
       <GameCanvas debug={props.debug} players={joinedPlayers} />
     </>

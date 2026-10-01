@@ -1,13 +1,13 @@
 import { usePlayerStore } from "stores/playerStore";
-import "./ScoreboardPlayer.css";
+import "./HUDPlayer.css";
 
-export default function ScoreboardPlayer(props: { playerNumber: number }) {
+export default function HUDPlayer(props: { playerNumber: number }) {
   const player = usePlayerStore((state) => state.players[props.playerNumber]);
 
   return (
-    <div className={"scoreboard-player scoreboard-player" + props.playerNumber}>
-      <div className="scoreboard-player-name">{player.name}</div>
-      <div className="scoreboard-player-health">
+    <div className={"hud-player hud-player" + props.playerNumber}>
+      <div className="hud-player-name">{player.name}</div>
+      <div className="hud-player-health">
         <svg
           width="800px"
           height="800px"
@@ -26,7 +26,7 @@ export default function ScoreboardPlayer(props: { playerNumber: number }) {
           />
         </svg>
         <div
-          className="scoreboard-player-meter"
+          className="hud-player-meter"
           style={{ width: `${player.health}%` }}
         ></div>
       </div>

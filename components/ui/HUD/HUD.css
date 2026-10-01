@@ -1,4 +1,4 @@
-#scoreboard {
+#hud {
   position: absolute;
   color: var(--color-text);
   z-index: 1;

@@ -47,7 +47,7 @@
   rather than hex literals. Write flat selectors — no CSS nesting, since
   Next 14's bundled PostCSS passes it through untranspiled. Since all CSS is
   global, prefix class names with the component name (e.g.
-  `.scoreboard-player-health`) and don't rely on cross-file cascade order —
+  `.hud-player-health`) and don't rely on cross-file cascade order —
   use specificity instead. `styles.d.ts` declares `*.css` so these
   side-effect imports type-check under `noUncheckedSideEffectImports` (on by
   default in newer TypeScript / editors; Next only ships types for
