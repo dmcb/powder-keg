@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useFBO } from "@react-three/drei";
-import { useControls } from "leva";
 import {
   Color,
   Mesh,
@@ -21,7 +20,7 @@ import {
 import { usePlayerStore } from "stores/playerStore";
 import { gameClock } from "lib/gameClock";
 import { groupPlayers } from "lib/playerGroups";
-import { baseDistance, frameCamera, groupZoom } from "components/canvas/Camera";
+import { baseDistance, frameCamera } from "components/canvas/Camera";
 import {
   cellDistance,
   joinDistance,
@@ -96,34 +95,15 @@ const fragmentShader = /* glsl */ `
   }
 `;
 
-type ViewPlayer = { id: number; position: [number, number] };
-
-/** Positions of simulated players for debugging, orbiting in and out. */
-function simulatePlayers(count: number, time: number): ViewPlayer[] {
-  const radius = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(time * 0.2));
-  return Array.from({ length: count }, (_, id) => {
-    const angle = time * 0.3 + (id * 2 * Math.PI) / count;
-    return {
-      id,
-      position: [radius * Math.cos(angle), radius * Math.sin(angle)],
-    };
-  });
-}
-
 /**
  * Renders the board with a dynamic Voronoi split screen: players near each
  * other share a view, and players apart from each other get their own cell,
  * each cell placed on screen in the direction of its players.
  */
-export default function SplitScreen(props: { debug: boolean }) {
+export default function SplitScreen() {
   const size = useThree((state) => state.size);
   const dpr = useThree((state) => state.viewport.dpr);
   const aspect = size.width / size.height;
-
-  const { splitScreen, simulatedPlayers } = useControls("Camera", {
-    splitScreen: true,
-    simulatedPlayers: { value: 0, min: 0, max: maxViews, step: 1 },
-  });
 
   const fboWidth = Math.floor(size.width * dpr);
   const fboHeight = Math.floor(size.height * dpr);
@@ -218,47 +198,30 @@ export default function SplitScreen(props: { debug: boolean }) {
   );
 
   useFrame((state) => {
-    const { delta, elapsed } = gameClock;
+    const { delta } = gameClock;
     const { gl, scene } = state;
     const { raycaster, hit, projected, target, centroid, groupCentroids } =
       scratch;
 
     const { players, joinedPlayers } = usePlayerStore.getState();
-    const viewPlayers: ViewPlayer[] =
-      props.debug && simulatedPlayers > 0
-        ? simulatePlayers(simulatedPlayers, elapsed)
-        : joinedPlayers.map((id) => ({ id, position: players[id].position }));
 
     gl.setRenderTarget(null);
 
-    if (!viewPlayers.length) {
+    if (!joinedPlayers.length) {
       frameCamera(cameras[0], centroid.set(0, 0), baseDistance(aspect));
       gl.render(scene, cameras[0]);
       return;
     }
 
     centroid.set(0, 0);
-    viewPlayers.forEach(({ position }) => {
-      centroid.x += position[0] / viewPlayers.length;
-      centroid.y += position[1] / viewPlayers.length;
+    joinedPlayers.forEach((id) => {
+      centroid.x += players[id].position[0] / joinedPlayers.length;
+      centroid.y += players[id].position[1] / joinedPlayers.length;
     });
 
-    // Legacy single view (debug only): zoom out without limit
-    if (props.debug && !splitScreen) {
-      const spread = Math.max(
-        ...viewPlayers.map(({ position }) =>
-          Math.hypot(position[0] - centroid.x, position[1] - centroid.y),
-        ),
-      );
-      frameCamera(state.camera, centroid, groupZoom(spread, aspect));
-      gl.render(scene, state.camera);
-      return;
-    }
-
-    const positions = new Map(viewPlayers.map((p) => [p.id, p.position]));
     const groups = groupPlayers(
-      viewPlayers.map((p) => p.id),
-      (id) => positions.get(id)!,
+      joinedPlayers,
+      (id) => players[id].position,
       prevGroups.current,
       joinDistance,
       splitDistance,
@@ -268,7 +231,7 @@ export default function SplitScreen(props: { debug: boolean }) {
     groups.forEach((group, index) => {
       const groupCentroid = groupCentroids[index].set(0, 0);
       group.forEach((id) => {
-        const position = positions.get(id)!;
+        const { position } = players[id];
         groupCentroid.x += position[0] / group.length;
         groupCentroid.y += position[1] / group.length;
       });
@@ -333,8 +296,8 @@ export default function SplitScreen(props: { debug: boolean }) {
         let closest = Infinity;
         group.forEach((a) => {
           other.forEach((b) => {
-            const [ax, ay] = positions.get(a)!;
-            const [bx, by] = positions.get(b)!;
+            const [ax, ay] = players[a].position;
+            const [bx, by] = players[b].position;
             closest = Math.min(closest, Math.hypot(ax - bx, ay - by));
           });
         });

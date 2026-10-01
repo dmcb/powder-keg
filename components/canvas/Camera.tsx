@@ -1,10 +1,5 @@
 import { Camera, Vector2, Vector3 } from "three";
-import {
-  cameraTiltDistance,
-  cameraMaxDistance,
-  cameraMinDistance,
-  defaultPlayerDistance,
-} from "config/camera";
+import { cameraTiltDistance, cameraMaxDistance } from "config/camera";
 
 const lookTarget = new Vector3();
 const tilt = new Vector3();
@@ -12,19 +7,6 @@ const tilt = new Vector3();
 /** Distance that keeps the entire board in view for the given aspect ratio. */
 export function baseDistance(aspect: number) {
   return aspect < 1 ? cameraMaxDistance / aspect : cameraMaxDistance;
-}
-
-/**
- * Legacy zoom-to-fit distance for players whose furthest member is `spread`
- * from their centroid.
- */
-export function groupZoom(spread: number, aspect: number) {
-  const adjustedPlayerDistance =
-    Math.pow(spread / defaultPlayerDistance, 0.6) * defaultPlayerDistance;
-  return Math.max(
-    (baseDistance(aspect) * adjustedPlayerDistance) / defaultPlayerDistance,
-    cameraMinDistance,
-  );
 }
 
 /** Positions a tilted camera looking at `target` from `distance` above. */

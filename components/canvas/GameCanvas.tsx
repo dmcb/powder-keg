@@ -27,7 +27,7 @@ export default function GameCanvas(props: GameCanvasProps) {
       {props.debug && <OrbitControls />}
       <Board debug={props.debug} players={props.players} />
       <Sun />
-      <SplitScreen debug={props.debug} />
+      <SplitScreen />
     </Canvas>
   );
 }
