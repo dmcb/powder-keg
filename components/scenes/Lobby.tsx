@@ -46,13 +46,15 @@ export default function Lobby(props: { debug: boolean }) {
           A local multiplayer pirate battler, connect controllers to start
         </h2>
         <GameCount />
-        <SeedInput value={seed} onChange={setSeedDraft} />
-        <PlayerConnectMenu
-          editable
-          enabled={formValid}
-          action="start"
-          onComplete={startGame}
-        />
+        <div className="form">
+          <SeedInput value={seed} onChange={setSeedDraft} />
+          <PlayerConnectMenu
+            editable
+            enabled={formValid}
+            action="start"
+            onComplete={startGame}
+          />
+        </div>
       </div>
     </div>
   );
