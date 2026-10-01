@@ -4,9 +4,9 @@
   font-family: var(--font-serif);
   border-radius: 8px;
   border: 0;
-  background-color: var(--color-brown-dark);
+  background-color: var(--color-background-dark);
   transition: 0.3s ease-in-out all;
-  color: #fff;
+  color: var(--color-text);
   padding: 0.75em 1em;
 }
 
@@ -17,8 +17,8 @@
 .progress-button:not(:disabled):hover {
   background: linear-gradient(
     90deg,
-    var(--color-active) 100%,
-    var(--color-brown-dark) 100%
+    var(--color-dark-active) 100%,
+    var(--color-background-dark) 100%
   ) !important;
   cursor: pointer;
 }

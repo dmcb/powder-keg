@@ -2,7 +2,7 @@
   content: "";
   position: fixed;
   inset: 1rem;
-  border: 0.5rem solid var(--color-sand);
+  border: 0.5rem solid var(--color-background-accent);
   z-index: -1;
 }
 
@@ -42,7 +42,7 @@
 
 .corner-line {
   fill: none;
-  stroke: var(--color-sand);
+  stroke: var(--color-background-accent);
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -53,15 +53,15 @@
 }
 
 .corner-fill {
-  fill: var(--color-sand);
+  fill: var(--color-background-accent);
 }
 
 .corner-medallion {
-  fill: var(--color-brown-dark);
-  stroke: var(--color-sand);
+  fill: var(--color-background-dark);
+  stroke: var(--color-background-accent);
   stroke-width: 3;
 }
 
 .corner-pin {
-  fill: var(--color-brown-dark);
+  fill: var(--color-background-dark);
 }

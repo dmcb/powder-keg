@@ -1,6 +1,6 @@
 #scoreboard {
   position: absolute;
-  color: #fff;
+  color: var(--color-text);
   z-index: 1;
   top: 0rem;
   width: 100%;

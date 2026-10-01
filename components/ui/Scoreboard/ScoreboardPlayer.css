@@ -1,5 +1,5 @@
 .scoreboard-player {
-  border: solid 0.25em var(--color-brown-dark);
+  border: solid 0.25em var(--color-background-dark);
   padding: 0.5em 1em;
   opacity: 0.95;
   position: absolute;
@@ -40,7 +40,7 @@
 .scoreboard-player-health {
   width: 3.5em;
   height: 0.15em;
-  background: #000;
+  background: var(--color-dark-active);
   border-radius: 0.25em;
   margin: 0.75em 0 0 1.25em;
   padding: 0.1em;
@@ -53,7 +53,7 @@
   top: 50%;
   width: 1.25em;
   height: 1.25em;
-  fill: var(--color-red);
+  fill: var(--color-alert);
   transform: translate(-100%, -50%);
 }
 
@@ -62,12 +62,12 @@
 }
 
 .scoreboard-player-health svg path {
-  stroke: #000;
+  stroke: var(--color-dark-active);
 }
 
 .scoreboard-player-meter {
   width: 100%;
   height: 100%;
-  background: var(--color-red);
+  background: var(--color-alert);
   border-radius: 0.25em;
 }
