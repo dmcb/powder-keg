@@ -26,13 +26,17 @@
 - Game time is centralized in `lib/gameClock.ts` (ticked by
   `components/canvas/GameClock.tsx`) and only advances while the game isn't
   frozen (`isFrozen` in `stores/gameStore.ts`: paused, or during the
-  countdown after starting/resuming). Game logic/animation should use
-  `useGameFrame` (`hooks/useGameFrame.ts`), which receives game-time
-  `delta`/`elapsed` — not raw `useFrame`, `state.clock` or `Date.now()`. It
-  still runs while frozen (with `delta` 0) so derived state (lighting, player
-  positions) is ready before play starts: scale logic by `delta`, and gate
-  anything that isn't (e.g. firing) on player input, which is locked while
-  frozen. Raw `useFrame` is for work that needs wall time (rendering and the
+  countdown after resuming — the countdown at the start of a game runs the
+  world). Player input is locked separately (`areControlsLocked`: paused or
+  any countdown). A match is a fixed length of game time (`config/match.ts`:
+  start countdown + match length), so pausing during the start countdown
+  restarts it (`resume()` resets `gameClock`), and the sun's position is
+  calculated from `elapsed` rather than accumulated. Game logic/animation should use `useGameFrame`
+  (`hooks/useGameFrame.ts`), which receives game-time `delta`/`elapsed` — not
+  raw `useFrame`, `state.clock` or `Date.now()`. It still runs while frozen
+  (with `delta` 0) so derived state (lighting, player positions) stays in
+  place: scale logic by `delta`, and gate anything that isn't (e.g. firing)
+  on player input. Raw `useFrame` is for work that needs wall time (rendering and the
   countdown zoom in `SplitScreen`, input edge tracking in
   `usePlayerControls`).
 - Styles are plain native CSS (global, non-module, no Sass — `sass` is not

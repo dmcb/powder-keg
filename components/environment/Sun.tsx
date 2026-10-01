@@ -1,9 +1,12 @@
 import React, { useRef } from "react";
 import { useGameFrame } from "hooks/useGameFrame";
-import { AmbientLight, DirectionalLight, Group } from "three";
+import { AmbientLight, DirectionalLight, Group, MathUtils } from "three";
 import kelvinToRGB from "lib/kelvin";
 import { useControls } from "leva";
 import { useGameStore } from "stores/gameStore";
+import { countdownSeconds, matchSeconds } from "config/match";
+
+const clamp01 = (value: number) => MathUtils.clamp(value, 0, 1);
 
 export default function Sun() {
   const sunRef = useRef<Group>(null!);
@@ -13,13 +16,9 @@ export default function Sun() {
 
   const [
     {
-      dayLength,
-      nightLength,
       sunRotationPerDay,
       sunRotationPerNight,
       middayExaggeration,
-      dayProgress,
-      nightProgress,
       maxDirectBrightness,
       directColorTempGradient,
       directMaxColorTemp,
@@ -30,18 +29,6 @@ export default function Sun() {
     },
     set,
   ] = useControls("Sun", () => ({
-    dayLength: {
-      value: 180,
-      min: 1,
-      max: 600,
-      step: 1,
-    },
-    nightLength: {
-      value: 6,
-      min: 0,
-      max: 600,
-      step: 1,
-    },
     sunRotationPerDay: {
       value: 0.32,
       min: 0.01,
@@ -116,23 +103,21 @@ export default function Sun() {
     },
   }));
 
-  useGameFrame((_, delta) => {
+  useGameFrame((_, __, elapsed) => {
     // Get total rotation per day and night
     const sunArcPerDay = sunRotationPerDay * Math.PI * 2;
     const sunArcPerNight = sunRotationPerNight * Math.PI * 2;
 
-    // Get time of day (or night)
-    if (nightProgress <= 0.5 && dayProgress < 1) {
-      set({ nightProgress: nightProgress + delta / nightLength });
-    } else if (dayProgress < 1) {
-      set({ dayProgress: dayProgress + delta / dayLength });
-    } else {
-      set({ nightProgress: nightProgress + delta / nightLength });
-      if (nightProgress >= 1) {
-        set({ nightProgress: 0 });
-        set({ dayProgress: 0 });
-      }
-    }
+    // Time of day from the match timeline: the second half of the night
+    // (sunrise) over the start countdown, the day over the match, then the
+    // first half of the night (sunset onwards) for as long again
+    const dayTime = elapsed - countdownSeconds;
+    const dayProgress = clamp01(dayTime / matchSeconds);
+    const nightProgress =
+      dayTime < 0
+        ? 0.5 * clamp01(elapsed / countdownSeconds)
+        : 0.5 + 0.5 * clamp01((dayTime - matchSeconds) / countdownSeconds);
+    set({ dayProgress, nightProgress });
 
     // Rotate sun based on latitude
     sunRef.current.rotation.x = ((latitude / 90) * Math.PI) / 2;

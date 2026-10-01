@@ -19,7 +19,8 @@ import {
   Vector3,
 } from "three";
 import { usePlayerStore } from "stores/playerStore";
-import { countdownSeconds, useGameStore } from "stores/gameStore";
+import { useGameStore } from "stores/gameStore";
+import { countdownSeconds } from "config/match";
 import { gameClock } from "lib/gameClock";
 import { groupPlayers } from "lib/playerGroups";
 import { baseDistance, frameCamera } from "components/canvas/Camera";
