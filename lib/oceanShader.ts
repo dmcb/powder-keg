@@ -10,6 +10,7 @@ import {
   Vector4,
 } from "three";
 import { waveCount, type Wave } from "lib/waves";
+import { createWakePoints, wakePoints, wakeShips } from "lib/wake";
 
 /**
  * Uniforms shared with the ocean's shader program. Update `.value`s in place;
@@ -47,6 +48,13 @@ export function createOceanUniforms() {
     uFoamNoiseScale: { value: 30 },
     uCrestThreshold: { value: 0.8 },
     uCrestSoftness: { value: 0.2 },
+    uWake: { value: createWakePoints() },
+    uWakeLifetime: { value: 1.6 },
+    uWakeWidth: { value: 0.012 },
+    uWakeSpread: { value: 2.5 },
+    uWakeLineWidth: { value: 0.008 },
+    uWakeChurn: { value: 0.15 },
+    uWakeOpacity: { value: 0.9 },
     uCrestOpacity: { value: 0.6 },
   };
 }
@@ -164,6 +172,15 @@ const fragmentCommon = /* glsl */ `
   uniform float uCrestThreshold;
   uniform float uCrestSoftness;
   uniform float uCrestOpacity;
+  #define OCEAN_WAKE_SHIPS ${wakeShips}
+  #define OCEAN_WAKE_POINTS ${wakePoints}
+  uniform vec4 uWake[OCEAN_WAKE_SHIPS * OCEAN_WAKE_POINTS];
+  uniform float uWakeLifetime;
+  uniform float uWakeWidth;
+  uniform float uWakeSpread;
+  uniform float uWakeLineWidth;
+  uniform float uWakeChurn;
+  uniform float uWakeOpacity;
   varying vec2 vOceanXY;
   varying float vFaceDepth;
   varying float vFaceWaveHeight;
@@ -181,6 +198,32 @@ const fragmentCommon = /* glsl */ `
       mix(oceanHash(i + vec2(0.0, 1.0)), oceanHash(i + vec2(1.0, 1.0)), f.x),
       f.y
     );
+  }
+
+  // Each ship's trail is a polyline of timestamped points. Around it, foam
+  // fills a churned band right behind the ship, then splits into two arms
+  // that spread apart and thin out with age: a V-shaped wake.
+  float oceanWake(vec2 p, float breakup) {
+    float foam = 0.0;
+    for (int s = 0; s < OCEAN_WAKE_SHIPS; s++) {
+      for (int i = 0; i < OCEAN_WAKE_POINTS - 1; i++) {
+        vec4 a = uWake[s * OCEAN_WAKE_POINTS + i];
+        vec4 b = uWake[s * OCEAN_WAKE_POINTS + i + 1];
+        if (a.w + b.w <= 0.0) continue;
+        vec2 ab = b.xy - a.xy;
+        float h = clamp(dot(p - a.xy, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
+        float life = (uTime - mix(a.z, b.z, h)) / uWakeLifetime;
+        if (life >= 1.0) continue;
+        float d = length(p - a.xy - ab * h) + breakup * uWakeLineWidth;
+        float width =
+          uWakeWidth * (1.0 + uWakeSpread * life) * mix(a.w, b.w, h);
+        float inner = life < uWakeChurn
+          ? 0.0
+          : width - uWakeLineWidth * (1.0 - life);
+        foam = max(foam, step(d, width) * step(inner, d));
+      }
+    }
+    return foam;
   }
 `;
 
@@ -213,7 +256,10 @@ const fragmentColour = /* glsl */ `
     uCrestThreshold + uCrestSoftness,
     vFaceWaveHeight / max(uWaveAmplitude, 1e-5)
   ) * uCrestOpacity;
-  float oceanFoam = max(max(oceanShore, oceanRipple), oceanCrest);
+  float oceanFoam = max(
+    max(max(oceanShore, oceanRipple), oceanCrest),
+    oceanWake(vOceanXY, oceanBreakup) * uWakeOpacity
+  );
 
   vec4 diffuseColor = vec4(
     mix(oceanColour, uFoamColour, oceanFoam),

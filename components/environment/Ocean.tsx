@@ -6,6 +6,8 @@ import type { ThreeElements } from "@react-three/fiber";
 import Delaunator from "delaunator";
 import Alea from "aleaprng";
 import { useGameStore } from "stores/gameStore";
+import { usePlayerStore } from "stores/playerStore";
+import { updateWake } from "lib/wake";
 import { createTerrainHeight } from "lib/noise";
 import { buildWaves, ocean } from "lib/waves";
 import {
@@ -114,6 +116,15 @@ function Ocean(props: ThreeElements["mesh"]) {
       crestSoftness: { value: 0.25, min: 0, max: 1, step: 0.01 },
       crestOpacity: { value: 0.15, min: 0, max: 1, step: 0.01 },
     }),
+    Wake: folder({
+      wakeLifetime: { value: 1.6, min: 0.1, max: 5, step: 0.05 },
+      wakeWidth: { value: 0.012, min: 0, max: 0.05, step: 0.0005 },
+      wakeSpread: { value: 2.5, min: 0, max: 8, step: 0.05 },
+      wakeLineWidth: { value: 0.008, min: 0.001, max: 0.03, step: 0.0005 },
+      wakeChurn: { value: 0.15, min: 0, max: 1, step: 0.01 },
+      wakeOpacity: { value: 0.9, min: 0, max: 1, step: 0.01 },
+      wakeFullSpeed: { value: 0.15, min: 0.01, max: 1, step: 0.01 },
+    }),
     Geometry: folder({
       resolution: { value: 110, min: 10, max: 250, step: 1 },
       jitter: { value: 0.8, min: 0, max: 1, step: 0.01 },
@@ -194,6 +205,13 @@ function Ocean(props: ThreeElements["mesh"]) {
     u.uCrestThreshold.value = c.crestThreshold;
     u.uCrestSoftness.value = c.crestSoftness;
     u.uCrestOpacity.value = c.crestOpacity;
+
+    u.uWakeLifetime.value = c.wakeLifetime;
+    u.uWakeWidth.value = c.wakeWidth;
+    u.uWakeSpread.value = c.wakeSpread;
+    u.uWakeLineWidth.value = c.wakeLineWidth;
+    u.uWakeChurn.value = c.wakeChurn;
+    u.uWakeOpacity.value = c.wakeOpacity;
   }, [controls, uniforms, material]);
 
   useLayoutEffect(() => {
@@ -202,6 +220,13 @@ function Ocean(props: ThreeElements["mesh"]) {
 
   useGameFrame((_, __, elapsed) => {
     uniforms.uTime.value = elapsed;
+    updateWake(
+      uniforms.uWake.value,
+      usePlayerStore.getState().players.map((player) => player.position),
+      elapsed,
+      controls.wakeLifetime,
+      controls.wakeFullSpeed,
+    );
   });
 
   // Nothing to colour by until the terrain has published its height field
