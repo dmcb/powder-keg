@@ -3,6 +3,7 @@ import cryptoRandomString from "crypto-random-string";
 import { generateGameSeed } from "config/seeds";
 import { countdownSeconds } from "config/match";
 import { gameClock } from "lib/gameClock";
+import type { TerrainParams } from "lib/noise";
 
 export type GameScene = "lobby" | "playing" | "results";
 
@@ -10,6 +11,9 @@ type GameStore = {
   seed: string;
   scene: GameScene;
   latitude: number;
+  // The current terrain's noise inputs, published by `Terrain` (e.g. for the
+  // ocean's depth map); null until the terrain has mounted
+  terrain: TerrainParams | null;
   paused: boolean;
   // Seconds left before play (re)starts; counts down after starting or resuming
   countdown: number;
@@ -18,6 +22,7 @@ type GameStore = {
   setScene: (scene: GameScene) => void;
   setSeed: (seed: string) => void;
   setLatitude: (latitude: number) => void;
+  setTerrain: (terrain: TerrainParams) => void;
   startGame: () => void;
   pause: () => void;
   resume: () => void;
@@ -28,6 +33,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   seed: generateGameSeed(),
   scene: "lobby",
   latitude: 0,
+  terrain: null,
   paused: false,
   countdown: 0,
   resuming: false,
@@ -42,6 +48,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
   setScene: (scene: GameScene) => set({ scene }),
   setLatitude: (latitude: number) => set({ latitude }),
+  setTerrain: (terrain: TerrainParams) => set({ terrain }),
   startGame: () =>
     set({
       scene: "playing",

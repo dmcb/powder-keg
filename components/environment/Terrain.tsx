@@ -19,6 +19,7 @@ const { min: minAmplitude, max: maxAmplitude } = terrainAmplitudeRange;
 export default function Terrain(props: { seed: string }) {
   // State hooks
   const setLatitude = useGameStore((state) => state.setLatitude);
+  const setTerrain = useGameStore((state) => state.setTerrain);
 
   // Refs
   const [trimeshRef, trimeshApi] = useTrimesh(
@@ -162,6 +163,16 @@ export default function Terrain(props: { seed: string }) {
 
     return points;
   }, [props.seed, octaves, amplitude, frequency, gradientEdge]);
+
+  useLayoutEffect(() => {
+    setTerrain({
+      seed: props.seed,
+      amplitude,
+      frequency,
+      octaves,
+      gradientEdge,
+    });
+  }, [props.seed, amplitude, frequency, octaves, gradientEdge]);
 
   const meshIndex: number[] = useMemo(() => {
     // Triangulate

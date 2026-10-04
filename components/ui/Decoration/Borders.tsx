@@ -8,29 +8,17 @@ const compassRose =
   "4,15 2.85,6.77 -0.95,8.95 1.23,5.15 -7,4 1.23,2.85 -0.95,-0.95 2.85,1.23";
 
 /**
- * Scrollwork running along one edge of the frame, away from the corner.
- * Mirrored across the diagonal for the other edge.
+ * A single sweeping line along one edge of the frame, away from the corner,
+ * finished with one curl. Mirrored across the diagonal for the other edge.
  */
 function Scroll(props: { transform?: string }) {
   return (
     <g transform={props.transform}>
       <path
         className="corner-line"
-        d="M22 12 C34 16 42 30 58 30 C72 30 78 20 72 14 C67 10 60 14 62 19 C63 22 67 22 68 19"
+        d="M20 12 C40 22 70 24 96 20 C110 18 116 12 111 8 C107 5 101 8 103 12"
       />
-      <path
-        className="corner-line"
-        d="M58 30 C80 34 96 22 118 20 C132 19 142 24 150 22"
-      />
-      <path
-        className="corner-line thin"
-        d="M112 21 C116 31 127 33 129 27 C130 23 125 22 124 25"
-      />
-      <path
-        className="corner-fill"
-        d="M92 26 C96 15 106 12 114 12 C110 19 103 25 92 26 Z"
-      />
-      <circle className="corner-fill" cx="150" cy="22" r="2.4" />
+      <circle className="corner-fill" cx="128" cy="16" r="2" />
     </g>
   );
 }

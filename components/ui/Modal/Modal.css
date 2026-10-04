@@ -1,7 +1,7 @@
 .modal {
   color: var(--color-text);
   padding: 4rem;
-  background-color: transparent;
+  background-color: var(--color-background);
   border: 0;
 }
 

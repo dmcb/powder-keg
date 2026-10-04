@@ -43,7 +43,9 @@ export default function Lobby(props: { debug: boolean }) {
       <div className="menu">
         <h1>Powder Keg</h1>
         <h2>
-          A local multiplayer pirate battler, connect controllers to start
+          A local multiplayer pirate battler!
+          <br />
+          Connect controllers to start
         </h2>
         <GameCount />
         <div className="form">

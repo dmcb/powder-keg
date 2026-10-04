@@ -32,6 +32,19 @@ export function getBiomeFromLatitude(latitude: number): number {
   );
 }
 
+// Latitudes (absolute degrees) over which the ocean fades from fully tropical
+// to fully cold
+export const tropicalLatitudeRange = { tropical: 15, cold: 50 };
+
+export function getTropicalnessFromLatitude(latitude: number): number {
+  const { tropical, cold } = tropicalLatitudeRange;
+  const t = Math.min(
+    Math.max((Math.abs(latitude) - tropical) / (cold - tropical), 0),
+    1,
+  );
+  return Math.round((1 - t * t * (3 - 2 * t)) * 100) / 100;
+}
+
 export const terrainAmplitudeRange = {
   min: 0.1,
   max: 0.4,
