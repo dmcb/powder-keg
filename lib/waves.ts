@@ -1,4 +1,5 @@
 import { MathUtils } from "three";
+import { boardRadius } from "config/physics";
 
 export const waveCount = 4;
 
@@ -70,7 +71,7 @@ export const ocean = {
 
 /** 0 at the board edge, rising to 1 `falloff` in from it. */
 export function waveEdgeFactor(x: number, y: number, falloff: number) {
-  const distanceToEdge = 1 - Math.max(Math.abs(x), Math.abs(y));
+  const distanceToEdge = boardRadius - Math.hypot(x, y);
   return MathUtils.smoothstep(distanceToEdge, 0, falloff);
 }
 

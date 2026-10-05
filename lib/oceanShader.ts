@@ -10,6 +10,9 @@ import {
   Vector4,
 } from "three";
 import { waveCount, type Wave } from "lib/waves";
+import { boardRadius } from "config/physics";
+
+const boardRadiusGlsl = boardRadius.toFixed(6);
 import { createWakePoints, wakePoints, wakeShips } from "lib/wake";
 
 /**
@@ -78,8 +81,9 @@ export function setWaveUniforms(uniforms: OceanUniforms, waves: Wave[]) {
 }
 
 /**
- * Bakes terrain height over the board (XY from -1 to 1) into a single-channel
- * texture, so the shader can work out water depth anywhere.
+ * Bakes terrain height over the board (XY from -boardRadius to boardRadius)
+ * into a single-channel texture, so the shader can work out water depth
+ * anywhere.
  */
 export function createHeightmap(
   height: (x: number, y: number) => number,
@@ -88,8 +92,8 @@ export function createHeightmap(
   const data = new Uint16Array(size * size);
   for (let j = 0; j < size; j++) {
     for (let i = 0; i < size; i++) {
-      const x = ((i + 0.5) / size) * 2 - 1;
-      const y = ((j + 0.5) / size) * 2 - 1;
+      const x = (((i + 0.5) / size) * 2 - 1) * boardRadius;
+      const y = (((j + 0.5) / size) * 2 - 1) * boardRadius;
       data[j * size + i] = DataUtils.toHalfFloat(height(x, y));
     }
   }
@@ -115,7 +119,7 @@ const vertexCommon = /* glsl */ `
   varying float vFaceWaveHeight;
 
   float oceanEdgeFactor(vec2 p) {
-    return smoothstep(0.0, uEdgeFalloff, 1.0 - max(abs(p.x), abs(p.y)));
+    return smoothstep(0.0, uEdgeFalloff, ${boardRadiusGlsl} - length(p));
   }
 
   // Sum of Gerstner waves: z is height, xy pulls vertices towards crests,
@@ -142,7 +146,7 @@ const vertexDisplace = /* glsl */ `
   // Wave height at the face's centre, so whitecaps cover whole facets
   vFaceWaveHeight =
     oceanGerstner(faceCentre, uTime).z * oceanEdgeFactor(faceCentre);
-  vFaceDepth = -texture2D(uHeightmap, faceCentre * 0.5 + 0.5).r;
+  vFaceDepth = -texture2D(uHeightmap, faceCentre / (2.0 * ${boardRadiusGlsl}) + 0.5).r;
 `;
 
 const fragmentCommon = /* glsl */ `
@@ -228,7 +232,7 @@ const fragmentCommon = /* glsl */ `
 `;
 
 const fragmentColour = /* glsl */ `
-  float oceanSmoothDepth = -texture2D(uHeightmap, vOceanXY * 0.5 + 0.5).r;
+  float oceanSmoothDepth = -texture2D(uHeightmap, vOceanXY / (2.0 * ${boardRadiusGlsl}) + 0.5).r;
   float oceanDepth = max(mix(oceanSmoothDepth, vFaceDepth, uFaceted), 0.0);
 
   // Depth -> 0 (shallow) to 1 (deep), optionally stepped into bands

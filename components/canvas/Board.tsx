@@ -12,10 +12,7 @@ import { boardGravity } from "config/physics";
 const BoardPieces = (props: { seed: string; players: number[] }) => {
   return (
     <>
-      <Border position={[0, -1, 0]} rotation={[-Math.PI / 2, 0, 0]} />
-      <Border position={[0, 1, 0]} rotation={[Math.PI / 2, 0, 0]} />
-      <Border position={[-1, 0, 0]} rotation={[Math.PI / 2, Math.PI / 2, 0]} />
-      <Border position={[1, 0, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
+      <Border />
       <Ocean />
       <Terrain seed={props.seed} />
       {props.players.map((player, index) => {

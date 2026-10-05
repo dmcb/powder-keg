@@ -14,12 +14,18 @@ export const turnTorque = 5;
 export const minSails = -1;
 export const maxSails = 3;
 
-// Ships are placed at the four corners of the board, facing the centre.
+// The board is a circle centred on the origin. Terrain falls away to seabed by
+// radius 1 (see `lib/noise.ts`), leaving open water out to the border; √2 is
+// the circle through the corners of the old square board.
+export const boardRadius = Math.SQRT2;
+
+// Ships are placed on the diagonals near the board's edge, facing the centre.
+const spawn = (0.92 * boardRadius) / Math.SQRT2;
 export const playerInitialPositions: Triplet[] = [
-  [-0.92, 0.92, 0],
-  [0.92, -0.92, 0],
-  [-0.92, -0.92, 0],
-  [0.92, 0.92, 0],
+  [-spawn, spawn, 0],
+  [spawn, -spawn, 0],
+  [-spawn, -spawn, 0],
+  [spawn, spawn, 0],
 ];
 
 export const playerInitialRotations: Triplet[] = [

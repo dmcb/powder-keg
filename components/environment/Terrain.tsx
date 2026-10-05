@@ -13,6 +13,7 @@ import {
   getBiomeFromLatitude,
   terrainAmplitudeRange,
 } from "config/biomes";
+import { boardRadius } from "config/physics";
 
 const { min: minAmplitude, max: maxAmplitude } = terrainAmplitudeRange;
 
@@ -103,62 +104,41 @@ export default function Terrain(props: { seed: string }) {
   const points: number[] = useMemo(() => {
     prng.restart();
     const noise2D = createNoise2D(prng);
-    const insidePointsCount = 8000;
-    const edgePointsCount = 449;
-    const size = 2;
-
-    // Start with corner points
-    const points = [
-      -1,
-      -1,
-      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, -1, -1),
-      1,
-      -1,
-      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, 1, -1),
-      1,
-      1,
-      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, 1, 1),
-      -1,
-      1,
-      baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, -1, 1),
-    ];
-
-    // Add edges
-    for (let i = 0; i < 4; i++) {
-      for (let j = 0; j < edgePointsCount; j++) {
-        let x = prng() * size - size / 2;
-        let y = prng() * size - size / 2;
-        switch (i) {
-          case 0:
-            y = -1;
-            break;
-          case 1:
-            x = 1;
-            break;
-          case 2:
-            y = 1;
-            break;
-          case 3:
-            x = -1;
-            break;
-        }
-        points.push(
-          x,
-          y,
-          baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y),
-        );
-      }
-    }
-
-    // Fill in the rest
-    for (let i = 0; i < insidePointsCount; i++) {
-      let x = prng() * size * 0.98 - (size * 0.98) / 2;
-      let y = prng() * size * 0.98 - (size * 0.98) / 2;
+    // Terrain falls to flat seabed by radius 1, so only the island (the same
+    // density as the original square board) needs detail; beyond it a sparse
+    // fill reaches the border
+    const islandRadius = 1;
+    const islandPointsCount = 6300;
+    const seabedPointsCount = 600;
+    const edgePointsCount = 360;
+    const points: number[] = [];
+    const addPoint = (x: number, y: number) =>
       points.push(
         x,
         y,
         baseNoise(noise2D, amplitude, frequency, octaves, gradientEdge, x, y),
       );
+    // Uniformly distributed over the ring between two radii
+    const addRandomPoint = (inner: number, outer: number) => {
+      const angle = prng() * Math.PI * 2;
+      const radius = Math.sqrt(
+        inner * inner + prng() * (outer * outer - inner * inner),
+      );
+      addPoint(Math.cos(angle) * radius, Math.sin(angle) * radius);
+    };
+
+    // Add the rim, evenly spaced so the hull is a smooth circle
+    for (let i = 0; i < edgePointsCount; i++) {
+      const angle = (i / edgePointsCount) * Math.PI * 2;
+      addPoint(Math.cos(angle) * boardRadius, Math.sin(angle) * boardRadius);
+    }
+
+    // Fill in the rest
+    for (let i = 0; i < islandPointsCount; i++) {
+      addRandomPoint(0, islandRadius);
+    }
+    for (let i = 0; i < seabedPointsCount; i++) {
+      addRandomPoint(islandRadius, boardRadius * 0.98);
     }
 
     return points;

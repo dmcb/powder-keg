@@ -17,29 +17,37 @@ import {
   setWaveUniforms,
 } from "lib/oceanShader";
 import { getTropicalnessFromLatitude } from "config/biomes";
+import { boardRadius } from "config/physics";
 
-const heightmapSize = 256;
+// Texels per 2 units of board, matching the original -1..1 board's 256
+const heightmapSize = Math.ceil(256 * boardRadius);
 const scratchColour = new Color();
 
 /**
- * Delaunay-triangulated plane over the board (XY from -1 to 1) from a
- * jittered grid of `resolution`² points, so its facets match the terrain's
- * irregular low-poly look. Non-indexed, with each vertex carrying its face's
- * centroid so the shader can colour whole faces by depth.
+ * Delaunay-triangulated disc over the board (radius `boardRadius`) from a
+ * jittered grid with `resolution` points per 2 units, so its facets match the
+ * terrain's irregular low-poly look. Non-indexed, with each vertex carrying
+ * its face's centroid so the shader can colour whole faces by depth.
  */
 function createOceanGeometry(resolution: number, jitter: number) {
   const prng = new Alea("ocean");
   const step = 2 / resolution;
+  const cells = Math.ceil((2 * boardRadius) / step);
   const points: [number, number][] = [];
-  for (let j = 0; j <= resolution; j++) {
-    for (let i = 0; i <= resolution; i++) {
-      const onEdgeX = i === 0 || i === resolution;
-      const onEdgeY = j === 0 || j === resolution;
-      // Edge points only slide along their edge, keeping the board covered
-      const x = -1 + (i + (onEdgeX ? 0 : (prng() - 0.5) * jitter)) * step;
-      const y = -1 + (j + (onEdgeY ? 0 : (prng() - 0.5) * jitter)) * step;
-      points.push([x, y]);
+  // Keep inner points clear of the rim so faces there don't become slivers
+  const innerRadius = boardRadius - step * 0.75;
+  for (let j = 0; j <= cells; j++) {
+    for (let i = 0; i <= cells; i++) {
+      const x = -boardRadius + (i + (prng() - 0.5) * jitter) * step;
+      const y = -boardRadius + (j + (prng() - 0.5) * jitter) * step;
+      if (Math.hypot(x, y) < innerRadius) points.push([x, y]);
     }
+  }
+  // Evenly spaced rim points keep the board covered out to the border
+  const rimPoints = Math.ceil((2 * Math.PI * boardRadius) / step);
+  for (let i = 0; i < rimPoints; i++) {
+    const angle = (i / rimPoints) * Math.PI * 2;
+    points.push([Math.cos(angle) * boardRadius, Math.sin(angle) * boardRadius]);
   }
   const triangles = Delaunator.from(points).triangles;
 
@@ -89,7 +97,7 @@ function Ocean(props: ThreeElements["mesh"]) {
       tropicalDeep: "#0a6fa8",
       coldShallow: "#7a9aa0",
       coldMid: "#3f6577",
-      coldDeep: "#1a3048",
+      coldDeep: "#2b445f",
       depthRange: { value: 0.1, min: 0.01, max: 0.3, step: 0.001 },
       depthCurve: { value: 0.7, min: 0.1, max: 3, step: 0.01 },
       midPoint: { value: 0.35, min: 0, max: 1, step: 0.01 },
@@ -98,7 +106,7 @@ function Ocean(props: ThreeElements["mesh"]) {
       roughness: { value: 0.35, min: 0, max: 1, step: 0.01 },
     }),
     Transparency: folder({
-      tropicalShallowOpacity: { value: 0.15, min: 0, max: 1, step: 0.01 },
+      tropicalShallowOpacity: { value: 0.4, min: 0, max: 1, step: 0.01 },
       coldShallowOpacity: { value: 0.6, min: 0, max: 1, step: 0.01 },
       deepOpacity: { value: 0.92, min: 0, max: 1, step: 0.01 },
     }),
@@ -107,7 +115,7 @@ function Ocean(props: ThreeElements["mesh"]) {
       foamOpacity: { value: 0.95, min: 0, max: 1, step: 0.01 },
       foamDepth: { value: 0.004, min: 0, max: 0.03, step: 0.0005 },
       foamReach: { value: 0.025, min: 0, max: 0.1, step: 0.001 },
-      foamSpacing: { value: 0.008, min: 0.001, max: 0.05, step: 0.0005 },
+      foamSpacing: { value: 0.004, min: 0.001, max: 0.05, step: 0.0005 },
       foamWidth: { value: 0.35, min: 0, max: 1, step: 0.01 },
       foamSpeed: { value: 0.35, min: -2, max: 2, step: 0.01 },
       foamBreakup: { value: 0.6, min: 0, max: 2, step: 0.01 },
